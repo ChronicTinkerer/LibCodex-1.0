@@ -27,6 +27,7 @@ Modules\Enums\Races.lua
 Modules\Enums\Realms.lua
 Modules\Enums\CreatureTypes.lua
 Modules\Enums\Specs.lua
+Modules\Enums\Stats.lua
 
 # ----- Tier 2 catalog modules (large, grow over time)
 Modules\Catalog\NPCs.lua
@@ -45,6 +46,8 @@ Modules\Catalog\Reputations.lua
 Modules\Catalog\Quests.lua
 Modules\Catalog\FlightPoints.lua
 Modules\Catalog\Talents.lua
+Modules\Catalog\Professions.lua
+Modules\Catalog\Crafts.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -69,6 +72,9 @@ Data\Reputations.lua
 Data\Quests.lua
 Data\FlightPoints.lua
 Data\Talents.lua
+Data\Professions.lua
+Data\Crafts.lua
+Data\Stats.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua

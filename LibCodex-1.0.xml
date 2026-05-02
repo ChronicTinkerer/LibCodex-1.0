@@ -19,6 +19,7 @@
     <Script file="Modules\Enums\Realms.lua"/>
     <Script file="Modules\Enums\CreatureTypes.lua"/>
     <Script file="Modules\Enums\Specs.lua"/>
+    <Script file="Modules\Enums\Stats.lua"/>
 
     <Script file="Modules\Catalog\NPCs.lua"/>
     <Script file="Modules\Catalog\Items.lua"/>
@@ -36,6 +37,8 @@
     <Script file="Modules\Catalog\Quests.lua"/>
     <Script file="Modules\Catalog\FlightPoints.lua"/>
     <Script file="Modules\Catalog\Talents.lua"/>
+    <Script file="Modules\Catalog\Professions.lua"/>
+    <Script file="Modules\Catalog\Crafts.lua"/>
 
     <Script file="Data\Classes.lua"/>
     <Script file="Data\Factions.lua"/>
@@ -56,6 +59,9 @@
     <Script file="Data\Quests.lua"/>
     <Script file="Data\FlightPoints.lua"/>
     <Script file="Data\Talents.lua"/>
+    <Script file="Data\Professions.lua"/>
+    <Script file="Data\Crafts.lua"/>
+    <Script file="Data\Stats.lua"/>
     <Script file="Data\NPCs.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\GameObjects.lua"/>
