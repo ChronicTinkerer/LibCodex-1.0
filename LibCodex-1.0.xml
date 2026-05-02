@@ -1,0 +1,69 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+    <!--
+        Embedding manifest. Consumer addons reference this from their embeds.xml:
+
+            <Include file="Libs\LibCodex-1.0\LibCodex-1.0.xml"/>
+
+        Load order matches LibCodex-1.0.toc. Do not load LibStub here; the
+        consumer addon provides its own LibStub via its libs folder, and
+        LibStub is idempotent so loading it twice is harmless.
+    -->
+
+    <Script file="LibCodex-1.0.lua"/>
+
+    <Script file="Modules\Common.lua"/>
+
+    <Script file="Modules\Enums\Classes.lua"/>
+    <Script file="Modules\Enums\Factions.lua"/>
+    <Script file="Modules\Enums\Races.lua"/>
+    <Script file="Modules\Enums\Realms.lua"/>
+    <Script file="Modules\Enums\CreatureTypes.lua"/>
+    <Script file="Modules\Enums\Specs.lua"/>
+
+    <Script file="Modules\Catalog\NPCs.lua"/>
+    <Script file="Modules\Catalog\Items.lua"/>
+    <Script file="Modules\Catalog\GameObjects.lua"/>
+    <Script file="Modules\Catalog\Pets.lua"/>
+    <Script file="Modules\Catalog\Mounts.lua"/>
+    <Script file="Modules\Catalog\Toys.lua"/>
+    <Script file="Modules\Catalog\Heirlooms.lua"/>
+    <Script file="Modules\Catalog\Achievements.lua"/>
+    <Script file="Modules\Catalog\Encounters.lua"/>
+    <Script file="Modules\Catalog\Spells.lua"/>
+    <Script file="Modules\Catalog\Zones.lua"/>
+    <Script file="Modules\Catalog\Currencies.lua"/>
+    <Script file="Modules\Catalog\Reputations.lua"/>
+    <Script file="Modules\Catalog\Quests.lua"/>
+    <Script file="Modules\Catalog\FlightPoints.lua"/>
+    <Script file="Modules\Catalog\Talents.lua"/>
+
+    <Script file="Data\Classes.lua"/>
+    <Script file="Data\Factions.lua"/>
+    <Script file="Data\Races.lua"/>
+    <Script file="Data\Realms.lua"/>
+    <Script file="Data\CreatureTypes.lua"/>
+    <Script file="Data\Specs.lua"/>
+    <Script file="Data\Pets.lua"/>
+    <Script file="Data\Mounts.lua"/>
+    <Script file="Data\Toys.lua"/>
+    <Script file="Data\Heirlooms.lua"/>
+    <Script file="Data\Achievements.lua"/>
+    <Script file="Data\Encounters.lua"/>
+    <Script file="Data\Spells.lua"/>
+    <Script file="Data\Zones.lua"/>
+    <Script file="Data\Currencies.lua"/>
+    <Script file="Data\Reputations.lua"/>
+    <Script file="Data\Quests.lua"/>
+    <Script file="Data\FlightPoints.lua"/>
+    <Script file="Data\Talents.lua"/>
+    <Script file="Data\NPCs.lua"/>
+    <Script file="Data\Items.lua"/>
+    <Script file="Data\GameObjects.lua"/>
+
+    <Script file="Adapters\Runtime.lua"/>
+    <Script file="Adapters\Zygor.lua"/>
+
+    <Script file="Log.lua"/>
+    <Script file="Dashboard.lua"/>
+    <Script file="SlashCommand.lua"/>
+</Ui>

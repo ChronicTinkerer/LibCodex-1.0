@@ -1,0 +1,84 @@
+## Interface: 120005
+## Title: LibCodex-1.0
+## Notes: A reusable static-catalog library for WoW addons. Tracks NPCs, items, spells, talents, quests, zones, flight points, currencies, reputations, crafts, achievements, pets, mounts, etc. Hybrid load model: bundled seed + runtime growth + adapters for other addons (Zygor, HeroDBC). Consumers embed via ## libs and call LibStub("LibCodex-1.0").
+## Author: ChronicTinkerer
+## Version: 0.1.0
+## SavedVariables: LibCodexDB
+## OptionalDeps: ZygorGuidesViewer, HeroDBC
+## LoadOnDemand: 0
+## X-Curse-Project-ID: -
+## X-License: MIT
+
+# ----- Vendored LibStub (only loaded when LibCodex runs as a standalone addon
+#       for development/testing; in production the consumer addon supplies its
+#       own LibStub via embeds and this is a no-op since LibStub is idempotent)
+embeds\LibStub\LibStub.lua
+
+# ----- Library core
+LibCodex-1.0.lua
+
+# ----- Reusable collection factory (every module is built from this)
+Modules\Common.lua
+
+# ----- Tier 1 enums (small, stable, hand-curated)
+Modules\Enums\Classes.lua
+Modules\Enums\Factions.lua
+Modules\Enums\Races.lua
+Modules\Enums\Realms.lua
+Modules\Enums\CreatureTypes.lua
+Modules\Enums\Specs.lua
+
+# ----- Tier 2 catalog modules (large, grow over time)
+Modules\Catalog\NPCs.lua
+Modules\Catalog\Items.lua
+Modules\Catalog\GameObjects.lua
+Modules\Catalog\Pets.lua
+Modules\Catalog\Mounts.lua
+Modules\Catalog\Toys.lua
+Modules\Catalog\Heirlooms.lua
+Modules\Catalog\Achievements.lua
+Modules\Catalog\Encounters.lua
+Modules\Catalog\Spells.lua
+Modules\Catalog\Zones.lua
+Modules\Catalog\Currencies.lua
+Modules\Catalog\Reputations.lua
+Modules\Catalog\Quests.lua
+Modules\Catalog\FlightPoints.lua
+Modules\Catalog\Talents.lua
+
+# ----- Bundled seed data (loaded by modules at module-construction time)
+Data\Classes.lua
+Data\Factions.lua
+Data\Races.lua
+Data\Realms.lua
+Data\CreatureTypes.lua
+Data\Specs.lua
+Data\Pets.lua
+Data\Mounts.lua
+Data\Toys.lua
+Data\Heirlooms.lua
+Data\Achievements.lua
+Data\Encounters.lua
+Data\NPCs.lua
+Data\Items.lua
+Data\GameObjects.lua
+Data\Spells.lua
+Data\Zones.lua
+Data\Currencies.lua
+Data\Reputations.lua
+Data\Quests.lua
+Data\FlightPoints.lua
+Data\Talents.lua
+
+# ----- Adapters (runtime sources that feed data into the catalog)
+Adapters\Runtime.lua
+Adapters\Zygor.lua
+
+# ----- Log window (used by SlashCommand and available to consumers)
+Log.lua
+
+# ----- GUI dashboard (/codex gui)
+Dashboard.lua
+
+# ----- Slash command interface (/codex)
+SlashCommand.lua
