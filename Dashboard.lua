@@ -16,6 +16,9 @@ LibCodex.Dashboard = LibCodex.Dashboard or {}
 local D = LibCodex.Dashboard
 
 local frame, tabs, panels, currentTab
+-- Forward declaration. `selectTab` is assigned further down but referenced
+-- by helpers defined earlier (e.g., D.OpenSearchInBrowse).
+local selectTab
 
 -- ----------------------------------------------------------------------------
 -- Helpers.
@@ -131,6 +134,13 @@ local function buildSearchPanel(parent)
     p.go = makeButton(p, "Search", 80, 22, function() D.RunSearch(p.input:GetText()) end)
     p.go:SetPoint("LEFT", p.input, "RIGHT", 8, 0)
 
+    -- Quick handoff: dump the current search query into the Browse tab's
+    -- filter so the user can drill into one module's results.
+    p.openBrowse = makeButton(p, "Open in Browse", 130, 22, function()
+        D.OpenSearchInBrowse(p.input:GetText())
+    end)
+    p.openBrowse:SetPoint("LEFT", p.go, "RIGHT", 8, 0)
+
     p.scroll = CreateFrame("ScrollFrame", nil, p, "UIPanelScrollFrameTemplate")
     p.scroll:SetPoint("TOPLEFT", 8, -56)
     p.scroll:SetPoint("BOTTOMRIGHT", -28, 8)
@@ -154,10 +164,14 @@ function D.RunSearch(query)
     end
     local lines = {}
     local total = 0
+    -- Stash per-module match counts so the Browse tab can prompt the user
+    -- to drill into the most-promising one when "Open in Browse" is clicked.
+    local moduleHits = {}
     for name, mod in pairs(LibCodex.modules) do
         if mod.Search then
             local hits = mod:Search(query)
             if #hits > 0 then
+                moduleHits[name] = #hits
                 lines[#lines + 1] = name .. " (" .. #hits .. " matches):"
                 local shown = 0
                 for _, e in ipairs(hits) do
@@ -179,6 +193,39 @@ function D.RunSearch(query)
         lines[#lines + 1] = "No matches for '" .. query .. "'"
     end
     panels.Search.text:SetText(table.concat(lines, "\n"))
+    panels.Search._lastQuery = query
+    panels.Search._lastModuleHits = moduleHits
+end
+
+-- Hand off the current search query to the Browse tab. If exactly one module
+-- matched, switch to it directly. Otherwise leave the Browse module choice
+-- to the user (they can click the module picker) but pre-populate the filter
+-- so they don't have to re-type the query.
+function D.OpenSearchInBrowse(query)
+    if not panels or not panels.Browse then return end
+    if not query or query == "" then return end
+    local p = panels.Browse
+
+    -- Pick a module: the single matching one if there's only one, otherwise
+    -- whatever the user had selected last (or leave blank for them to pick).
+    local hits = (panels.Search and panels.Search._lastModuleHits) or {}
+    local single = nil
+    for name, count in pairs(hits) do
+        if count > 0 then
+            if single then single = nil; break end  -- two or more — bail out
+            single = name
+        end
+    end
+    if single then
+        p._modName = single
+        p.modBtn:SetText("Module: " .. single)
+    end
+
+    -- Set the filter to the search query and refresh.
+    p._filter = query
+    p.filter:SetText(query)
+    selectTab("Browse")
+    D.RefreshBrowse()
 end
 
 -- ----------------------------------------------------------------------------
@@ -347,9 +394,21 @@ local function buildBrowsePanel(parent)
     p.listScroll:SetScrollChild(p.list)
     p._rowButtons = {}      -- pool of reusable row buttons
 
+    -- Right column header: title bar with the selected entry name + Copy ID
+    -- button. Both update on row selection.
+    p.detailHeader = makeLabel(p, "(no selection)", "GameFontHighlight")
+    p.detailHeader:SetPoint("TOPLEFT", p.listScroll, "TOPRIGHT", 18, -2)
+
+    p.copyBtn = makeButton(p, "Copy ID", 70, 22, function()
+        if p._currentKey == nil then return end
+        D.CopyBrowseID(p._currentKey)
+    end)
+    p.copyBtn:SetPoint("TOPRIGHT", -32, -2)
+    p.copyBtn:Disable()
+
     -- Right column: detail pane for the selected entry.
     p.detailScroll = CreateFrame("ScrollFrame", nil, p, "UIPanelScrollFrameTemplate")
-    p.detailScroll:SetPoint("TOPLEFT", p.listScroll, "TOPRIGHT", 18, 0)
+    p.detailScroll:SetPoint("TOPLEFT", p.listScroll, "TOPRIGHT", 18, -26)
     p.detailScroll:SetPoint("BOTTOMRIGHT", -28, 8)
 
     p.detail = CreateFrame("EditBox", nil, p.detailScroll)
@@ -360,6 +419,29 @@ local function buildBrowsePanel(parent)
     p.detail:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
     p.detailScroll:SetScrollChild(p.detail)
     p.detail:SetText("(select a module, then click a row)")
+
+    -- Keyboard nav: up/down arrows move the selection, Enter focuses detail.
+    -- We listen for keys on the panel frame; works whenever the dashboard is
+    -- visible and the Browse tab is the active panel.
+    p:EnableKeyboard(true)
+    p:SetPropagateKeyboardInput(true)  -- don't swallow chat input keys
+    p:SetScript("OnKeyDown", function(self, key)
+        if not self:IsVisible() then return end
+        -- Don't intercept keys while the user is typing in the filter input.
+        if p.filter and p.filter:HasFocus() then return end
+        if key == "DOWN" then
+            D.MoveBrowseSelection(1); self:SetPropagateKeyboardInput(false)
+        elseif key == "UP" then
+            D.MoveBrowseSelection(-1); self:SetPropagateKeyboardInput(false)
+        elseif key == "RETURN" or key == "ENTER" then
+            if p._currentKey ~= nil then
+                D.ShowBrowseDetail(p._currentKey)
+            end
+            self:SetPropagateKeyboardInput(false)
+        else
+            self:SetPropagateKeyboardInput(true)
+        end
+    end)
 
     return p
 end
@@ -425,6 +507,9 @@ function D.OpenBrowseModulePicker()
 end
 
 -- Repopulate the result list for the current module + filter combination.
+-- Filter syntax:
+--   "<text>"       substring match (default)
+--   "id:12345"     direct id lookup, bypasses :Search
 function D.RefreshBrowse()
     if not panels or not panels.Browse then return end
     local p = panels.Browse
@@ -444,8 +529,16 @@ function D.RefreshBrowse()
     -- modules with hundreds of thousands of rows.
     local rows
     local total
-    if p._filter and p._filter ~= "" and mod.Search then
-        local hits = mod:Search(p._filter)
+    local f = p._filter or ""
+    -- id:N prefix → direct lookup. Skips :Search and produces at most one row.
+    local idPrefix = f:match("^id:(%-?%d+)$")
+    if idPrefix then
+        local id = tonumber(idPrefix)
+        local entry = mod:Get(id)
+        rows = entry and { { key = id, entry = entry } } or {}
+        total = #rows
+    elseif f ~= "" and mod.Search then
+        local hits = mod:Search(f)
         total = #hits
         rows = {}
         for i = 1, math.min(BROWSE_LIMIT, #hits) do
@@ -463,7 +556,10 @@ function D.RefreshBrowse()
 
     p.count:SetText(string.format("Showing %d of %d entries%s",
         #rows, total,
-        total > BROWSE_LIMIT and "  |cffff8866(narrow with filter)|r" or ""))
+        total > BROWSE_LIMIT and "  |cffff8866(narrow with filter; try id:N for direct lookup)|r" or ""))
+
+    -- Stash the result set on the panel so keyboard nav can walk it.
+    p._rows = rows
 
     -- Recycle row buttons. Keep extras hidden rather than destroyed so we
     -- don't churn frames as the user filters in real time.
@@ -478,6 +574,12 @@ function D.RefreshBrowse()
             btn.text:SetJustifyH("LEFT")
             btn.text:SetWidth(212)
             btn:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
+            -- Selection background: tinted texture below the highlight overlay.
+            -- Hidden by default; toggled by D.ShowBrowseDetail to mark current.
+            btn.selBG = btn:CreateTexture(nil, "BACKGROUND")
+            btn.selBG:SetAllPoints()
+            btn.selBG:SetColorTexture(0.3, 0.5, 0.9, 0.35)
+            btn.selBG:Hide()
             p._rowButtons[i] = btn
         end
         btn:SetPoint("TOPLEFT", 0, -(i - 1) * BROWSE_ROW_HEIGHT)
@@ -485,13 +587,83 @@ function D.RefreshBrowse()
         local label = (entry and (entry.label or entry.name)) or "(no label)"
         btn.text:SetText(string.format("|cffaaaaaa[%s]|r %s",
             tostring(row.key), tostring(label)))
+        btn._key = row.key
+        btn._index = i
+        btn.selBG:Hide()
         btn:SetScript("OnClick", function() D.ShowBrowseDetail(row.key) end)
         btn:Show()
     end
     p.list:SetHeight(math.max(1, #rows * BROWSE_ROW_HEIGHT))
+
+    -- Re-apply current selection highlight if it's still in the visible set.
+    if p._currentKey ~= nil then
+        for _, btn in ipairs(p._rowButtons) do
+            if btn:IsShown() and btn._key == p._currentKey then
+                btn.selBG:Show()
+            end
+        end
+    end
 end
 
--- Render every field of the entry into the right-hand detail pane.
+-- Move the highlighted row up or down by `delta`. Wraps at the edges. If no
+-- row is currently selected, picks the first row.
+function D.MoveBrowseSelection(delta)
+    if not panels or not panels.Browse then return end
+    local p = panels.Browse
+    if not p._rows or #p._rows == 0 then return end
+
+    local curIdx = nil
+    if p._currentKey ~= nil then
+        for i, row in ipairs(p._rows) do
+            if row.key == p._currentKey then curIdx = i; break end
+        end
+    end
+    local newIdx
+    if not curIdx then
+        newIdx = (delta > 0) and 1 or #p._rows
+    else
+        newIdx = curIdx + delta
+        if newIdx < 1 then newIdx = #p._rows
+        elseif newIdx > #p._rows then newIdx = 1 end
+    end
+    D.ShowBrowseDetail(p._rows[newIdx].key)
+end
+
+-- Copy the selected entry's id by writing it into a popup edit box the user
+-- can grab with Ctrl-C. WoW Lua has no clipboard API, so this is the
+-- standard pattern (same as the Log window's copy popup).
+function D.CopyBrowseID(key)
+    if key == nil then return end
+    if not D._copyPopup then
+        local pop = CreateFrame("Frame", "LibCodexBrowseCopyPopup", UIParent, "BasicFrameTemplateWithInset")
+        pop:SetSize(260, 80)
+        pop:SetPoint("CENTER")
+        pop:SetFrameStrata("DIALOG")
+        pop:EnableMouse(true)
+        pop:SetMovable(true)
+        pop:RegisterForDrag("LeftButton")
+        pop:SetScript("OnDragStart", pop.StartMoving)
+        pop:SetScript("OnDragStop", pop.StopMovingOrSizing)
+        pop.title = pop:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        pop.title:SetPoint("TOP", pop.TitleBg, "TOP", 0, -3)
+        pop.title:SetText("Copy ID — Ctrl-C")
+        pop.edit = CreateFrame("EditBox", nil, pop, "InputBoxTemplate")
+        pop.edit:SetSize(220, 22)
+        pop.edit:SetPoint("CENTER", 0, 0)
+        pop.edit:SetAutoFocus(true)
+        pop.edit:SetScript("OnEscapePressed", function(self) self:GetParent():Hide() end)
+        pop.edit:SetScript("OnEnterPressed",  function(self) self:GetParent():Hide() end)
+        D._copyPopup = pop
+    end
+    D._copyPopup.edit:SetText(tostring(key))
+    D._copyPopup.edit:HighlightText()
+    D._copyPopup:Show()
+    D._copyPopup.edit:SetFocus()
+end
+
+-- Render every field of the entry into the right-hand detail pane. Also
+-- updates the header + Copy ID button + row highlight to mark this row
+-- as the current selection.
 function D.ShowBrowseDetail(key)
     if not panels or not panels.Browse then return end
     local p = panels.Browse
@@ -500,6 +672,8 @@ function D.ShowBrowseDetail(key)
     local entry = mod:Get(key)
     if not entry then
         p.detail:SetText("(entry " .. tostring(key) .. " not found)")
+        p.detailHeader:SetText("(not found)")
+        p.copyBtn:Disable()
         return
     end
 
@@ -520,6 +694,22 @@ function D.ShowBrowseDetail(key)
         lines[#lines + 1] = string.format("%s = %s", tostring(k), formatValue(entry[k]))
     end
     p.detail:SetText(table.concat(lines, "\n"))
+
+    -- Header + copy button reflect the current selection.
+    p.detailHeader:SetText(string.format("%s [%s] %s",
+        p._modName, tostring(key),
+        (entry.label or entry.name) and ('"' .. tostring(entry.label or entry.name) .. '"') or ""))
+    p.copyBtn:Enable()
+    p._currentKey = key
+
+    -- Toggle the row highlight: hide on every row except this one.
+    if p._rowButtons then
+        for _, btn in ipairs(p._rowButtons) do
+            if btn:IsShown() then
+                if btn._key == key then btn.selBG:Show() else btn.selBG:Hide() end
+            end
+        end
+    end
 end
 
 -- ----------------------------------------------------------------------------
@@ -693,7 +883,7 @@ end
 
 local TAB_NAMES = { "Stats", "Search", "Browse", "Where", "Settings", "Actions", "Log" }
 
-local function selectTab(name)
+selectTab = function(name)
     currentTab = name
     for n, panel in pairs(panels) do
         if panel then panel:SetShown(n == name) end
@@ -705,6 +895,9 @@ local function selectTab(name)
         end
     end
     if name == "Stats" then D.RefreshStats() end
+    -- Persist so the next session opens to the same tab.
+    LibCodexDB = LibCodexDB or {}
+    LibCodexDB.dashboardTab = name
 end
 
 -- ----------------------------------------------------------------------------
@@ -773,7 +966,11 @@ local function buildFrame()
     end)
     frame.saveBtn:SetPoint("RIGHT", frame.reloadBtn, "LEFT", -6, 0)
 
-    selectTab("Stats")
+    -- Restore the last-used tab if one was persisted; otherwise fall back to
+    -- Stats so first-time openers see the overview.
+    local restoredTab = (LibCodexDB and LibCodexDB.dashboardTab) or "Stats"
+    if not panels[restoredTab] then restoredTab = "Stats" end
+    selectTab(restoredTab)
     frame:Hide()
     return frame
 end
