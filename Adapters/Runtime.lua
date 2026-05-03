@@ -28,6 +28,41 @@ function R.SetVerbose(on)
 end
 
 -- ----------------------------------------------------------------------------
+-- Chromie / expansion context.
+--
+-- WoW's chromie API has churned across patches. We try the most common
+-- modern names first and fall back to GetExpansionLevel() on failure. This
+-- is best-effort: on any client where the chromie API isn't present we
+-- simply return nil for chromieID and the player's current expansion.
+--
+-- Returns: (chromieExpansionRecID, currentExpansionLevel)
+--   chromieExpansionRecID  the row id of the chromie option the player chose
+--                          (e.g. BFA, Legion, WoD, etc.). nil if not in chromie.
+--   currentExpansionLevel  GetExpansionLevel() result. Nil only outside WoW.
+-- ----------------------------------------------------------------------------
+
+local function getCurrentChromie()
+    local chromieID
+    -- Modern path: C_PlayerInfo.GetCurrentChromieTimeOption (DF+).
+    if C_PlayerInfo and C_PlayerInfo.GetCurrentChromieTimeOption then
+        local ok, v = pcall(C_PlayerInfo.GetCurrentChromieTimeOption)
+        if ok and type(v) == "number" and v ~= 0 then
+            chromieID = v
+        end
+    end
+    -- Older / alternate path: C_ChromieTime.GetChromieTimeExpansionOption(0)
+    -- with no arg sometimes returns the active selection. Best-effort.
+    if not chromieID and C_ChromieTime and C_ChromieTime.GetChromieTimeExpansionOption then
+        local ok, info = pcall(C_ChromieTime.GetChromieTimeExpansionOption)
+        if ok and type(info) == "table" and info.id and info.id ~= 0 then
+            chromieID = info.id
+        end
+    end
+    local exp = (GetExpansionLevel and GetExpansionLevel()) or nil
+    return chromieID, exp
+end
+
+-- ----------------------------------------------------------------------------
 -- Quest log scan. QUEST_LOG_UPDATE fires very often (every objective tick),
 -- so we throttle and only walk the player's currently-active quests, refreshing
 -- their entry via Quests:AddFromAPI. Title arrives this way for quests that
@@ -205,7 +240,11 @@ local function readUnit(unit)
         or (UnitIsUnit and UnitIsUnit(unit, "pet"))
         or (UnitPlayerControlled and UnitPlayerControlled(unit) and not (UnitIsPlayer and UnitIsPlayer(unit)))
     if mapID and x and y and not isFollower then
-        NPCs:AddLocation(id, mapID, x, y, zone)
+        local chromieID, expansion = getCurrentChromie()
+        NPCs:AddLocation(id, mapID, x, y, zone, {
+            chromieID = chromieID,
+            expansion = expansion,
+        })
     end
     vlog(string.format("NPC %d (%s) from unit '%s'%s",
         id, tostring(name), tostring(unit), isFollower and " [no-loc: follower]" or ""))
@@ -448,7 +487,10 @@ local function captureLoot()
     elseif kind == "gameobject" and LibCodex.modules.GameObjects and sourceID then
         LibCodex.modules.GameObjects:Add({ id = sourceID, label = sourceLabel, sources = { "runtime" } })
         if mapID and x and y then
-            LibCodex.modules.GameObjects:AddLocation(sourceID, mapID, x, y, nil)
+            local chromieID, expansion = getCurrentChromie()
+            LibCodex.modules.GameObjects:AddLocation(sourceID, mapID, x, y, nil, {
+                chromieID = chromieID, expansion = expansion,
+            })
         end
     end
 
@@ -662,8 +704,10 @@ LibCodex:RegisterAdapter("Runtime", function(LC)
                         if fg == "Alliance" then side = "A"
                         elseif fg == "Horde" then side = "H" end
                     end
+                    local chromieID, expansion = getCurrentChromie()
                     Quests:AddFromAPI(questID, {
                         mapID = mapID, x = x, y = y, side = side,
+                        chromieID = chromieID, expansion = expansion,
                     })
                     vlog(string.format("Quest accepted: %d", questID))
                 end

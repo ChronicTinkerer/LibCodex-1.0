@@ -103,16 +103,45 @@ end
 -- Skips when an existing location is within LOCATION_DEDUP_YARDS of the new
 -- one, so a patrolling mob captured every 5 seconds doesn't blow up the
 -- locations array.
-function NPCs:AddLocation(id, mapID, x, y, zone)
+function NPCs:AddLocation(id, mapID, x, y, zone, ctx)
+    -- ctx (optional) carries chromie / expansion context captured at the
+    -- moment of sighting: { chromieID, expansion }. When supplied it gets
+    -- attached to the new location entry so consumers can later filter
+    -- locations by the player's current chromie state.
     local entry = self:Get(id) or self:Add({ id = id, locations = {} })
     entry.locations = entry.locations or {}
     for _, loc in ipairs(entry.locations) do
         if withinYards(loc.mapID, loc.x, loc.y, mapID, x, y, LOCATION_DEDUP_YARDS) then
+            -- If the existing nearby location lacks a chromie tag and we
+            -- have one now, fill it in. (First-seen-wins on multi-chromie
+            -- spawns; consumers should expect occasional misclassification.)
+            if ctx then
+                if ctx.chromieID and not loc.chromieID then loc.chromieID = ctx.chromieID end
+                if ctx.expansion and not loc.expansion then loc.expansion = ctx.expansion end
+            end
             return entry  -- close enough to a known spot; skip
         end
     end
-    table.insert(entry.locations, { mapID = mapID, x = x, y = y, zone = zone })
+    local loc = { mapID = mapID, x = x, y = y, zone = zone }
+    if ctx then
+        if ctx.chromieID then loc.chromieID = ctx.chromieID end
+        if ctx.expansion then loc.expansion = ctx.expansion end
+    end
+    table.insert(entry.locations, loc)
     return entry
+end
+
+-- Filter helper: every location for an NPC that matches the given chromie
+-- expansion id. Pass nil chromieID to get only locations with NO chromie tag
+-- (i.e., wago-bundled or pre-chromie-capture entries).
+function NPCs:LocationsForChromie(npcID, chromieID)
+    local entry = self:Get(npcID)
+    if not entry or not entry.locations then return {} end
+    local out = {}
+    for _, loc in ipairs(entry.locations) do
+        if loc.chromieID == chromieID then out[#out + 1] = loc end
+    end
+    return out
 end
 
 -- Record that this NPC dropped an item at the given location. Symmetric to

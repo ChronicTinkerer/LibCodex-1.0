@@ -66,8 +66,53 @@ function Quests:AddFromAPI(questID, opts)
     if opts.mapID then entry.mapID = opts.mapID end
     if opts.x then entry.x = opts.x end
     if opts.y then entry.y = opts.y end
+    -- Chromie / expansion context captured at quest-accept time. Sticky
+    -- so consumers can later filter quests by the chromie expansion the
+    -- player was in when they picked it up.
+    if opts.chromieID then entry.chromieID = opts.chromieID end
+    if opts.expansion then entry.expansion = opts.expansion end
 
     return self:Add(entry)
+end
+
+-- Filter helper: every quest captured while the player was in the given
+-- chromie expansion. Pass nil to find quests captured outside chromie
+-- (the player's natural expansion).
+function Quests:ForChromie(chromieID)
+    local out = {}
+    for _, e in pairs(self:AllRaw()) do
+        if e.chromieID == chromieID then out[#out + 1] = e end
+    end
+    return out
+end
+
+-- Runtime predicate: can the current player pick up this quest right now?
+-- Uses live C_QuestLog API to ask the game directly. Returns:
+--   true   if the player can accept it (or already has it)
+--   false  if the quest is gated out (wrong faction, already done, chromie
+--          bucket excludes it, etc.)
+--   nil    if the API isn't available or the quest id is unknown to the client
+function Quests:IsAvailableForPlayer(questID)
+    if type(questID) ~= "number" or not C_QuestLog then return nil end
+    if C_QuestLog.IsOnQuest and C_QuestLog.IsOnQuest(questID) then
+        return true
+    end
+    if C_QuestLog.IsQuestFlaggedCompleted and C_QuestLog.IsQuestFlaggedCompleted(questID) then
+        if C_QuestLog.IsRepeatableQuest and C_QuestLog.IsRepeatableQuest(questID) then
+            return true
+        end
+        return false
+    end
+    -- C_QuestLog.GetQuestDifficultyLevel returns nil for quests the player
+    -- can't see at all in their current chromie/level/faction state. That's
+    -- a useful lower-bound proxy for "available".
+    if C_QuestLog.GetQuestDifficultyLevel then
+        local ok, lvl = pcall(C_QuestLog.GetQuestDifficultyLevel, questID)
+        if ok and type(lvl) == "number" and lvl > 0 then
+            return true
+        end
+    end
+    return nil
 end
 
 -- Mark a quest as just turned in. Updates the entry's lastTurnedIn timestamp

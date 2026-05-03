@@ -59,6 +59,10 @@
     <Script file="Modules\Catalog\TransmogIllusions.lua"/>
     <Script file="Modules\Catalog\AreaTriggers.lua"/>
     <Script file="Modules\Catalog\PlayerConditions.lua"/>
+    <Script file="Modules\Catalog\AreaPOI.lua"/>
+    <Script file="Modules\Catalog\WMOAreaTables.lua"/>
+    <Script file="Modules\Catalog\TaxiPaths.lua"/>
+    <Script file="Modules\Catalog\DungeonEncounters.lua"/>
 
     <Script file="Data\Classes.lua"/>
     <Script file="Data\Factions.lua"/>
@@ -102,6 +106,10 @@
     <Script file="Data\TransmogIllusions.lua"/>
     <Script file="Data\AreaTriggers.lua"/>
     <Script file="Data\PlayerConditions.lua"/>
+    <Script file="Data\AreaPOI.lua"/>
+    <Script file="Data\WMOAreaTables.lua"/>
+    <Script file="Data\TaxiPaths.lua"/>
+    <Script file="Data\DungeonEncounters.lua"/>
     <Script file="Data\NPCs.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\GameObjects.lua"/>

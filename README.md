@@ -151,6 +151,10 @@ Every module is keyed by `id`. Common fields across modules: `label` (display na
 | `TransmogIllusions` | wago `TransmogIllusion`        | `enchantID` (-> Enchants for label/icon), `unlockCondition`, `transmogCost` |
 | `AreaTriggers` | wago `AreaTrigger`              | `continentID`, `x`, `y`, `z`, `shapeType`, `radius` (or `boxLength`/`boxWidth`/`boxHeight`/`boxYaw`), `actionSetID`, `phaseID` (no name; identify by id + position) |
 | `PlayerConditions` | wago `PlayerCondition`      | `failureMessage`, `minLevel`, `maxLevel`, `raceMask`, `classMask`, `currentPvpFaction`, plus 14 logic / threshold fields. Universal gating predicate referenced by `PlayerConditionID` everywhere. |
+| `AreaPOI`      | wago `AreaPOI` + `AreaPOIState` | `description`, `x`/`y`/`z`, `continentID`, `areaID`, `portLocID`, `playerCondition`, `uiAtlasMember`, `worldStateID`, `states[]` (state overlays). Named map markers — capital portals, world bosses, flight points, etc. |
+| `WMOAreaTables`| wago `WMOAreaTable`             | `wmoID`, `wmoGroupID`, `nameSetID`, `areaTableID`, `ambienceID`, `zoneMusicID`. Interior areas inside dungeons / detailed-geometry locations. |
+| `TaxiPaths`    | wago `TaxiPath` + `TaxiPathNode` | `fromNode`, `toNode` (-> FlightPoints), `cost`, `nodes[]` (each: `x`, `y`, `z`, `continentID`, `nodeIndex`, `flags`, `delay`). Actual flight routes between flight masters. |
+| `DungeonEncounters` | wago `DungeonEncounter`    | `mapID`, `difficultyID`, `orderIndex`, `bit`, `completeWorldStateID`, `icon`, `faction`. Combat-log encounter ids — distinct from `Encounters` which lists adventure-guide entries. |
 
 ### Enum tier (small, stable, hand-curated or DBC-sourced)
 
@@ -539,7 +543,8 @@ LibCodex-1.0/
       LFGDungeons.lua, Battlemasters.lua, Scenarios.lua, GroupFinder.lua,
       BattlePetAbilities.lua, CustomizationOptions.lua,
       CustomizationChoices.lua, TransmogIllusions.lua,
-      AreaTriggers.lua, PlayerConditions.lua
+      AreaTriggers.lua, PlayerConditions.lua,
+      AreaPOI.lua, WMOAreaTables.lua, TaxiPaths.lua, DungeonEncounters.lua
     Enums/
       Classes.lua, Factions.lua, Races.lua, Realms.lua,
       CreatureTypes.lua, Specs.lua, Stats.lua, Difficulty.lua

@@ -67,6 +67,10 @@ Modules\Catalog\CustomizationChoices.lua
 Modules\Catalog\TransmogIllusions.lua
 Modules\Catalog\AreaTriggers.lua
 Modules\Catalog\PlayerConditions.lua
+Modules\Catalog\AreaPOI.lua
+Modules\Catalog\WMOAreaTables.lua
+Modules\Catalog\TaxiPaths.lua
+Modules\Catalog\DungeonEncounters.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -113,6 +117,10 @@ Data\CustomizationChoices.lua
 Data\TransmogIllusions.lua
 Data\AreaTriggers.lua
 Data\PlayerConditions.lua
+Data\AreaPOI.lua
+Data\WMOAreaTables.lua
+Data\TaxiPaths.lua
+Data\DungeonEncounters.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua

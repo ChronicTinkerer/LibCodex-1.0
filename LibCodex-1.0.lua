@@ -272,6 +272,10 @@ function LibCodex:CustomizationChoices() return self.modules.CustomizationChoice
 function LibCodex:TransmogIllusions() return self.modules.TransmogIllusions end
 function LibCodex:AreaTriggers() return self.modules.AreaTriggers end
 function LibCodex:PlayerConditions() return self.modules.PlayerConditions end
+function LibCodex:AreaPOI()         return self.modules.AreaPOI end
+function LibCodex:WMOAreaTables()   return self.modules.WMOAreaTables end
+function LibCodex:TaxiPaths()       return self.modules.TaxiPaths end
+function LibCodex:DungeonEncounters() return self.modules.DungeonEncounters end
 
 -- ============================================================================
 -- Diagnostic helpers exposed to consumers.

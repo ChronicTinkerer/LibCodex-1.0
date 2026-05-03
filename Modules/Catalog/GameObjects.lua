@@ -24,18 +24,41 @@ local GameObjects = CC.New("GameObjects", {
 
 -- Append a sighted location to an existing entry (or create one). Avoids
 -- duplicating identical locations within a small tolerance.
-function GameObjects:AddLocation(id, mapID, x, y, zone)
+function GameObjects:AddLocation(id, mapID, x, y, zone, ctx)
+    -- ctx (optional) tags the location with chromie / expansion captured at
+    -- the moment of sighting so consumers can later filter by chromie state.
     local entry = self:Get(id) or self:Add({ id = id, locations = {} })
     entry.locations = entry.locations or {}
     for _, loc in ipairs(entry.locations) do
         if loc.mapID == mapID
             and math.abs((loc.x or 0) - (x or 0)) < 0.001
             and math.abs((loc.y or 0) - (y or 0)) < 0.001 then
+            if ctx then
+                if ctx.chromieID and not loc.chromieID then loc.chromieID = ctx.chromieID end
+                if ctx.expansion and not loc.expansion then loc.expansion = ctx.expansion end
+            end
             return entry
         end
     end
-    table.insert(entry.locations, { mapID = mapID, x = x, y = y, zone = zone })
+    local loc = { mapID = mapID, x = x, y = y, zone = zone }
+    if ctx then
+        if ctx.chromieID then loc.chromieID = ctx.chromieID end
+        if ctx.expansion then loc.expansion = ctx.expansion end
+    end
+    table.insert(entry.locations, loc)
     return entry
+end
+
+-- Filter helper: every location for a game object that matches the given
+-- chromie expansion id. Pass nil to get only locations with no chromie tag.
+function GameObjects:LocationsForChromie(objectID, chromieID)
+    local entry = self:Get(objectID)
+    if not entry or not entry.locations then return {} end
+    local out = {}
+    for _, loc in ipairs(entry.locations) do
+        if loc.chromieID == chromieID then out[#out + 1] = loc end
+    end
+    return out
 end
 
 -- Record that this object dropped an item at the given location. Builds the
