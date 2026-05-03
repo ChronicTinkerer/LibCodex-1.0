@@ -43,7 +43,6 @@ Modules\Catalog\Encounters.lua
 Modules\Catalog\Spells.lua
 Modules\Catalog\Zones.lua
 Modules\Catalog\Currencies.lua
-Modules\Catalog\Reputations.lua
 Modules\Catalog\Quests.lua
 Modules\Catalog\FlightPoints.lua
 Modules\Catalog\Talents.lua
@@ -88,7 +87,6 @@ Data\GameObjects.lua
 Data\Spells.lua
 Data\Zones.lua
 Data\Currencies.lua
-Data\Reputations.lua
 Data\Quests.lua
 Data\FlightPoints.lua
 Data\Talents.lua
