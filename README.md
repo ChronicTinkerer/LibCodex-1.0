@@ -129,6 +129,10 @@ Every module is keyed by `id`. Common fields across modules: `label` (display na
 | `Holidays`     | wago `Holidays` + `HolidayNames` | `region`, `looping`, `priority`, `filterType`, `nameID`     |
 | `QuestPOI`     | wago `QuestPOIBlob` + `QuestPOIPoint` | `questID`, `uiMapID`, `mapID`, `objectiveIndex`, `objectiveID`, `numPoints`, `points[]` (each: `x`, `y`, `z` normalized) |
 | `PvpTalents`   | wago `PvpTalent`                | `spellID`, `description`, `specID`, `categoryID`, `levelRequired`, `actionBarSpellID`, `overridesSpellID` |
+| `Enchants`     | wago `SpellItemEnchantment`     | `icon`, `duration`, `itemLevelMin`, `itemLevelMax`, `hordeLabel`, `flags` |
+| `ItemSets`     | wago `ItemSet` + `ItemSetSpell` | `requiredSkill`, `items[]` (ItemIDs), `bonuses[]` (each: `threshold`, `spellID`, `specID`, `traitSubTreeID`) |
+| `TradeSkillCategories` | wago `TradeSkillCategory` | `parentID`, `skillLineID`, `orderIndex`, `hordeLabel` (profession sub-buckets) |
+| `TransmogSets` | wago `TransmogSet` + `TransmogSetItem` | `classMask`, `expansion`, `parentID`, `groupID`, `appearances[]` (ItemModifiedAppearanceIDs) |
 
 ### Enum tier (small, stable, hand-curated or DBC-sourced)
 
@@ -512,7 +516,8 @@ LibCodex-1.0/
       Talents.lua, FlightPoints.lua, Crafts.lua, Professions.lua,
       Pets.lua, Mounts.lua, Toys.lua, Heirlooms.lua, Achievements.lua,
       Encounters.lua, Zones.lua, Currencies.lua, Reputations.lua,
-      Areas.lua, Vignettes.lua, Holidays.lua, QuestPOI.lua, PvpTalents.lua
+      Areas.lua, Vignettes.lua, Holidays.lua, QuestPOI.lua, PvpTalents.lua,
+      Enchants.lua, ItemSets.lua, TradeSkillCategories.lua, TransmogSets.lua
     Enums/
       Classes.lua, Factions.lua, Races.lua, Realms.lua,
       CreatureTypes.lua, Specs.lua, Stats.lua, Difficulty.lua

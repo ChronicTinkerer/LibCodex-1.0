@@ -255,6 +255,10 @@ function LibCodex:Difficulty() return self.modules.Difficulty end
 function LibCodex:Holidays()  return self.modules.Holidays end
 function LibCodex:QuestPOI()  return self.modules.QuestPOI end
 function LibCodex:PvpTalents() return self.modules.PvpTalents end
+function LibCodex:Enchants() return self.modules.Enchants end
+function LibCodex:ItemSets() return self.modules.ItemSets end
+function LibCodex:TradeSkillCategories() return self.modules.TradeSkillCategories end
+function LibCodex:TransmogSets() return self.modules.TransmogSets end
 
 -- ============================================================================
 -- Diagnostic helpers exposed to consumers.

@@ -54,6 +54,10 @@ Modules\Catalog\Areas.lua
 Modules\Catalog\Holidays.lua
 Modules\Catalog\QuestPOI.lua
 Modules\Catalog\PvpTalents.lua
+Modules\Catalog\Enchants.lua
+Modules\Catalog\ItemSets.lua
+Modules\Catalog\TradeSkillCategories.lua
+Modules\Catalog\TransmogSets.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -87,6 +91,10 @@ Data\Difficulty.lua
 Data\Holidays.lua
 Data\QuestPOI.lua
 Data\PvpTalents.lua
+Data\Enchants.lua
+Data\ItemSets.lua
+Data\TradeSkillCategories.lua
+Data\TransmogSets.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua

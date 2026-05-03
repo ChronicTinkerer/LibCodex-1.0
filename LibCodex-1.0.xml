@@ -45,6 +45,10 @@
     <Script file="Modules\Catalog\Holidays.lua"/>
     <Script file="Modules\Catalog\QuestPOI.lua"/>
     <Script file="Modules\Catalog\PvpTalents.lua"/>
+    <Script file="Modules\Catalog\Enchants.lua"/>
+    <Script file="Modules\Catalog\ItemSets.lua"/>
+    <Script file="Modules\Catalog\TradeSkillCategories.lua"/>
+    <Script file="Modules\Catalog\TransmogSets.lua"/>
 
     <Script file="Data\Classes.lua"/>
     <Script file="Data\Factions.lua"/>
@@ -74,6 +78,10 @@
     <Script file="Data\Holidays.lua"/>
     <Script file="Data\QuestPOI.lua"/>
     <Script file="Data\PvpTalents.lua"/>
+    <Script file="Data\Enchants.lua"/>
+    <Script file="Data\ItemSets.lua"/>
+    <Script file="Data\TradeSkillCategories.lua"/>
+    <Script file="Data\TransmogSets.lua"/>
     <Script file="Data\NPCs.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\GameObjects.lua"/>
