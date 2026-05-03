@@ -1,6 +1,15 @@
 # LibCodex-1.0
 
-A reusable static-catalog library for World of Warcraft addons. Tracks every NPC, item, spell, talent, PvP talent, quest (with objectives, rewards, and POI map markers), zone, sub-zone (area), flight point, currency, reputation, craft, achievement (with criteria), pet, mount, toy, heirloom, profession, race, class, faction, realm, encounter, holiday, vignette (rare spawn / treasure), difficulty, and stat the game knows about.
+A reusable static-catalog library for World of Warcraft addons. **45 catalog and enum modules** covering every major DBC family the game ships:
+
+- **World**: NPCs, items, game objects, vignettes (rare spawns / treasures), area triggers, zones, sub-zones (areas), flight points
+- **Quests**: catalog with objectives, rewards (items / currency), quest lines, POI map markers, and quest-giver coordinates
+- **Combat**: spells, talents, PvP talents, specs, classes, races, creature types, stats
+- **Achievements**: catalog with per-step criteria attached
+- **Collections**: pets (with abilities), pet-battle abilities, mounts, toys, heirlooms, transmog sets, transmog illusions
+- **Group content**: encounters (instances + bosses), LFG dungeons, battlemasters (BG / arena), scenarios (with steps), Premade Group Finder activities, difficulty enum
+- **Professions**: profession skill lines, recipes (crafts), trade-skill sub-categories, enchants, item sets (with tier bonuses)
+- **Social / meta**: factions, reputations, currencies, realms, holidays, character-creation customization options + choices, player-condition predicates
 
 Hybrid load model: bundled seed (DBC-derived data shipped with the library) + runtime growth (events captured during play) + a pluggable adapter system for reading from other addons.
 
