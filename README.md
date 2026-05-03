@@ -376,8 +376,16 @@ LibCodexDB = {
 /codex log                open the dedicated log window
 /codex save               force-write to SavedVariables (no reload required)
 /codex debug              dump internal state for diagnosis
+/codex perf [Module]      lazy-load memory footprint (no arg = summary)
 /codex gui                open the dashboard window
 ```
+
+`/codex perf` with no argument prints a per-module summary of how many
+lazy chunks are still pending vs. materialized — a quick sanity check that
+modules nobody queried haven't been needlessly expanded. With a module
+name (`/codex perf Spells`) it forces a full expand of that one module
+and reports the Lua memory delta in KB, so you can see exactly what each
+catalog costs at runtime.
 
 `/codex gui` opens a tabbed dashboard:
 

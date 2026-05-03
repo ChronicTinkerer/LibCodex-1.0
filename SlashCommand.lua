@@ -349,7 +349,110 @@ local function cmdHelp()
     line("  /codex where <itemID>  - list every NPC/object you've looted this item from")
     line("  /codex verbose [on|off]- log every capture to the log window")
     line("  /codex log [...]       - show|hide|clear|copy|on|off the log window")
+    line("  /codex perf [Module]   - measure lazy-load memory footprint (no arg = summary)")
     line("  /codex gui             - open the GUI dashboard (no slash commands needed)")
+end
+
+-- ----------------------------------------------------------------------------
+-- /codex perf <ModuleName>
+-- Measures the Lua memory delta when a module's lazy chunks materialize.
+-- Real-world validation that lazy loading actually saves what we claim.
+--
+--   /codex perf Spells       -- shows: lazy chunks pending, memory before,
+--                               forces ExpandAll, memory after, delta
+--   /codex perf              -- summary across every module: lazy-pending count
+--                               and entries materialized so far
+-- ----------------------------------------------------------------------------
+local function cmdPerf(arg)
+    local target = (arg or ""):match("^%s*(.-)%s*$")
+
+    if target == "" then
+        -- Summary mode: per-module materialization status.
+        out("Per-module memory state (no materialization triggered):")
+        local rows = {}
+        for name, mod in pairs(LibCodex.modules) do
+            local pending = (mod._lazyChunks and #mod._lazyChunks) or 0
+            local materialized = 0
+            if mod._entries then
+                for _ in pairs(mod._entries) do materialized = materialized + 1 end
+            end
+            local indexed = 0
+            if mod._rowIndex then
+                for _ in pairs(mod._rowIndex) do indexed = indexed + 1 end
+            end
+            rows[#rows + 1] = {
+                name = name, pending = pending,
+                materialized = materialized, indexed = indexed,
+            }
+        end
+        table.sort(rows, function(a, b) return a.name < b.name end)
+        for _, r in ipairs(rows) do
+            local tag = (r.pending > 0) and " |cffaaaaaa[lazy]|r" or ""
+            line(string.format("  %-26s pending:%-3d  materialized:%-6d  indexed:%-6d%s",
+                r.name, r.pending, r.materialized, r.indexed, tag))
+        end
+        local total_lua_kb = collectgarbage and collectgarbage("count") or -1
+        if total_lua_kb >= 0 then
+            line(string.format("  Total Lua memory in this addon's environment: %.1f KB",
+                total_lua_kb))
+        end
+        line("Run `/codex perf <ModuleName>` to materialize one and measure the delta.")
+        return
+    end
+
+    -- Targeted mode: force-materialize one module and report memory delta.
+    local mod = LibCodex.modules[target]
+    if not mod then
+        out("Module '" .. target .. "' not found. Try /codex stats to see registered modules.")
+        return
+    end
+
+    if not collectgarbage then
+        out("collectgarbage() unavailable in this environment; can't measure memory.")
+        return
+    end
+
+    -- Snapshot before. Force a full GC so we measure live data, not garbage.
+    collectgarbage("collect")
+    local memBefore = collectgarbage("count")
+    local pendingBefore = (mod._lazyChunks and #mod._lazyChunks) or 0
+    local entriesBefore = 0
+    if mod._entries then
+        for _ in pairs(mod._entries) do entriesBefore = entriesBefore + 1 end
+    end
+    local indexedBefore = 0
+    if mod._rowIndex then
+        for _ in pairs(mod._rowIndex) do indexedBefore = indexedBefore + 1 end
+    end
+
+    -- Materialize everything: drains lazy chunks, expands every row into a
+    -- dict entry. Worst-case memory cost; real-world consumers usually pay
+    -- much less because they only :Get the entries they need.
+    if mod.ExpandAll then
+        mod:ExpandAll()
+    end
+
+    -- Snapshot after.
+    collectgarbage("collect")
+    local memAfter = collectgarbage("count")
+    local entriesAfter = 0
+    if mod._entries then
+        for _ in pairs(mod._entries) do entriesAfter = entriesAfter + 1 end
+    end
+
+    local delta = memAfter - memBefore
+    out(string.format("|cffd0a0ff%s perf:|r", target))
+    line(string.format("  lazy chunks pending: %d -> 0", pendingBefore))
+    line(string.format("  indexed (lazy rows): %d -> 0", indexedBefore))
+    line(string.format("  materialized dict entries: %d -> %d (+%d)",
+        entriesBefore, entriesAfter, entriesAfter - entriesBefore))
+    line(string.format("  Lua memory: %.1f KB -> %.1f KB  (%s%.1f KB)",
+        memBefore, memAfter, delta >= 0 and "+" or "", delta))
+    if entriesAfter > entriesBefore then
+        local newEntries = entriesAfter - entriesBefore
+        line(string.format("  cost per new entry (avg): %.2f KB",
+            delta / newEntries))
+    end
 end
 
 -- ----------------------------------------------------------------------------
@@ -372,6 +475,7 @@ local function dispatch(msg)
     elseif cmd == "where"   then cmdWhere(rest)
     elseif cmd == "verbose" then cmdVerbose(rest)
     elseif cmd == "log"     then cmdLog(rest)
+    elseif cmd == "perf"    then cmdPerf(rest)
     elseif cmd == "gui" or cmd == "dashboard" or cmd == "panel" then
         if LibCodex.Dashboard and LibCodex.Dashboard.Toggle then
             LibCodex.Dashboard.Toggle()

@@ -210,6 +210,12 @@ SpellPower:ForSpell(spellID)
 
 ```lua
 Maps:ByInstanceType(t)
+
+-- Map projection helpers (wrap C_Map). All return nil on failure.
+Maps:WorldToUiMap(continentID, worldX, worldY)   -- -> uiMapID, x, y (0..1)
+Maps:UiMapToWorld(uiMapID, x, y)                 -- -> continentID, wx, wy (yards)
+Maps:UiDistance(uiMapID, ax, ay, bx, by)         -- -> yards between two UI points
+
 Areas:Path(areaID, maxDepth)               -- walks parent chain
 Vignettes:ByType(vignetteType)
 AreaPOI:ForContinent(continentID)
@@ -221,6 +227,12 @@ WMOAreaTables:ForArea(areaTableID)
 QuestPOI:ForQuest(questID)                 -- sorted by objectiveIndex
 QuestPOI:ForMap(uiMapID)
 ```
+
+`WorldToUiMap` takes a **continent UiMapID** (Eastern Kingdoms = 13, Kalimdor =
+12, Outland = 101, Northrend = 113, etc.) — not the legacy MapID stored in this
+module's `id` field. Returns the most specific zone UiMap covering that
+world point, or `nil` if no UiMap covers it. Useful for converting combat-log
+positional data (which is continent-yards) into a pin-displayable UI coord.
 
 ### Pets / BattlePetAbilities
 
