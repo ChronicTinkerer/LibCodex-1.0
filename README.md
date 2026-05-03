@@ -51,6 +51,7 @@ print(entry.label, entry.creatureType, entry.classification)
 - [Adding a new module](#adding-a-new-module)
 - [Embedding in a consumer addon](#embedding-in-a-consumer-addon)
 - [Repo layout](#repo-layout)
+- [Releasing](#releasing)
 
 ---
 
@@ -670,6 +671,48 @@ LIB_MINOR is the integer revision. Bump it when shipping a backwards-compatible 
 
 ---
 
+## Releasing
+
+Auto-packaging is wired up via [BigWigsMods/packager](https://github.com/BigWigsMods/packager) in `.github/workflows/release.yml`. A pushed git tag triggers a build that uploads to CurseForge, WoWInterface, and Wago, plus creates a GitHub Release with the zip attached.
+
+**One-time setup (per site):**
+
+1. Create the project page on each site you want to publish to:
+   - CurseForge: https://www.curseforge.com -> Author Tools -> Submit Project
+   - WoWInterface: https://www.wowinterface.com/downloads/author.php
+   - Wago: https://addons.wago.io
+2. Copy the numeric project ID from each site into the `.toc`:
+   ```
+   ## X-Curse-Project-ID: 12345
+   ## X-Wago-ID: AbC123
+   ## X-WoWI-ID: 67890
+   ```
+3. Generate an API token on each site and add as a GitHub repo secret (Settings -> Secrets and variables -> Actions):
+   - `CF_API_KEY` -> https://www.curseforge.com/account/api-tokens
+   - `WAGO_API_TOKEN` -> https://addons.wago.io/account/apikeys
+   - `WOWI_API_TOKEN` -> WoWInterface profile -> API Tokens
+
+A missing secret causes the packager to silently skip that site, so you can publish to CurseForge today and add WoWI/Wago whenever those project pages exist.
+
+**Releasing a new build:**
+
+```sh
+# 1. Bump ## Version: in the .toc and LIB_MINOR in LibCodex-1.0.lua
+#    to the same fresh YYMMDDHHMM stamp.
+# 2. Commit.
+git commit -am "Build 2605041030"
+
+# 3. Tag with the same stamp (with optional v-prefix) and push.
+git tag 2605041030
+git push origin main --tags
+```
+
+The push of the tag fires the workflow. Watch progress under the **Actions** tab in GitHub.
+
+The packager respects a hardcoded `## Version:` line and will not rewrite it from the tag, so the YYMMDDHHMM in the .toc is the authoritative version published to all sites. The tag exists only to trigger the workflow and label the GitHub Release.
+
+---
+
 ## License
 
-MIT. See LICENSE if/when one is added.
+MIT. See [LICENSE](LICENSE).

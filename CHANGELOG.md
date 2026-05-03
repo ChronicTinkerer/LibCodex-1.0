@@ -6,7 +6,14 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ## [Unreleased]
 
-_Nothing pending._
+### Added
+
+- Auto-packaging workflow (`.github/workflows/release.yml`) using
+  BigWigsMods/packager v2. Tag push (`git tag <stamp> && git push --tags`)
+  triggers a build that uploads to CurseForge, WoWInterface, and Wago, and
+  creates a matching GitHub Release. `.pkgmeta` excludes dev/build infra
+  (tools/, import-cache/, .py, .bat) from the published zip. README has a
+  Releasing section with the per-site setup walkthrough.
 
 ## 2605031257 — Polish pass (2026-05-03)
 
