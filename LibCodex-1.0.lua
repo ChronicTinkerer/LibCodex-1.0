@@ -17,7 +17,11 @@
 --   for _, hit in ipairs(LC:Items():Search("rune", { quality=4 })) do ... end
 
 local LIB_MAJOR = "LibCodex-1.0"
-local LIB_MINOR = 1
+-- LIB_MINOR is a YYMMDDHHMM build stamp. Bumped on every edit. LibStub
+-- compares it numerically to decide which copy of the library to keep
+-- when multiple addons embed different versions, so any later timestamp
+-- automatically wins. Lua doubles represent 10-digit integers exactly.
+local LIB_MINOR = 2605031049
 
 assert(LibStub, LIB_MAJOR .. " requires LibStub.")
 local LibCodex, oldMinor = LibStub:NewLibrary(LIB_MAJOR, LIB_MINOR)
