@@ -21,6 +21,9 @@
     <Script file="Modules\Enums\Specs.lua"/>
     <Script file="Modules\Enums\Stats.lua"/>
     <Script file="Modules\Enums\Difficulty.lua"/>
+    <Script file="Modules\Enums\Regions.lua"/>
+    <Script file="Modules\Enums\Languages.lua"/>
+    <Script file="Modules\Enums\ChatChannels.lua"/>
 
     <Script file="Modules\Catalog\NPCs.lua"/>
     <Script file="Modules\Catalog\Items.lua"/>
@@ -67,6 +70,16 @@
     <Script file="Modules\Catalog\ItemModifiedAppearances.lua"/>
     <Script file="Modules\Catalog\ItemBonuses.lua"/>
     <Script file="Modules\Catalog\ItemEffects.lua"/>
+    <Script file="Modules\Catalog\SpellChargeCategories.lua"/>
+    <Script file="Modules\Catalog\SpellMechanics.lua"/>
+    <Script file="Modules\Catalog\SpellCooldowns.lua"/>
+    <Script file="Modules\Catalog\SpellCastTimes.lua"/>
+    <Script file="Modules\Catalog\SpellPower.lua"/>
+    <Script file="Modules\Catalog\SpellRanges.lua"/>
+    <Script file="Modules\Catalog\SpellDurations.lua"/>
+    <Script file="Modules\Catalog\Glyphs.lua"/>
+    <Script file="Modules\Catalog\AchievementCategories.lua"/>
+    <Script file="Modules\Catalog\FriendshipReputations.lua"/>
 
     <Script file="Data\Classes.lua"/>
     <Script file="Data\Factions.lua"/>
@@ -118,6 +131,19 @@
     <Script file="Data\ItemModifiedAppearances.lua"/>
     <Script file="Data\ItemBonuses.lua"/>
     <Script file="Data\ItemEffects.lua"/>
+    <Script file="Data\SpellChargeCategories.lua"/>
+    <Script file="Data\SpellMechanics.lua"/>
+    <Script file="Data\SpellCooldowns.lua"/>
+    <Script file="Data\SpellCastTimes.lua"/>
+    <Script file="Data\SpellPower.lua"/>
+    <Script file="Data\SpellRanges.lua"/>
+    <Script file="Data\SpellDurations.lua"/>
+    <Script file="Data\Glyphs.lua"/>
+    <Script file="Data\AchievementCategories.lua"/>
+    <Script file="Data\FriendshipReputations.lua"/>
+    <Script file="Data\Regions.lua"/>
+    <Script file="Data\Languages.lua"/>
+    <Script file="Data\ChatChannels.lua"/>
     <Script file="Data\NPCs.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\GameObjects.lua"/>

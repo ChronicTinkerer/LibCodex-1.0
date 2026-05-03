@@ -280,6 +280,19 @@ function LibCodex:ItemAppearances() return self.modules.ItemAppearances end
 function LibCodex:ItemModifiedAppearances() return self.modules.ItemModifiedAppearances end
 function LibCodex:ItemBonuses()    return self.modules.ItemBonuses end
 function LibCodex:ItemEffects()    return self.modules.ItemEffects end
+function LibCodex:SpellChargeCategories() return self.modules.SpellChargeCategories end
+function LibCodex:SpellMechanics()  return self.modules.SpellMechanics end
+function LibCodex:SpellCooldowns()  return self.modules.SpellCooldowns end
+function LibCodex:SpellCastTimes()  return self.modules.SpellCastTimes end
+function LibCodex:SpellPower()      return self.modules.SpellPower end
+function LibCodex:SpellRanges()     return self.modules.SpellRanges end
+function LibCodex:SpellDurations()  return self.modules.SpellDurations end
+function LibCodex:Glyphs()          return self.modules.Glyphs end
+function LibCodex:AchievementCategories() return self.modules.AchievementCategories end
+function LibCodex:FriendshipReputations() return self.modules.FriendshipReputations end
+function LibCodex:Regions()         return self.modules.Regions end
+function LibCodex:Languages()       return self.modules.Languages end
+function LibCodex:ChatChannels()    return self.modules.ChatChannels end
 
 -- ============================================================================
 -- Diagnostic helpers exposed to consumers.

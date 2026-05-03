@@ -4,7 +4,6 @@
 ## Author: ChronicTinkerer
 ## Version: 0.1.0
 ## SavedVariables: LibCodexDB
-## OptionalDeps: HeroDBC
 ## LoadOnDemand: 0
 ## X-Curse-Project-ID: -
 ## X-License: MIT
@@ -29,6 +28,9 @@ Modules\Enums\CreatureTypes.lua
 Modules\Enums\Specs.lua
 Modules\Enums\Stats.lua
 Modules\Enums\Difficulty.lua
+Modules\Enums\Regions.lua
+Modules\Enums\Languages.lua
+Modules\Enums\ChatChannels.lua
 
 # ----- Tier 2 catalog modules (large, grow over time)
 Modules\Catalog\NPCs.lua
@@ -75,6 +77,16 @@ Modules\Catalog\ItemAppearances.lua
 Modules\Catalog\ItemModifiedAppearances.lua
 Modules\Catalog\ItemBonuses.lua
 Modules\Catalog\ItemEffects.lua
+Modules\Catalog\SpellChargeCategories.lua
+Modules\Catalog\SpellMechanics.lua
+Modules\Catalog\SpellCooldowns.lua
+Modules\Catalog\SpellCastTimes.lua
+Modules\Catalog\SpellPower.lua
+Modules\Catalog\SpellRanges.lua
+Modules\Catalog\SpellDurations.lua
+Modules\Catalog\Glyphs.lua
+Modules\Catalog\AchievementCategories.lua
+Modules\Catalog\FriendshipReputations.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -129,6 +141,19 @@ Data\ItemAppearances.lua
 Data\ItemModifiedAppearances.lua
 Data\ItemBonuses.lua
 Data\ItemEffects.lua
+Data\SpellChargeCategories.lua
+Data\SpellMechanics.lua
+Data\SpellCooldowns.lua
+Data\SpellCastTimes.lua
+Data\SpellPower.lua
+Data\SpellRanges.lua
+Data\SpellDurations.lua
+Data\Glyphs.lua
+Data\AchievementCategories.lua
+Data\FriendshipReputations.lua
+Data\Regions.lua
+Data\Languages.lua
+Data\ChatChannels.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua
