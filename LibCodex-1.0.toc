@@ -1,10 +1,10 @@
 ## Interface: 120005
 ## Title: LibCodex-1.0
-## Notes: A reusable static-catalog library for WoW addons. Tracks NPCs, items, spells, talents, quests, zones, flight points, currencies, reputations, crafts, achievements, pets, mounts, etc. Hybrid load model: bundled seed + runtime growth + adapters for other addons (Zygor, HeroDBC). Consumers embed via ## libs and call LibStub("LibCodex-1.0").
+## Notes: A reusable static-catalog library for WoW addons. Tracks NPCs, items, spells, talents, quests, zones, flight points, currencies, reputations, crafts, achievements, pets, mounts, etc. Hybrid load model: bundled seed + runtime growth. Consumers embed via ## libs and call LibStub("LibCodex-1.0").
 ## Author: ChronicTinkerer
 ## Version: 0.1.0
 ## SavedVariables: LibCodexDB
-## OptionalDeps: ZygorGuidesViewer, HeroDBC
+## OptionalDeps: HeroDBC
 ## LoadOnDemand: 0
 ## X-Curse-Project-ID: -
 ## X-License: MIT
@@ -78,7 +78,6 @@ Data\Stats.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua
-Adapters\Zygor.lua
 
 # ----- Log window (used by SlashCommand and available to consumers)
 Log.lua

@@ -67,7 +67,6 @@
     <Script file="Data\GameObjects.lua"/>
 
     <Script file="Adapters\Runtime.lua"/>
-    <Script file="Adapters\Zygor.lua"/>
 
     <Script file="Log.lua"/>
     <Script file="Dashboard.lua"/>

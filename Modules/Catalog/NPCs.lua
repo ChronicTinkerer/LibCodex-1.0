@@ -17,7 +17,7 @@
 --   drops           array of itemIDs (if known)
 --   quests          array of questIDs offered/turned in
 --   notes           free text
---   sources         array of source tags ("bundled","runtime","zygor",...)
+--   sources         array of source tags ("bundled","runtime","wago","wowhead",...)
 
 local LibCodex = LibStub("LibCodex-1.0")
 local CC = LibCodex.CollectionFactory

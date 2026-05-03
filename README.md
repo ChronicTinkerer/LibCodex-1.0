@@ -2,7 +2,7 @@
 
 A reusable static-catalog library for World of Warcraft addons. Tracks every NPC, item, spell, talent, quest, zone, flight point, currency, reputation, craft, achievement, pet, mount, toy, heirloom, profession, race, class, faction, realm, encounter, and stat the game knows about.
 
-Hybrid load model: bundled seed (DBC-derived data shipped with the library) + runtime growth (events captured during play) + adapters (read from other addons like ZygorGuidesViewer or HeroDBC).
+Hybrid load model: bundled seed (DBC-derived data shipped with the library) + runtime growth (events captured during play) + a pluggable adapter system for reading from other addons.
 
 Consumer addons embed it the same way they embed any LibStub library.
 
@@ -94,7 +94,7 @@ Three layers, loaded in this order at addon startup:
 Catalog modules grow from any of three sources tagged in `entry.sources`:
 - `bundled` — shipped in `Data/*.lua`
 - `runtime` — captured via API events
-- `wago` / `wowhead` / `zygor` — written into SavedVariables by an importer or external addon, then merged on next load
+- `wago` / `wowhead` — written into SavedVariables by an importer or external addon, then merged on next load
 
 ---
 
@@ -226,10 +226,6 @@ Hooks the following events:
 Plus a tooltip hook for `GameObjects` (mailboxes, herbs, ore, chests).
 
 Auto-scan tick (default ON, configurable) periodically re-walks visible nameplates so wandering NPCs get captured even when the player isn't actively targeting them.
-
-### Zygor adapter (`Adapters/Zygor.lua`)
-
-If `ZygorGuidesViewer` is loaded, reads `ZGV._NPCData` and merges into `NPCs`. This only adds entries where Zygor has data we don't.
 
 ### Writing your own adapter
 
@@ -519,7 +515,6 @@ LibCodex-1.0/
 
   Adapters/
     Runtime.lua               WoW event hooks for live capture
-    Zygor.lua                 ZygorGuidesViewer reader
 
   embeds/
     LibStub/                  vendored LibStub for standalone use

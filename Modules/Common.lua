@@ -308,7 +308,12 @@ function CC.New(name, opts)
         return n
     end
 
-    -- Substring search across configured search fields.
+    -- Substring search across configured search fields. Walks every
+    -- materialized entry AND every lazy bundled row (both row format and
+    -- legacy TSV format), expanding lazy rows into entry dicts only when
+    -- they actually match. This keeps memory low even when searching across
+    -- huge modules like Spells (400K rows).
+    --
     -- opts.filter: optional function(entry) -> bool, called on every candidate
     -- opts can also contain field-equality filters: { side = "A", mapID = 2248 }
     -- Returns an array of matching entries.
@@ -317,11 +322,16 @@ function CC.New(name, opts)
         local q = lower(query or "")
         local filterFn = opts.filter
         local fieldFilters = {}
+        local hasFieldFilters = false
         for k, v in pairs(opts) do
-            if k ~= "filter" then fieldFilters[k] = v end
+            if k ~= "filter" then
+                fieldFilters[k] = v
+                hasFieldFilters = true
+            end
         end
 
-        local function matches(e)
+        -- Match against an already-materialized dict entry.
+        local function matchesDict(e)
             if not e then return false end
             if q ~= "" then
                 local hay = buildHaystack(e, self._searchFields)
@@ -335,14 +345,118 @@ function CC.New(name, opts)
         end
 
         local out = {}
+
+        -- Pass 1: walk materialized entries (the fast path, O(materialized)).
         for _, e in pairs(self._entries) do
-            if matches(e) then out[#out + 1] = e end
+            if matchesDict(e) then out[#out + 1] = e end
         end
-        if self._extras then
-            for _, e in ipairs(self._extras) do
-                if matches(e) then out[#out + 1] = e end
+
+        -- Pass 2: walk lazy row-format entries. Build the haystack from
+        -- positional row values so we don't materialize non-matches into
+        -- entry dicts. Snapshot the keys first because :_ExpandRow mutates
+        -- _rowIndex (matched rows move into _entries).
+        if self._rowIndex and next(self._rowIndex) then
+            local candidates = {}
+            for key, _ in pairs(self._rowIndex) do
+                candidates[#candidates + 1] = key
+            end
+            -- Pre-resolve searchField -> column-index lookups per blob to
+            -- avoid an inner-loop scan. Same for fieldFilters.
+            local searchIdxByBlob = {}
+            local filterIdxByBlob = {}
+            for blobIdx, blob in ipairs(self._rowBlobs) do
+                local sIdx = {}
+                for _, fname in ipairs(self._searchFields) do
+                    for i, c in ipairs(blob.columns) do
+                        if c == fname then sIdx[#sIdx + 1] = i; break end
+                    end
+                end
+                searchIdxByBlob[blobIdx] = sIdx
+                if hasFieldFilters then
+                    local fIdx = {}
+                    for k, _ in pairs(fieldFilters) do
+                        for i, c in ipairs(blob.columns) do
+                            if c == k then fIdx[k] = i; break end
+                        end
+                    end
+                    filterIdxByBlob[blobIdx] = fIdx
+                end
+            end
+
+            for _, key in ipairs(candidates) do
+                local ref = self._rowIndex[key]
+                if ref then
+                    local blobIdx = ref[1]
+                    local blob = self._rowBlobs[blobIdx]
+                    local row = blob.rows[ref[2]]
+                    if type(row) == "table" then
+                        -- Substring test against searchable column values.
+                        local substrOk = (q == "")
+                        if not substrOk then
+                            local idxs = searchIdxByBlob[blobIdx]
+                            local parts = {}
+                            for i = 1, #idxs do
+                                local v = row[idxs[i]]
+                                if v ~= nil then parts[#parts + 1] = tostring(v) end
+                            end
+                            substrOk = lower(table.concat(parts, " ")):find(q, 1, true) ~= nil
+                        end
+                        -- Field-equality test on positional values. Only run
+                        -- if substring already passed.
+                        local fieldOk = true
+                        if substrOk and hasFieldFilters then
+                            local fIdx = filterIdxByBlob[blobIdx]
+                            for fk, fv in pairs(fieldFilters) do
+                                local idx = fIdx and fIdx[fk]
+                                if not idx or row[idx] ~= fv then
+                                    fieldOk = false; break
+                                end
+                            end
+                        end
+                        if substrOk and fieldOk then
+                            local entry = self:_ExpandRow(key)
+                            if entry and (not filterFn or filterFn(entry)) then
+                                out[#out + 1] = entry
+                            end
+                        end
+                    end
+                end
             end
         end
+
+        -- Pass 3: walk lazy TSV-format entries (legacy). The TSV blob is a
+        -- flat string per line, so a substring test on the raw line text
+        -- is correct for the searchable-column case (a stricter test than
+        -- ideal, but TSV is a back-compat path that won't see new data).
+        -- Field filters are applied post-expansion since they need parsing.
+        if self._tsvIndex and next(self._tsvIndex) then
+            local candidates = {}
+            for key, _ in pairs(self._tsvIndex) do
+                candidates[#candidates + 1] = key
+            end
+            for _, key in ipairs(candidates) do
+                local ref = self._tsvIndex[key]
+                if ref then
+                    local blob = self._tsvBlobs[ref[1]]
+                    local line = blob.blob:sub(ref[2], ref[3])
+                    local substrOk = (q == "") or lower(line):find(q, 1, true) ~= nil
+                    if substrOk then
+                        local entry = self:_ExpandTSVRow(key)
+                        if entry and matchesDict(entry) then
+                            out[#out + 1] = entry
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Pass 4: keyless extras.
+        if self._extras then
+            for _, e in ipairs(self._extras) do
+                if matchesDict(e) then out[#out + 1] = e end
+            end
+        end
+
         return out
     end
 
