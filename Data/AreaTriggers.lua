@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("AreaTriggers", "id,x,y,flags,sources,actionSetID,boxHeight,boxLength,boxWidth,boxYaw,continentID,phaseGroupID,phaseID,phaseUseFlags,radius,shapeID,shapeType,z", {
+LibCodex:_FeedBundledRowsLazy("AreaTriggers", "id,x,y,flags,sources,actionSetID,boxHeight,boxLength,boxWidth,boxYaw,continentID,phaseGroupID,phaseID,phaseUseFlags,radius,shapeID,shapeType,z", function() return {
     {45,2924.3799,-798.4290,0,{"wago"},167,0,0,0,0,0,1127,0,0,8,0,0,161.6110},
     {71,-10645.9004,1179.0601,0,{"wago"},168,0,0,0,0,0,0,0,0,27,0,0,48.1781},
     {78,-11207.2998,1684.2400,0,{"wago"},169,9,14,9.9000,6.2560,0,0,0,0,0,0,1,26.9075},
@@ -3669,4 +3669,4 @@ LibCodex:_FeedBundledRows("AreaTriggers", "id,x,y,flags,sources,actionSetID,boxH
     {10524,1667.7100,446.5380,0,{"wago"},27023,50.1421,14.1421,80.1421,3.2590,1549,0,0,0,0,0,1,52.8593},
     {10525,1184.3400,301.3360,0,{"wago"},27025,50.1421,14.1421,80.1421,3.4750,1550,0,0,0,0,0,1,57.2123},
     {10527,-3660.3799,58.1842,0,{"wago"},30303,0,0,0,4.1469,2444,0,0,0,150,159,0,774.5530},
-})
+} end)

@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "NPCs", "id,label,creatureType,classification,sources"
 
 -- Chunk 1/3: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {3,"Flesh Eater","Undead","Normal",{"wago"}},
     {89,"Infernal","Demon","Normal",{"wago"}},
     {304,"Felsteed","Demon","Normal",{"wago"}},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {112749,"Ebon Knights","Humanoid","Normal",{"wago"}},
     {112750,"Ebon Knights","Humanoid","Normal",{"wago"}},
     {112751,"Ebon Knights","Humanoid","Normal",{"wago"}},
-} end)())
+} end)
 
 -- Chunk 2/3: rows 8001..16000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {112752,"Ebon Ravagers","Humanoid","Normal",{"wago"}},
     {112753,"Ebon Ravagers","Humanoid","Normal",{"wago"}},
     {112754,"Ebon Ravagers","Humanoid","Normal",{"wago"}},
@@ -16015,10 +16015,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {178472,"The Stonewright","Humanoid","Elite",{"wago"}},
     {178517,"Aeskir","Humanoid","Elite",{"wago"}},
     {178518,"Dyrfinna","Humanoid","Elite",{"wago"}},
-} end)())
+} end)
 
 -- Chunk 3/3: rows 16001..22811
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {178519,"Kolfinna","Humanoid","Elite",{"wago"}},
     {178557,"The Primus","Humanoid","Elite",{"wago"}},
     {178561,"The Stonewright's Carriage","Not specified","Normal",{"wago"}},
@@ -22830,5 +22830,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {264933,"Ka'bubb","Wild Pet","Normal",{"wago"}},
     {264934,"Ka'bubb","Wild Pet","Normal",{"wago"}},
     {265196,"Ka'bubb","Beast","Normal",{"wago"}},
-} end)())
+} end)
 

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Languages", "id,label,flags,sources,learningCurveID,uiTextureKitElementCount,uiTextureKitID", {
+LibCodex:_FeedBundledRowsLazy("Languages", "id,label,flags,sources,learningCurveID,uiTextureKitElementCount,uiTextureKitID", function() return {
     {1,"Orcish",0,{"wago"},0,0,0},
     {2,"Darnassian",0,{"wago"},0,0,0},
     {3,"Taurahe",0,{"wago"},0,0,0},
@@ -51,4 +51,4 @@ LibCodex:_FeedBundledRows("Languages", "id,label,flags,sources,learningCurveID,u
     {307,"Nerubian",0,{"wago"},0,0,0},
     {308,"Tongues of Sanctuary",0,{"wago"},0,0,0},
     {309,"Hara'ni",0,{"wago"},0,0,0},
-})
+} end)

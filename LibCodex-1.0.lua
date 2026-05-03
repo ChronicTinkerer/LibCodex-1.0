@@ -21,7 +21,7 @@ local LIB_MAJOR = "LibCodex-1.0"
 -- compares it numerically to decide which copy of the library to keep
 -- when multiple addons embed different versions, so any later timestamp
 -- automatically wins. Lua doubles represent 10-digit integers exactly.
-local LIB_MINOR = 2605031104
+local LIB_MINOR = 2605031118
 
 assert(LibStub, LIB_MAJOR .. " requires LibStub.")
 local LibCodex, oldMinor = LibStub:NewLibrary(LIB_MAJOR, LIB_MINOR)
@@ -67,6 +67,12 @@ function LibCodex:RegisterModule(name, collection)
             collection:_IngestRows(p.columns, p.rows)
         end
         self.pendingRows[name] = nil
+    end
+    if self.pendingLazyRows and self.pendingLazyRows[name] and collection._IngestLazyChunk then
+        for _, p in ipairs(self.pendingLazyRows[name]) do
+            collection:_IngestLazyChunk(p.columns, p.thunk)
+        end
+        self.pendingLazyRows[name] = nil
     end
 
     return collection
@@ -148,6 +154,37 @@ function LibCodex:_FeedBundledRows(moduleName, columns, rows)
         self.pendingRows = self.pendingRows or {}
         self.pendingRows[moduleName] = self.pendingRows[moduleName] or {}
         table.insert(self.pendingRows[moduleName], { columns = columns, rows = rows })
+    end
+end
+
+-- Lazy variant: instead of taking the rows table directly, take a thunk
+-- (zero-arg function) that returns the rows table on demand. The library
+-- stores the thunk and only invokes it when the consumer actually queries
+-- the module via :Get / :Search / :All / :Add. Modules a consumer never
+-- touches pay zero row-table memory cost.
+--
+-- Usage from bake-emitted Data files:
+--   LibCodex:_FeedBundledRowsLazy("Spells", "id,label,icon", function() return {
+--       {1, "Spell 1", "icon1"},
+--       -- ...8000 rows in this chunk...
+--   } end)
+--
+-- Why this works: in Lua, a function definition compiles to a Proto object
+-- whose constants pool holds the literal strings/numbers. The TABLE itself
+-- (and the per-row sub-tables) is only constructed when the function body
+-- runs. So wrapping the constructor in a function defers the dominant
+-- memory cost (per-table headers, hash structures, array storage) until
+-- materialization. String constants stay around regardless because Lua
+-- interns them at parse time.
+function LibCodex:_FeedBundledRowsLazy(moduleName, columns, thunk)
+    if type(columns) ~= "string" or type(thunk) ~= "function" then return end
+    local mod = self.modules[moduleName]
+    if mod and mod._IngestLazyChunk then
+        mod:_IngestLazyChunk(columns, thunk)
+    else
+        self.pendingLazyRows = self.pendingLazyRows or {}
+        self.pendingLazyRows[moduleName] = self.pendingLazyRows[moduleName] or {}
+        table.insert(self.pendingLazyRows[moduleName], { columns = columns, thunk = thunk })
     end
 end
 

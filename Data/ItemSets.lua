@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("ItemSets", "id,label,flags,sources,bonuses,items,requiredSkill,requiredSkillRank", {
+LibCodex:_FeedBundledRowsLazy("ItemSets", "id,label,flags,sources,bonuses,items,requiredSkill,requiredSkillRank", function() return {
     {1,"The Gladiator",1,{"wago"},{{spellID=41863,specID=0,threshold=2,traitSubTreeID=0},{spellID=41864,specID=0,threshold=3,traitSubTreeID=0},{spellID=41861,specID=0,threshold=4,traitSubTreeID=0},{spellID=41862,specID=0,threshold=5,traitSubTreeID=0}},{11729,11726,11728,11731,11730},0,0},
     {41,"Dal'Rend's Arms",0,{"wago"},{{spellID=41719,specID=0,threshold=2,traitSubTreeID=0}},{12940,12939},0,0},
     {65,"Spider's Kiss",0,{"wago"},{{spellID=17332,specID=0,threshold=2,traitSubTreeID=0}},{13218,13183},0,0},
@@ -996,4 +996,4 @@ LibCodex:_FeedBundledRows("ItemSets", "id,label,flags,sources,bonuses,items,requ
     {1988,"Mantle of the Primal Core",0,{"wago"},{{spellID=1264862,specID=262,threshold=2,traitSubTreeID=0},{spellID=1264864,specID=263,threshold=2,traitSubTreeID=0},{spellID=1264866,specID=264,threshold=2,traitSubTreeID=0},{spellID=1264863,specID=262,threshold=4,traitSubTreeID=0},{spellID=1264865,specID=263,threshold=4,traitSubTreeID=0},{spellID=1264867,specID=264,threshold=4,traitSubTreeID=0}},{249982,249980,249979,249978,249977},0,0},
     {1989,"Reign of the Abyssal Immolator",0,{"wago"},{{spellID=1264869,specID=265,threshold=2,traitSubTreeID=0},{spellID=1264871,specID=266,threshold=2,traitSubTreeID=0},{spellID=1264873,specID=267,threshold=2,traitSubTreeID=0},{spellID=1264870,specID=265,threshold=4,traitSubTreeID=0},{spellID=1264872,specID=266,threshold=4,traitSubTreeID=0},{spellID=1264874,specID=267,threshold=4,traitSubTreeID=0}},{250043,250042,250041,250045,250040},0,0},
     {1990,"Rage of the Night Ender",0,{"wago"},{{spellID=1264875,specID=71,threshold=2,traitSubTreeID=0},{spellID=1264877,specID=72,threshold=2,traitSubTreeID=0},{spellID=1264879,specID=73,threshold=2,traitSubTreeID=0},{spellID=1264876,specID=71,threshold=4,traitSubTreeID=0},{spellID=1264878,specID=72,threshold=4,traitSubTreeID=0},{spellID=1264880,specID=73,threshold=4,traitSubTreeID=0}},{249955,249953,249952,249951,249950},0,0},
-})
+} end)

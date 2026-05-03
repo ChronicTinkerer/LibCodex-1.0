@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("SpellChargeCategories", "id,label,flags,sources,chargeRecoveryTime,maxCharges,typeMask,usesPerWeek", {
+LibCodex:_FeedBundledRowsLazy("SpellChargeCategories", "id,label,flags,sources,chargeRecoveryTime,maxCharges,typeMask,usesPerWeek", function() return {
     {1,"Default",0,{"wago"},0,0,0,0},
     {2,"Direct Damage - Spell",0,{"wago"},0,0,0,0},
     {4,"Item - Combat Cons. (Potion)",32,{"wago"},0,0,0,0},
@@ -1103,4 +1103,4 @@ LibCodex:_FeedBundledRows("SpellChargeCategories", "id,label,flags,sources,charg
     {2532,"Monk - Zenith Stomp",0,{"wago"},0,3,1,0},
     {2534,"Class - Death Knight - Dark Transformation - Cool up",0,{"wago"},750,0,0,0},
     {2535,"12.0 Raid - Darkwell - Boss - Naaru - Crystal - Light - Cone - AD",118,{"wago"},20000,3,0,0},
-})
+} end)

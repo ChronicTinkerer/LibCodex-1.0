@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("DungeonEncounters", "id,label,icon,faction,mapID,flags,sources,bit,completeWorldStateID,difficultyID,orderIndex", {
+LibCodex:_FeedBundledRowsLazy("DungeonEncounters", "id,label,icon,faction,mapID,flags,sources,bit,completeWorldStateID,difficultyID,orderIndex", function() return {
     {227,"High Interrogator Gerstahn",0,-1,230,4,{"wago"},0,4625,1,0},
     {228,"Lord Roccor",0,-1,230,4,{"wago"},1,4626,1,1000},
     {229,"Houndmaster Grebmar",0,-1,230,4,{"wago"},2,4627,1,2000},
@@ -1307,4 +1307,4 @@ LibCodex:_FeedBundledRows("DungeonEncounters", "id,label,icon,faction,mapID,flag
     {3454,"Lu'ashal",0,-1,2930,4,{"wago"},2,0,0,-1000},
     {3459,"Thorm'belan",0,-1,2930,4,{"wago"},3,0,0,2000},
     {3463,"Betarix Hotfixxle",0,-1,1594,4,{"wago"},4,0,0,4000},
-})
+} end)

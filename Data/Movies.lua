@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Movies", "id,sources,audioFileDataID,keyID,subtitleFileDataID,subtitleFileFormat,volume", {
+LibCodex:_FeedBundledRowsLazy("Movies", "id,sources,audioFileDataID,keyID,subtitleFileDataID,subtitleFileFormat,volume", function() return {
     {1,{"wago"},625988,0,0,0,100},
     {2,{"wago"},625564,0,481154,7,100},
     {14,{"wago"},458394,0,481156,7,100},
@@ -262,4 +262,4 @@ LibCodex:_FeedBundledRows("Movies", "id,sources,audioFileDataID,keyID,subtitleFi
     {1061,{"wago"},7671194,0,7639583,118,100},
     {1062,{"wago"},7728589,0,7639575,118,100},
     {1066,{"wago"},7728181,0,7745994,118,100},
-})
+} end)

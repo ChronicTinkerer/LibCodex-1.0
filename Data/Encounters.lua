@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Encounters", "id,label,expansion,mapID,kind,instanceID,sources,loot", {
+LibCodex:_FeedBundledRowsLazy("Encounters", "id,label,expansion,mapID,kind,instanceID,sources,loot", function() return {
     {63,"Deadmines",nil,36,"instance",nil,{"wago"}},
     {64,"Shadowfang Keep",nil,33,"instance",nil,{"wago"}},
     {65,"Throne of the Tides",nil,643,"instance",nil,{"wago"}},
@@ -1364,4 +1364,4 @@ LibCodex:_FeedBundledRows("Encounters", "id,label,expansion,mapID,kind,instanceI
     {1002829,"Thorm'belan",nil,nil,"encounter",1312,{"wago"},{250449,250452,250455,250462,250456,250457,250459,250458}},
     {1002869,"Mythic Keystones",nil,nil,"encounter",1319,{"wago"}},
     {1002870,"Affixes",nil,nil,"encounter",1319,{"wago"}},
-})
+} end)

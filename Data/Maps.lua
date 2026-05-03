@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Maps", "id,label,expansion,description,sources,areaTableID,directory,instanceType,loadingScreenID,mapType,parentMapID,pvpDescription", {
+LibCodex:_FeedBundledRowsLazy("Maps", "id,label,expansion,description,sources,areaTableID,directory,instanceType,loadingScreenID,mapType,parentMapID,pvpDescription", function() return {
     {1,"Kalimdor",0,nil,{"wago"},0,"Kalimdor",0,3,1,-1},
     {30,"Alterac Valley",0,"Hidden within the Alterac Mountains, Alterac Valley is the home of the Frostwolf clan.  The Stormpike dwarves have established a foothold in the valley and seek to plumb its depths for riches and links to their ancestral past.\n\n\n\nA large-scale battleground, each side attempts to destroy each other's tower fortifications and slay the enemy General (Vanndar Stormpike or Drek'Thar).",{"wago"},0,"PVPZone01",3,104,1,-1,"- Capture enemy towers and bunkers\n\n- Slay the enemy leader\n\n- Reduce the enemy reinforcements to 0"},
     {33,"Shadowfang Keep",0,nil,{"wago"},0,"Shadowfang",1,204,1,-1},
@@ -1175,4 +1175,4 @@ LibCodex:_FeedBundledRows("Maps", "id,label,expansion,description,sources,areaTa
     {3029,"Keystone Dungeons",0,nil,{"wago"},0,"3029",1,0,1,-1},
     {3038,"internalname",0,nil,{"wago"},0,"3038",0,4,1,-1},
     {3074,"Daggerspine Point",11,nil,{"wago"},0,"3074",5,682,1,-1},
-})
+} end)

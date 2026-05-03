@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("FlightPoints", "id,label,flags,sources,bitNumber,continentID,mountCreatureA,mountCreatureH,worldX,worldY,worldZ", {
+LibCodex:_FeedBundledRowsLazy("FlightPoints", "id,label,flags,sources,bitNumber,continentID,mountCreatureA,mountCreatureH,worldX,worldY,worldZ", function() return {
     {1,"Northshire Abbey",1024,{"wago"},0,0,308,nil,-8888.9805,-0.5400,94.3900},
     {2,"Stormwind, Elwynn",1,{"wago"},2,0,nil,541,-8841.0596,489.6560,109.6070},
     {3,"Programmer Isle",1024,{"wago"},0,0,308,nil,16391.8105,16341.2100,69.4400},
@@ -1457,4 +1457,4 @@ LibCodex:_FeedBundledRows("FlightPoints", "id,label,flags,sources,bitNumber,cont
     {3239,"Quest Path 11403: 12.0 Z1 - Eversong - Teleporters - Upper Rookery - Going Down - Force Taxi - SJC",0,{"wago"},0,0,251064,251064,8457.4404,-4024.5701,76.3444},
     {3240,"Quest Path 11404: 12.0 Z1 - Eversong - Teleporters - Brightwing Estates - Going Up - Force Taxi - SJC",0,{"wago"},0,0,251064,251064,8130.2202,-5922.5601,140.2750},
     {3241,"Quest Path 11405: 12.0 Z1 - Eversong - Teleporters - Brightwing Estates - Going Down - Force Taxi - SJC",0,{"wago"},0,0,251064,251064,8110.8301,-5829.1099,76.2243},
-})
+} end)

@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "EncounterSections", "id,title,icon,type,spellID,flags,sources,bodyText,difficultyMask,firstChildSectionID,iconCreatureDisplayInfoID,iconFlags,journalEncounterID,nextSiblingSectionID,orderIndex,parentSectionID,uiModelSceneID"
 
 -- Chunk 1/3: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {816,"Mighty Stomp",132368,2,0,0,{"wago"},"Throngus stomps his foot on the ground, triggering the walls of Grim Batol to Cave In. Throngus will not Mighty Stomp if he has his shield equipped.",-1,0,0,0,132,817,1,0,0},
     {817,"Cave In",132153,2,0,0,{"wago"},"After the Mighty Stomp of Throngus weakens the walls of Grim Batol, pieces of stone begin to fall on top of a random player in a $74986A1 yard radius area. Players who continue to stand in that area take $74986s1 Physical damage every second.",-1,0,0,0,132,818,2,0,0},
     {818,"Pick Weapon",134400,1,0,0,{"wago"},"Throngus has several fearsome weapons at his disposal. Periodically during the encounter, he randomly chooses between a massive Shield, a pair of Swords, or a punishing Mace. The chosen weapon grants him new abilities for a short duration of the encounter.",-1,0,0,0,132,819,3,0,0},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {14806,"Damage Dealers",0,3,0,0,{"wago"},"$bullet;Dodge |cFF2959D3|Hspell:233971|h[Tidal Wave]|h|r by watching the sea for incoming waves.\n\n$bullet;Avoid |cFF2959D3|Hspell:234231|h[Submerge]|h|r stuns, especially as waves crash over the beach.",-1,0,0,2,1885,14808,2,14805,0},
     {14807,"Healers",0,3,0,0,{"wago"},"$bullet;Dodge |cFF2959D3|Hspell:233971|h[Tidal Wave]|h|r by watching the sea for incoming waves.",-1,0,0,4,1885,0,4,14805,0},
     {14808,"Tanks",0,3,0,0,{"wago"},"$bullet;Dodge |cFF2959D3|Hspell:233971|h[Tidal Wave]|h|r by watching the sea for incoming waves.\n\n$bullet;Gather the Si'vashi Honor Guard before they harm your allies.",-1,0,0,1,1885,14807,3,14805,0},
-} end)())
+} end)
 
 -- Chunk 2/3: rows 8001..16000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {14810,"Si'vashi Honor Guard",0,1,0,0,{"wago"},nil,-1,15299,74536,0,1885,0,7,0,0},
     {14811,nil,0,2,233971,0,{"wago"},nil,-1,0,0,0,1885,14812,5,0,0},
     {14812,nil,0,2,234231,0,{"wago"},nil,-1,0,0,0,1885,14810,6,0,0},
@@ -16015,10 +16015,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {26588,"Section 5",0,2,404916,0,{"wago"},nil,-1,0,0,1,2536,26589,5,0,0},
     {26589,"Section 6",0,2,403891,1,{"wago"},"$[8,23\n\n\n\nAll Morchies begin to cast |cFF2959D3|Hspell:404365|h[Dragon's Breath]|h|r. Just before the cast time ends, the original Morchie sends the alternates back to their own timelines.$]",-1,26590,0,0,2536,26591,6,0,0},
     {26590,"Section 7",0,2,404365,1,{"wago"},nil,-1,27380,0,48,2536,0,7,26589,0},
-} end)())
+} end)
 
 -- Chunk 3/3: rows 16001..20507
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {26591,"Section 8",0,2,405279,0,{"wago"},"$; \n\n\n\nOn subsequent casts, Morchie restores her minions to full health and removes any harmful effects.",-1,26592,0,0,2536,26594,9,0,0},
     {26592,"Familiar Face",0,1,0,0,{"wago"},nil,-1,27377,37925,0,2536,0,10,26591,0},
     {26593,"Section 10",0,2,412768,0,{"wago"},nil,-1,0,0,0,2536,0,12,26592,0},
@@ -20526,5 +20526,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {35537,"Section 157",0,2,1287702,2,{"wago"},nil,0,0,0,16,2740,34901,127,34900,0},
     {35809,"Section 158",0,2,1295191,2,{"wago"},nil,0,0,0,0,2740,0,13,35322,0},
     {35862,"Section 18",0,2,1295986,1,{"wago"},nil,-1,0,0,0,2870,0,9,35353,0},
-} end)())
+} end)
 

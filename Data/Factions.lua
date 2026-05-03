@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Factions", "id,label,expansion,color,parentFactionID,kind,_handcrafted,sources", {
+LibCodex:_FeedBundledRowsLazy("Factions", "id,label,expansion,color,parentFactionID,kind,_handcrafted,sources", function() return {
     {1,"PLAYER, Human",0,nil,0,"reputation",nil,{"wago"}},
     {2,"PLAYER, Orc",0,nil,0,"reputation",nil,{"wago"}},
     {3,"PLAYER, Dwarf",0,nil,0,"reputation",nil,{"wago"}},
@@ -869,4 +869,4 @@ LibCodex:_FeedBundledRows("Factions", "id,label,expansion,color,parentFactionID,
     {"A","Alliance",nil,{b=0.8700,g=0.4400,hex="0070dd",r=0},nil,"player",true,{"handcrafted"}},
     {"H","Horde",nil,{b=0.2300,g=0.1200,hex="c41e3a",r=0.7700},nil,"player",true,{"handcrafted"}},
     {"N","Neutral",nil,{b=0,g=0.8100,hex="ffd000",r=1},nil,"player",true,{"handcrafted"}},
-})
+} end)

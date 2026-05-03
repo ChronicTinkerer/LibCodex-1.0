@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("SpellDurations", "id,sources,duration,durationPerResource,maxDuration", {
+LibCodex:_FeedBundledRowsLazy("SpellDurations", "id,sources,duration,durationPerResource,maxDuration", function() return {
     {1,{"wago"},10000,0,10000},
     {3,{"wago"},60000,0,60000},
     {4,{"wago"},120000,0,120000},
@@ -434,4 +434,4 @@ LibCodex:_FeedBundledRows("SpellDurations", "id,sources,duration,durationPerReso
     {1563,{"wago"},25500,0,25500},
     {1564,{"wago"},22500,0,22500},
     {1569,{"wago"},450000,0,450000},
-})
+} end)

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Pets", "id,label,icon,family,sourceType,creatureID,description,sources,abilities", {
+LibCodex:_FeedBundledRowsLazy("Pets", "id,label,icon,family,sourceType,creatureID,description,sources,abilities", function() return {
     {2,"Dumptruck",132332,4,-1,61892,nil,{"wago"},{{requiredLevel=1,abilityID=116,slot=0},{requiredLevel=2,abilityID=504,slot=1},{requiredLevel=4,abilityID=160,slot=2}}},
     {39,"Mechanical Squirrel",656559,9,3,2671,"A mechanical squirrel's logic center tells it to collect and store both nuts and bolts for the winter.",{"wago"},{{requiredLevel=1,abilityID=384,slot=0},{requiredLevel=10,abilityID=202,slot=0},{requiredLevel=2,abilityID=389,slot=1},{requiredLevel=15,abilityID=392,slot=1},{requiredLevel=4,abilityID=459,slot=2},{requiredLevel=20,abilityID=278,slot=2}}},
     {40,"Bombay Cat",656575,7,2,7385,"Donni Anthania plans to have a bombay buried with her when she dies. A wise adventurer can put its talents to much better use.",{"wago"},{{requiredLevel=1,abilityID=429,slot=0},{requiredLevel=10,abilityID=535,slot=0},{requiredLevel=2,abilityID=492,slot=1},{requiredLevel=15,abilityID=357,slot=1},{requiredLevel=4,abilityID=538,slot=2},{requiredLevel=20,abilityID=536,slot=2}}},
@@ -2956,4 +2956,4 @@ LibCodex:_FeedBundledRows("Pets", "id,label,icon,family,sourceType,creatureID,de
     {5039,"Cappy",2205590,7,0,262787,"Having the bad luck to face many void corruption hostilities, Cappy has persevered. He is one of the few creatures to make it through mostly unscathed.",{"wago"},{{requiredLevel=1,abilityID=655,slot=0},{requiredLevel=10,abilityID=2068,slot=0},{requiredLevel=2,abilityID=1895,slot=1},{requiredLevel=15,abilityID=2361,slot=1},{requiredLevel=4,abilityID=159,slot=2},{requiredLevel=20,abilityID=2358,slot=2}}},
     {5040,"Curious Lynx Kitten",7390432,7,0,262788,"The saying curiosity killed the cat wasn't written about the Eversong lynx, even if their reckless kittens do find their way to the frontlines. A few rangers have found a lifelong companion stowed away in the supply wagons on campaign.",{"wago"},{{requiredLevel=1,abilityID=119,slot=0},{requiredLevel=10,abilityID=535,slot=0},{requiredLevel=2,abilityID=347,slot=1},{requiredLevel=15,abilityID=1016,slot=1},{requiredLevel=4,abilityID=1347,slot=2},{requiredLevel=20,abilityID=536,slot=2}}},
     {5065,"Ka'bubb",2205592,4,10,264933,"A true Abyss Angler, certified by Depthdiver Jeju himself.",{"wago"}},
-})
+} end)

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Cinematics", "id,sources,cameras,soundID", {
+LibCodex:_FeedBundledRowsLazy("Cinematics", "id,sources,cameras,soundID", function() return {
     {1,{"wago"},{1},0},
     {2,{"wago"},{2},0},
     {21,{"wago"},{235},0},
@@ -33,4 +33,4 @@ LibCodex:_FeedBundledRows("Cinematics", "id,sources,cameras,soundID", {
     {271,{"wago"},{356},0},
     {272,{"wago"},{355},0},
     {289,{"wago"},nil,0},
-})
+} end)

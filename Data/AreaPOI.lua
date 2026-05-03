@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("AreaPOI", "id,label,x,y,description,flags,sources,areaID,continentID,playerCondition,poiData,poiDataType,portLocID,states,uiAtlasMember,widgetSetID,worldStateID,z", {
+LibCodex:_FeedBundledRowsLazy("AreaPOI", "id,label,x,y,description,flags,sources,areaID,continentID,playerCondition,poiData,poiDataType,portLocID,states,uiAtlasMember,widgetSetID,worldStateID,z", function() return {
     {1,"Anvilmar",-6134.2798,383.7630,nil,517,{"wago"},132,0,0,0,0,0,nil,0,0,0,399.2540},
     {2,"Brill",2249.8501,278.4140,nil,517,{"wago"},159,0,0,0,0,0,nil,0,0,0,34.1137},
     {3,"Darkshire",-10564.7002,-1170.6500,nil,517,{"wago"},10,0,0,0,0,0,nil,0,0,0,28.0505},
@@ -3837,4 +3837,4 @@ LibCodex:_FeedBundledRows("AreaPOI", "id,label,x,y,description,flags,sources,are
     {8789,"Prey",8551.1201,-4912.1802,"Defeat powerful enemies to fuel Astalor's endeavors.",1623593379,{"wago"},15969,0,155389,0,0,0,nil,33416,2108,0,25.4109},
     {8790,"Prey",8551.1201,-4912.1802,"Defeat powerful enemies to fuel Astalor's endeavors.",1623593379,{"wago"},15969,0,155390,0,0,0,nil,33416,2109,0,25.4109},
     {8791,"Soridormi",8466.9902,-4896.8301,"Speak with Soridormi to skip previously completed adventures.",397731,{"wago"},15969,0,151571,0,0,0,nil,11491,0,0,54.2208},
-})
+} end)

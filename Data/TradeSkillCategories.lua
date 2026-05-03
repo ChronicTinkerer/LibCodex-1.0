@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("TradeSkillCategories", "id,label,parentID,flags,sources,hordeLabel,orderIndex,skillLineID", {
+LibCodex:_FeedBundledRowsLazy("TradeSkillCategories", "id,label,parentID,flags,sources,hordeLabel,orderIndex,skillLineID", function() return {
     {58,"Holiday Cooking",72,0,{"wago"},nil,4,185},
     {59,"Wintersveil",58,0,{"wago"},nil,0,185},
     {63,"Everyday Cooking",90,0,{"wago"},nil,7,185},
@@ -1870,4 +1870,4 @@ LibCodex:_FeedBundledRows("TradeSkillCategories", "id,label,parentID,flags,sourc
     {2732,"Guns",2158,0,{"wago"},nil,49,202},
     {2735,"Section IV - Dazzling Thorium",2164,0,{"wago"},nil,3,186},
     {2744,"Mounts",2163,0,{"wago"},nil,18,165},
-})
+} end)

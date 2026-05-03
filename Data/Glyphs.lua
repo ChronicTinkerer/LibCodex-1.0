@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Glyphs", "id,icon,spellID,sources,glyphExclusiveCategoryID,glyphType", {
+LibCodex:_FeedBundledRowsLazy("Glyphs", "id,icon,spellID,sources,glyphExclusiveCategoryID,glyphType", function() return {
     {161,237636,54810,{"wago"},0,0},
     {162,237635,54811,{"wago"},0,0},
     {163,237651,54812,{"wago"},0,0},
@@ -703,4 +703,4 @@ LibCodex:_FeedBundledRows("Glyphs", "id,icon,spellID,sources,glyphExclusiveCateg
     {1471,237640,1213568,{"wago"},198,1},
     {1472,237640,1213567,{"wago"},198,1},
     {1473,237642,1234337,{"wago"},0,1},
-})
+} end)

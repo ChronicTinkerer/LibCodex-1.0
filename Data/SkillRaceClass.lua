@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("SkillRaceClass", "id,classMask,flags,sources,availability,minLevel,raceMask,raceMask1,skillID,skillTierID", {
+LibCodex:_FeedBundledRowsLazy("SkillRaceClass", "id,classMask,flags,sources,availability,minLevel,raceMask,raceMask1,skillID,skillTierID", function() return {
     {4,-1,640,{"wago"},1,0,-1,-1,95,0},
     {5,16383,1170,{"wago"},1,0,-1,-1,183,0},
     {6,-1,128,{"wago"},1,0,-1,-1,162,0},
@@ -356,4 +356,4 @@ LibCodex:_FeedBundledRows("SkillRaceClass", "id,classMask,flags,sources,availabi
     {2530,-1,0,{"wago"},0,0,-1,-1,171,41},
     {2531,-1,0,{"wago"},0,0,-1,-1,2984,41},
     {2537,-1,128,{"wago"},1,0,1572864,0,2987,0},
-})
+} end)

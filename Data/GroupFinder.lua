@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("GroupFinder", "id,label,expansion,mapID,categoryID,flags,sources,areaID,categoryName,difficultyID,displayType,groupID,groupName,maxPlayers,minGearLevel,orderIndex,playerCondition,shortName", {
+LibCodex:_FeedBundledRowsLazy("GroupFinder", "id,label,expansion,mapID,categoryID,flags,sources,areaID,categoryName,difficultyID,displayType,groupID,groupName,maxPlayers,minGearLevel,orderIndex,playerCondition,shortName", function() return {
     {2,"Teldrassil",0,1,1,258,{"wago"},141,"Questing",0,4,3,"Kalimdor",0,0,0,0,"Teldrassil"},
     {3,"Westfall",0,0,1,258,{"wago"},40,"Questing",0,4,2,"Eastern Kingdoms",0,0,0,0,"Westfall"},
     {4,"Siege of Orgrimmar (Normal)",4,1136,3,35,{"wago"},0,"Raids",14,0,1,"Siege of Orgrimmar",30,0,0,0,"Normal"},
@@ -1305,4 +1305,4 @@ LibCodex:_FeedBundledRows("GroupFinder", "id,label,expansion,mapID,categoryID,fl
     {1943,"Eversong",11,0,1,258,{"wago"},15968,"Questing",0,4,397,"Midnight",0,0,0,0,"Eversong"},
     {1944,"Zul'Aman",11,0,1,258,{"wago"},15947,"Questing",0,4,397,"Midnight",0,0,0,0,"Zul'Aman"},
     {1945,"Cathedral of Eternal Night (Mythic Keystone)",6,1677,2,1218,{"wago"},0,"Dungeons",8,1,129,"Cathedral of Eternal Night",5,0,4,145399,"Mythic+"},
-})
+} end)

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("PvpTalents", "id,spellID,categoryID,flags,sources,actionBarSpellID,levelRequired,overridesSpellID,playerCondition,specID", {
+LibCodex:_FeedBundledRowsLazy("PvpTalents", "id,spellID,categoryID,flags,sources,actionBarSpellID,levelRequired,overridesSpellID,playerCondition,specID", function() return {
     {15,248855,2,0,{"wago"},0,49,0,103501,265},
     {16,212371,2,0,{"wago"},0,0,0,0,265},
     {18,212295,2,0,{"wago"},0,0,0,0,265},
@@ -414,4 +414,4 @@ LibCodex:_FeedBundledRows("PvpTalents", "id,spellID,categoryID,flags,sources,act
     {5734,354489,2,0,{"wago"},0,42,0,0,1480},
     {5735,1261697,2,0,{"wago"},0,10,0,0,1480},
     {5738,205604,2,0,{"wago"},0,30,0,0,1480},
-})
+} end)

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("TransmogIllusions", "id,flags,sources,enchantID,transmogCost,unlockCondition", {
+LibCodex:_FeedBundledRowsLazy("TransmogIllusions", "id,flags,sources,enchantID,transmogCost,unlockCondition", function() return {
     {2,2,{"wago"},1899,25000,41116},
     {3,0,{"wago"},1898,10000,0},
     {4,2,{"wago"},803,25000,41116},
@@ -97,4 +97,4 @@ LibCodex:_FeedBundledRows("TransmogIllusions", "id,flags,sources,enchantID,trans
     {98,7,{"wago"},8549,500000,145674},
     {99,7,{"wago"},8553,50000,146156},
     {100,7,{"wago"},8674,0,5793},
-})
+} end)

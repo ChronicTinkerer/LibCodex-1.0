@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "Crafts", "id,spellID,classMask,sources,acquireMethod,minRank,raceMask,skillLineID,supercedesSpell,trivialHigh,trivialLow"
 
 -- Chunk 1/3: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {246,264,16397,{"wago"},2,1,nil,45,nil,0,0},
     {248,196,23151,{"wago"},2,1,nil,44,nil,0,0},
     {251,266,16397,{"wago"},2,1,nil,46,nil,0,0},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {34918,194763,nil,{"wago"},0,1,nil,165,194794,100,80},
     {34919,194764,nil,{"wago"},0,1,nil,165,194799,100,80},
     {34920,194765,nil,{"wago"},0,1,nil,165,194793,100,80},
-} end)())
+} end)
 
 -- Chunk 2/3: rows 8001..16000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {34921,194766,nil,{"wago"},0,1,nil,165,194795,100,80},
     {34922,194767,nil,{"wago"},0,1,nil,165,194759,100,100},
     {34923,194768,nil,{"wago"},0,1,nil,165,194760,100,100},
@@ -16015,10 +16015,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {52031,1225948,nil,{"wago"},0,1,nil,393,nil,1,1},
     {52032,1225939,nil,{"wago"},0,1,nil,393,nil,1,1},
     {52033,1225940,nil,{"wago"},0,1,nil,393,nil,1,1},
-} end)())
+} end)
 
 -- Chunk 3/3: rows 16001..17723
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {52034,1225941,nil,{"wago"},0,1,nil,393,nil,1,1},
     {52035,1225942,nil,{"wago"},0,1,nil,393,nil,1,1},
     {52036,1226062,nil,{"wago"},1,1,nil,186,nil,1,1},
@@ -17742,5 +17742,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {58554,1296758,nil,{"wago"},0,1,nil,777,nil,0,0},
     {58555,1296759,nil,{"wago"},0,1,nil,777,nil,0,0},
     {58556,1296760,nil,{"wago"},0,1,nil,777,nil,0,0},
-} end)())
+} end)
 

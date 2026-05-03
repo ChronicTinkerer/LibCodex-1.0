@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Currencies", "id,label,expansion,categoryID,sources,categoryName", {
+LibCodex:_FeedBundledRowsLazy("Currencies", "id,label,expansion,categoryID,sources,categoryName", function() return {
     {42,"Badge of Justice",1,1,{"wago"},"Miscellaneous"},
     {61,"Dalaran Jewelcrafter's Token",21,21,{"wago"},"Wrath of the Lich King"},
     {81,"Epicurean's Award",1,1,{"wago"},"Miscellaneous"},
@@ -1496,4 +1496,4 @@ LibCodex:_FeedBundledRows("Currencies", "id,label,expansion,categoryID,sources,c
     {3505,"[DNT] Diver Score",142,142,{"wago"},"Hidden"},
     {3506,"[DNT] Diver Display Currency",142,142,{"wago"},"Hidden"},
     {3513,"Nebulous Voidcore",142,142,{"wago"},"Hidden"},
-})
+} end)

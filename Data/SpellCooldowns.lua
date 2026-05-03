@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "SpellCooldowns", "id,spellID,sources,auraSpellID,categoryRecoveryTime,difficultyID,recoveryTime,startRecoveryTime"
 
 -- Chunk 1/5: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {2,17,{"wago"},0,7500,0,0,1500},
     {5,53,{"wago"},0,0,0,0,1000},
     {6,66,{"wago"},0,300000,0,0,1500},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {15195,135650,{"wago"},0,0,0,0,1500},
     {15196,135577,{"wago"},0,5000,0,15000,0},
     {15198,135591,{"wago"},0,10000,0,60000,0},
-} end)())
+} end)
 
 -- Chunk 2/5: rows 8001..16000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {15199,135664,{"wago"},0,0,0,0,1500},
     {15201,135693,{"wago"},0,6000,0,0,1500},
     {15202,135704,{"wago"},0,0,0,0,1500},
@@ -16015,10 +16015,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {28048,245525,{"wago"},0,10000,0,0,1500},
     {28049,245549,{"wago"},0,0,0,3000,0},
     {28051,243175,{"wago"},0,0,0,6000,0},
-} end)())
+} end)
 
 -- Chunk 3/5: rows 16001..24000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {28052,243180,{"wago"},0,0,0,6000,0},
     {28054,244822,{"wago"},0,0,0,1000,0},
     {28055,245588,{"wago"},0,0,0,0,1500},
@@ -24019,10 +24019,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {70327,354743,{"wago"},0,0,0,0,1500},
     {70328,354760,{"wago"},0,0,0,10000,0},
     {70329,354762,{"wago"},0,0,0,10000,0},
-} end)())
+} end)
 
 -- Chunk 4/5: rows 24001..32000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {70330,354773,{"wago"},0,0,0,10000,0},
     {70332,354793,{"wago"},0,0,0,1000,0},
     {70333,354799,{"wago"},0,5000,0,0,0},
@@ -32023,10 +32023,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {91848,467926,{"wago"},0,0,0,32000,1500},
     {91849,468228,{"wago"},0,0,0,0,1500},
     {91852,468290,{"wago"},0,0,0,30000,0},
-} end)())
+} end)
 
 -- Chunk 5/5: rows 32001..35549
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {91853,442294,{"wago"},0,0,0,0,1500},
     {91854,468296,{"wago"},0,0,0,30000,0},
     {91855,468317,{"wago"},0,0,0,0,1500},
@@ -35576,5 +35576,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {99639,1256191,{"wago"},0,0,0,5000,0},
     {99730,1296168,{"wago"},0,0,0,5000,1500},
     {99989,1293502,{"wago"},0,0,0,1,0},
-} end)())
+} end)
 

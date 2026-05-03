@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("GameObjects", "id,label,sources,displayID,typeID", {
+LibCodex:_FeedBundledRowsLazy("GameObjects", "id,label,sources,displayID,typeID", function() return {
     {1,"11.2 Brewfest - Durotar - On a Barrel",{"wago"},107350,5},
     {451,"Warehouse for Rent",{"wago"},108978,5},
     {530,"Draenei Engineer Supplies",{"wago"},15130,5},
@@ -227,4 +227,4 @@ LibCodex:_FeedBundledRows("GameObjects", "id,label,sources,displayID,typeID", {
     {3022,"Pillow",{"wago"},105673,5},
     {3038,"12.0 - Diver - Fish Active",{"wago"},76016,5},
     {3074,"12.0 IGC Plinth (SLW)",{"wago"},108374,5},
-})
+} end)

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("SpellRanges", "id,label,flags,sources,rangeMaxFriend,rangeMaxHostile,rangeMinFriend,rangeMinHostile,shortLabel", {
+LibCodex:_FeedBundledRowsLazy("SpellRanges", "id,label,flags,sources,rangeMaxFriend,rangeMaxHostile,rangeMinFriend,rangeMinHostile,shortLabel", function() return {
     {1,"Self Only",0,{"wago"},0,0,0,0,"Self"},
     {2,"Combat Range",1,{"wago"},5,5,0,0,"Combat"},
     {3,"Twenty yards",0,{"wago"},20,20,0,0,"Short"},
@@ -228,4 +228,4 @@ LibCodex:_FeedBundledRows("SpellRanges", "id,label,flags,sources,rangeMaxFriend,
     {561,"Four Hundred Yards",0,{"wago"},400,400,0,0,"400"},
     {562,"SHORT Interact Range",0,{"wago"},3,3,0,0,"SHORT Interact"},
     {565,"Two Thousand Yards",0,{"wago"},2000,2000,0,0,"2000 Yards"},
-})
+} end)

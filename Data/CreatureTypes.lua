@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("CreatureTypes", "id,label,sources", {
+LibCodex:_FeedBundledRowsLazy("CreatureTypes", "id,label,sources", function() return {
     {1,"Beast",{"wago"}},
     {2,"Dragonkin",{"wago"}},
     {3,"Demon",{"wago"}},
@@ -21,4 +21,4 @@ LibCodex:_FeedBundledRows("CreatureTypes", "id,label,sources", {
     {13,"Gas Cloud",{"wago"}},
     {14,"Wild Pet",{"wago"}},
     {15,"Aberration",{"wago"}},
-})
+} end)

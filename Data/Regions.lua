@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Regions", "id,sources,challengeOrigin,raidOrigin,regionGroup,regionID,tag,timeEventGroupID", {
+LibCodex:_FeedBundledRowsLazy("Regions", "id,sources,challengeOrigin,raidOrigin,regionGroup,regionID,tag,timeEventGroupID", function() return {
     {1,{"wago"},1135695600,1127228400,1,1,"US",1},
     {2,{"wago"},1135810800,1135810800,2,2,"KR",2},
     {3,{"wago"},1135742400,1135742400,3,3,"EU",3},
@@ -189,4 +189,4 @@ LibCodex:_FeedBundledRows("Regions", "id,sources,challengeOrigin,raidOrigin,regi
     {1293,{"wago"},1135810800,1135810800,5,181,"CN",15},
     {1294,{"wago"},1135810800,1135810800,5,182,"CN",15},
     {1295,{"wago"},1135206000,1127232000,9,667,"US",6},
-})
+} end)

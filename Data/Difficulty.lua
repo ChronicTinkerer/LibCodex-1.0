@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Difficulty", "id,label,flags,sources,fallbackDifficultyID,instanceType,maxPlayers,minPlayers,orderIndex", {
+LibCodex:_FeedBundledRowsLazy("Difficulty", "id,label,flags,sources,fallbackDifficultyID,instanceType,maxPlayers,minPlayers,orderIndex", function() return {
     {1,"Normal",4,{"wago"},0,1,5,5,1},
     {2,"Heroic",5,{"wago"},1,1,5,5,2},
     {3,"10 Player",38,{"wago"},0,2,10,10,1},
@@ -62,4 +62,4 @@ LibCodex:_FeedBundledRows("Difficulty", "id,label,flags,sources,fallbackDifficul
     {248,"RENAME Event",272,{"wago"},0,5,8,8,7},
     {251,"Decor Duel",272,{"wago"},0,5,4,4,7},
     {253,"Decor Duel",272,{"wago"},0,5,7,7,7},
-})
+} end)

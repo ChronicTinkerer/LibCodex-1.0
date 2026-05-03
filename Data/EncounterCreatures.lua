@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("EncounterCreatures", "id,label,description,sources,creatureDisplayInfoID,fileDataID,journalEncounterID,orderIndex,uiModelSceneID", {
+LibCodex:_FeedBundledRowsLazy("EncounterCreatures", "id,label,description,sources,creatureDisplayInfoID,fileDataID,journalEncounterID,orderIndex,uiModelSceneID", function() return {
     {358,"Glubtok",nil,{"wago"},37410,522228,89,0,9},
     {359,"Helix Gearbreaker",nil,{"wago"},33002,522234,90,0,9},
     {360,"Foe Reaper 5000",nil,{"wago"},35606,522225,91,0,9},
@@ -1912,4 +1912,4 @@ LibCodex:_FeedBundledRows("EncounterCreatures", "id,label,description,sources,cr
     {6153,"Infernal","Pursues players with |cFF2959D3|Hspell:1231262|h[Felfire Core]|h|r",{"wago"},103096,0,2682,3,9},
     {6154,"Enduring Void",nil,{"wago"},142526,0,2736,3,9},
     {6189,"Toxic Creeper",nil,{"wago"},140374,0,2792,1,9},
-})
+} end)

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("CustomizationOptions", "id,label,categoryID,flags,sources,addedInPatch,barberCost,categoryName,chrCustomID,chrModelID,optionType,orderIndex,requirement,secondaryID,secondaryOrderIndex", {
+LibCodex:_FeedBundledRowsLazy("CustomizationOptions", "id,label,categoryID,flags,sources,addedInPatch,barberCost,categoryName,chrCustomID,chrModelID,optionType,orderIndex,requirement,secondaryID,secondaryOrderIndex", function() return {
     {1,"Skin Color",2,16,{"wago"},90001,0,"Face",0,0,0,0,0,1,0},
     {2,"Face",2,0,{"wago"},90001,0,"Face",0,0,0,1,0,2,1},
     {3,"Hair Style",4,0,{"wago"},90001,0,"Hair",0,0,0,2,0,3,2},
@@ -1153,4 +1153,4 @@ LibCodex:_FeedBundledRows("CustomizationOptions", "id,label,categoryID,flags,sou
     {9158,"Sprout",72,0,{"wago"},0,0,"Treant Form",0,213,1,4,4674,1540,4},
     {9159,"Vines",72,0,{"wago"},0,0,"Treant Form",0,213,1,5,4674,1541,5},
     {9163,"Color",46,34,{"wago"},0,0,"Body (Moonkin)",0,194,0,15,4657,1543,12},
-})
+} end)

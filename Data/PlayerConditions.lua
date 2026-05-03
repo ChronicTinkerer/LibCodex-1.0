@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "PlayerConditions", "id,classMask,sources,auraSpellLogic,currQuestLogic,currentCompletedQuestLogic,currentPvpFaction,failureMessage,itemFlags,itemLogic,languageID,maxFactionID,maxLanguage,maxLevel,maxReputation,minLanguage,minLevel,prevQuestLogic,pvpMedal,raceMask,reputationLogic,skillLogic,spellLogic"
 
 -- Chunk 1/6: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {62,8,{"wago"},0,0,0,0,"Requires Rogue",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {402,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {403,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {61167,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {61168,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {61169,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-} end)())
+} end)
 
 -- Chunk 2/6: rows 8001..16000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {61170,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {61171,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {61172,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -16015,10 +16015,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {86375,0,{"wago"},0,65536,0,0,nil,0,0,0,0,0,0,0,0,0,65536,0,-6184943489809468494,0,0,0},
     {86376,0,{"wago"},0,65536,0,0,nil,0,0,0,0,0,0,0,0,0,65536,0,6130900294268439629,0,0,0},
     {86377,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-} end)())
+} end)
 
 -- Chunk 3/6: rows 16001..24000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {86378,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {86379,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {86380,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -24019,10 +24019,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {105198,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {105199,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {105200,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-} end)())
+} end)
 
 -- Chunk 4/6: rows 24001..32000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {105201,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {105202,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {105203,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -32023,10 +32023,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {125030,0,{"wago"},65536,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {125031,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {125033,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-} end)())
+} end)
 
 -- Chunk 5/6: rows 32001..40000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {125034,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {125035,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {125036,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -40027,10 +40027,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {143042,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {143044,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {143045,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-} end)())
+} end)
 
 -- Chunk 6/6: rows 40001..45157
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {143048,0,{"wago"},0,0,0,0,"Unlocked by progressing the Season 3 Delver's Journey.",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {143049,0,{"wago"},0,0,0,0,"Unlocked by progressing the Season 3 Delver's Journey.",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {143050,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -45188,5 +45188,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {157695,0,{"wago"},0,0,0,0,"Only available inside Tier 11 Delves.",0,0,0,0,0,0,0,0,0,458762,0,0,0,0,0},
     {158259,0,{"wago"},0,0,0,0,nil,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     {158261,0,{"wago"},0,0,0,0,nil,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0},
-} end)())
+} end)
 

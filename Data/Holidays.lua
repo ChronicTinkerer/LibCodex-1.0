@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Holidays", "id,label,region,description,flags,sources,descriptionID,filterType,looping,nameID,priority", {
+LibCodex:_FeedBundledRowsLazy("Holidays", "id,label,region,description,flags,sources,descriptionID,filterType,looping,nameID,priority", function() return {
     {62,"Fireworks Spectacular",0,"After the sun sets, the end of Midsummer is celebrated, with an hourly firework extravaganza.\n\n\n\nTo watch the show, visit any capital city or Booty Bay.",1,{"wago"},11,255,0,12,4},
     {141,"Feast of Winter Veil",0,"Greatfather Winter is visiting the cities of Ironforge and Orgrimmar, courtesy of Smokywood Pastures.  And throughout Azeroth, it is the season to be jolly!",1,{"wago"},13,255,0,14,5},
     {181,"Noblegarden",0,"The feast of Noblegarden has arrived.  The proving grounds of each race, the place where young heroes first test their strength, each holds cleverly hidden treasure eggs.  How many can you find?",1,{"wago"},14,255,0,15,5},
@@ -768,4 +768,4 @@ LibCodex:_FeedBundledRows("Holidays", "id,label,region,description,flags,sources
     {1820,"March on Quel'Danas",2,"Players may now confront Midnight Falls in Story Mode.",13,{"wago"},507,255,0,455,1},
     {1821,"March on Quel'Danas",2,"Players may now use the Raid Finder to access March on Quel'Danas.",13,{"wago"},506,255,0,455,1},
     {1822,nil,0,nil,2,{"wago"},0,0,0,0,0},
-})
+} end)

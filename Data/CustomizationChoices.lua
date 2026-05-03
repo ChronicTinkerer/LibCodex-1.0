@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "CustomizationChoices", "id,label,flags,sources,addedInPatch,optionID,orderIndex,reqID,soundKitID,swatchColor0,swatchColor1,uiOrderIndex,visReqID"
 
 -- Chunk 1/2: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {1,nil,0,{"wago"},90001,9,0,291,0,-1654626,0,40,0},
     {2,nil,0,{"wago"},90001,9,1,291,0,-2312813,0,41,0},
     {3,nil,0,{"wago"},90001,9,2,291,0,-3036537,0,42,0},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {32257,nil,0,{"wago"},100007,12,47,37,0,-5102299,0,203,0},
     {32258,nil,0,{"wago"},100007,12,48,37,0,-14957569,0,212,0},
     {32259,nil,0,{"wago"},100007,12,49,37,0,-16741815,0,211,0},
-} end)())
+} end)
 
 -- Chunk 2/2: rows 8001..10046
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {32260,nil,0,{"wago"},100007,12,50,37,0,-2922862,0,215,0},
     {32261,nil,0,{"wago"},100007,12,51,36,0,-5102299,0,103,0},
     {32262,nil,0,{"wago"},100007,12,52,36,0,-14957569,0,112,0},
@@ -10061,5 +10061,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {62820,nil,0,{"wago"},120100,572,152,668,0,-16747025,0,105,0},
     {62821,nil,0,{"wago"},120100,578,143,4601,0,-16747025,0,105,0},
     {62822,nil,0,{"wago"},120100,579,143,4602,0,-16747025,0,105,0},
-} end)())
+} end)
 

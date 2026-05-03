@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("SpellCastTimes", "id,sources,base,minimum", {
+LibCodex:_FeedBundledRowsLazy("SpellCastTimes", "id,sources,base,minimum", function() return {
     {1,{"wago"},0,0},
     {2,{"wago"},250,250},
     {3,{"wago"},500,500},
@@ -274,4 +274,4 @@ LibCodex:_FeedBundledRows("SpellCastTimes", "id,sources,base,minimum", {
     {652,{"wago"},9250,9250},
     {654,{"wago"},3000,3000},
     {655,{"wago"},3000,3000},
-})
+} end)

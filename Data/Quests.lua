@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "Quests", "id,sources,objectives,questLine,questLineID"
 
 -- Chunk 1/9: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {1,{"wago"}},
     {2,{"wago"}},
     {5,{"wago"}},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {13589,{"wago"}},
     {13590,{"wago"}},
     {13591,{"wago"}},
-} end)())
+} end)
 
 -- Chunk 2/9: rows 8001..16000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {13592,{"wago"}},
     {13593,{"wago"}},
     {13594,{"wago"}},
@@ -16015,10 +16015,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {32150,{"wago"}},
     {32151,{"wago"}},
     {32152,{"wago"}},
-} end)())
+} end)
 
 -- Chunk 3/9: rows 16001..24000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {32153,{"wago"}},
     {32154,{"wago"}},
     {32155,{"wago"}},
@@ -24019,10 +24019,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {41830,{"wago"},{{type="monster",description="Barax the Mauler slain.",amount=1,objectID=97637,order=0}}},
     {41831,{"wago"}},
     {41832,{"wago"},{{type="monster",description="Flamescale slain.",amount=1,objectID=97793,order=0}}},
-} end)())
+} end)
 
 -- Chunk 4/9: rows 24001..32000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {41833,{"wago"},{{type="monster",description="Crab Rider Grmlrml slain.",amount=1,objectID=97933,order=0}}},
     {41834,{"wago"}},
     {41835,{"wago"},{{type="monster",description="Luggut the Eggeater slain.",amount=1,objectID=98024,order=0}}},
@@ -32023,10 +32023,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {51413,{"wago"}},
     {51415,{"wago"},{{type=15,description="Absorb Azerite from defeated elementals",amount=1,objectID=0,order=0},{type="monster",description=nil,amount=34,objectID=136617,order=1},{type="monster",description=nil,amount=20,objectID=136618,order=2},{type="monster",description=nil,amount=7,objectID=136619,order=3},{type="monster",description=nil,amount=4,objectID=136620,order=4},{type="monster",description=nil,amount=100000,objectID=136614,order=5},{type="monster",description=nil,amount=100000,objectID=136615,order=6},{type="monster",description=nil,amount=100000,objectID=136613,order=7},{type="monster",description=nil,amount=100000,objectID=136616,order=8}}},
     {51417,{"wago"}},
-} end)())
+} end)
 
 -- Chunk 5/9: rows 32001..40000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {51418,{"wago"}},
     {51421,{"wago"}},
     {51422,{"wago"},{{type=15,description="Absorb Azerite from defeated elementals",amount=1,objectID=0,order=0},{type="monster",description=nil,amount=34,objectID=136617,order=1},{type="monster",description=nil,amount=20,objectID=136618,order=2},{type="monster",description=nil,amount=7,objectID=136619,order=3},{type="monster",description=nil,amount=4,objectID=136620,order=4},{type="monster",description=nil,amount=100000,objectID=136614,order=5},{type="monster",description=nil,amount=100000,objectID=136615,order=6},{type="monster",description=nil,amount=100000,objectID=136613,order=7},{type="monster",description=nil,amount=100000,objectID=136616,order=8}}},
@@ -40027,10 +40027,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {60659,{"wago"},{{type="monster",description="Mirror secured",amount=1,objectID=171352,order=0},{type=15,description="Enemies slain",amount=1,objectID=0,order=1},{type="monster",description=nil,amount=34,objectID=171386,order=2},{type="monster",description=nil,amount=10,objectID=173544,order=3},{type="monster",description=nil,amount=20,objectID=173518,order=4}}},
     {60660,{"wago"}},
     {60661,{"wago"}},
-} end)())
+} end)
 
 -- Chunk 6/9: rows 40001..48000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {60662,{"wago"}},
     {60663,{"wago"}},
     {60664,{"wago"}},
@@ -48031,10 +48031,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {71915,{"wago"}},
     {71916,{"wago"}},
     {71917,{"wago"}},
-} end)())
+} end)
 
 -- Chunk 7/9: rows 48001..56000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {71918,{"wago"}},
     {71919,{"wago"}},
     {71920,{"wago"}},
@@ -56035,10 +56035,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {82064,{"wago"}},
     {82065,{"wago"}},
     {82066,{"wago"}},
-} end)())
+} end)
 
 -- Chunk 8/9: rows 56001..64000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {82067,{"wago"}},
     {82069,{"wago"}},
     {82077,{"wago"}},
@@ -64039,10 +64039,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {92739,{"wago"}},
     {92740,{"wago"}},
     {92746,{"wago"},{{type="monster",description="Stellar Vortex entered",amount=1,objectID=253093,order=0},{type="monster",description="Anomalous Residue collected",amount=10,objectID=253154,order=1}}},
-} end)())
+} end)
 
 -- Chunk 9/9: rows 64001..65328
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {92756,{"wago"}},
     {92757,{"wago"}},
     {92758,{"wago"}},
@@ -65371,5 +65371,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {96417,{"wago"}},
     {96527,{"wago"}},
     {96936,{"wago"}},
-} end)())
+} end)
 

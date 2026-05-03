@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Enchants", "id,label,icon,flags,sources,duration,hordeLabel,itemLevelMax,itemLevelMin", {
+LibCodex:_FeedBundledRowsLazy("Enchants", "id,label,icon,flags,sources,duration,hordeLabel,itemLevelMax,itemLevelMin", function() return {
     {13,"Sharpened II",0,33,{"wago"},3600,nil,320,10},
     {14,"Sharpened III",0,33,{"wago"},3600,nil,320,10},
     {15,"Reinforced (+$k1 Armor)",0,32,{"wago"},0,nil,120,10},
@@ -5340,4 +5340,4 @@ LibCodex:_FeedBundledRows("Enchants", "id,label,icon,flags,sources,duration,hord
     {8684,"+$k1 Primary Stat and opponent's failed interrupt attempts grant Precognition",0,160,{"wago"},0,nil,0,80},
     {8685,"+$k1 Primary Stat and +$435550s1% Damage Reduction when affected by Crowd Control",0,160,{"wago"},0,nil,0,80},
     {8686,"+$k1 Primary Stat and getting snared increases damage of your next attack by $411132s1 per stack",0,160,{"wago"},0,nil,0,80},
-})
+} end)

@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "ItemAppearances", "id,icon,sources,displayInfoID,displayType,transmogPlayerCondition,uiOrder"
 
 -- Chunk 1/8: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {153,132759,{"wago"},675536,2,0,15300},
     {154,135274,{"wago"},1542,11,0,15400},
     {155,135145,{"wago"},472,11,0,15500},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {8170,135629,{"wago"},169301,12,0,817000},
     {8171,135321,{"wago"},43838,11,0,817100},
     {8172,133074,{"wago"},188915,0,0,817200},
-} end)())
+} end)
 
 -- Chunk 2/8: rows 8001..16000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {8173,135662,{"wago"},683827,11,0,817300},
     {8174,133145,{"wago"},45167,0,0,817400},
     {8175,135186,{"wago"},43858,11,0,817500},
@@ -16015,10 +16015,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {16206,537804,{"wago"},104162,6,0,1620600},
     {16207,132550,{"wago"},104123,6,0,1620700},
     {16208,532088,{"wago"},102030,4,0,1620800},
-} end)())
+} end)
 
 -- Chunk 3/8: rows 16001..24000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {16209,532092,{"wago"},102039,8,0,1620900},
     {16210,533756,{"wago"},102873,5,0,1621000},
     {16211,536648,{"wago"},105960,13,0,1621100},
@@ -24019,10 +24019,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {24743,926043,{"wago"},139138,11,0,2474300},
     {24744,925794,{"wago"},695116,11,0,2474400},
     {24745,1048290,{"wago"},138805,11,0,2474500},
-} end)())
+} end)
 
 -- Chunk 4/8: rows 24001..32000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {24746,1048290,{"wago"},138806,11,0,2474600},
     {24747,1048290,{"wago"},138807,11,0,2474700},
     {24748,1048290,{"wago"},138808,11,0,2474800},
@@ -32023,10 +32023,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {34608,1547869,{"wago"},162111,7,0,3460800},
     {34609,1547867,{"wago"},162114,4,0,3460900},
     {34610,1547868,{"wago"},162115,6,0,3461000},
-} end)())
+} end)
 
 -- Chunk 5/8: rows 32001..40000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {34611,1547870,{"wago"},167431,3,0,3461100},
     {34612,1547871,{"wago"},162117,8,0,3461200},
     {34613,1547872,{"wago"},162118,0,0,3461300},
@@ -40027,10 +40027,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {43246,3616005,{"wago"},185611,11,0,4324600},
     {43247,3616005,{"wago"},185612,11,0,4324700},
     {43248,3616005,{"wago"},185613,11,0,4324800},
-} end)())
+} end)
 
 -- Chunk 6/8: rows 40001..48000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {43249,3095185,{"wago"},185622,11,93647,4324900},
     {43252,669448,{"wago"},185665,0,0,4325200},
     {43253,1670851,{"wago"},185676,0,0,4325300},
@@ -48031,10 +48031,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {82521,5341867,{"wago"},671804,9,0,8252100},
     {82522,5341928,{"wago"},672219,0,0,8252200},
     {82523,5341945,{"wago"},671847,1,0,8252300},
-} end)())
+} end)
 
 -- Chunk 7/8: rows 48001..56000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {82524,5341826,{"wago"},686030,4,0,8252400},
     {82525,5341924,{"wago"},672221,0,0,8252500},
     {82526,5341942,{"wago"},671809,1,0,8252600},
@@ -56035,10 +56035,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {98886,6236534,{"wago"},693618,11,0,9888600},
     {98887,6181439,{"wago"},693619,11,0,9888700},
     {98888,6181439,{"wago"},693620,11,0,9888800},
-} end)())
+} end)
 
 -- Chunk 8/8: rows 56001..63142
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {98889,6181439,{"wago"},693621,11,0,9888900},
     {98890,6181439,{"wago"},693622,11,0,9889000},
     {98891,6225451,{"wago"},693623,12,0,9889100},
@@ -63181,5 +63181,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {130315,7139859,{"wago"},736734,11,0,13031500},
     {130316,7794032,{"wago"},737640,12,0,13031600},
     {130443,135208,{"wago"},737671,11,0,13044300},
-} end)())
+} end)
 

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("MapDifficulties", "id,mapID,flags,sources,contentTuningID,difficultyID,itemContext,itemContextPickerID,lockID,maxPlayers,message,resetInterval,worldStateExpressionID", {
+LibCodex:_FeedBundledRowsLazy("MapDifficulties", "id,mapID,flags,sources,contentTuningID,difficultyID,itemContext,itemContextPickerID,lockID,maxPlayers,message,resetInterval,worldStateExpressionID", function() return {
     {2,1,0,{"wago"},0,0,0,0,0,0,nil,0,0},
     {3,13,0,{"wago"},0,0,0,0,0,0,nil,0,0},
     {4,25,0,{"wago"},0,0,0,0,0,0,nil,0,0},
@@ -1872,4 +1872,4 @@ LibCodex:_FeedBundledRows("MapDifficulties", "id,mapID,flags,sources,contentTuni
     {6156,3022,64,{"wago"},0,253,0,0,0,14,nil,0,0},
     {6208,2930,0,{"wago"},0,14,0,0,0,30,nil,0,0},
     {6239,3074,16,{"wago"},0,12,0,0,0,5,nil,0,0},
-})
+} end)

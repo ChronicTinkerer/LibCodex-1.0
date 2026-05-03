@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("ChatChannels", "id,label,flags,sources,factionGroup,ruleset,shortcut", {
+LibCodex:_FeedBundledRowsLazy("ChatChannels", "id,label,flags,sources,factionGroup,ruleset,shortcut", function() return {
     {1,"General - %s",1572875,{"wago"},0,0,"General"},
     {2,"Trade - %s",1048635,{"wago"},0,0,"Trade"},
     {22,"LocalDefense - %s",1114123,{"wago"},0,0,"LocalDefense"},
@@ -23,4 +23,4 @@ LibCodex:_FeedBundledRows("ChatChannels", "id,label,flags,sources,factionGroup,r
     {40,"Chromie Time - Warlords of Draenor",2097160,{"wago"},0,2,"ChromieTime"},
     {41,"Chromie Time - Legion",2097160,{"wago"},0,2,"ChromieTime"},
     {42,"Trade (Services) - %s",34603067,{"wago"},0,0,"Services"},
-})
+} end)

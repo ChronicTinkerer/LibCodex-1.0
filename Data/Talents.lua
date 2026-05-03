@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "Talents", "id,label,icon,spellID,description,sources,maxRanks,subTreeID,subTreeName,treeID,treeName"
 
 -- Chunk 1/3: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {10579,nil,135936,0,nil,{"wago"}},
     {10612,nil,135936,0,nil,{"wago"}},
     {10644,nil,135936,0,nil,{"wago"}},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {128442,nil,nil,0,"Ingenious breakthroughs refund an additional $ev1% of the Concentration spent on Khaz Algar Enchanting.",{"wago"},nil,nil,nil,981},
     {128443,nil,nil,0,"Gain an additional +$ev1 $en1 while affected by Shattered Essence.",{"wago"},nil,nil,nil,981},
     {128444,nil,nil,0,"Ingenious breakthroughs refund an additional $ev1% of the Concentration spent on Khaz Algar Enchanting.",{"wago"},nil,nil,nil,981},
-} end)())
+} end)
 
 -- Chunk 2/3: rows 8001..16000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {128445,nil,nil,0,"Gain an additional +$ev1 $en1 while affected by Shattered Essence.",{"wago"},nil,nil,nil,981},
     {128446,nil,nil,0,"Ingenious breakthroughs refund an additional $ev1% of the Concentration spent on Khaz Algar Enchanting.",{"wago"},nil,nil,nil,981},
     {128447,"Immaculate Ingenuity",236225,0,"Hone the magical essences released upon a shatter, improving your Ingenuity for a time. Additionally, your ingenious breakthroughs will refund an additional $ev1% of the Concentration spent per point in this Specialization.",{"wago"},30,nil,nil,981},
@@ -16015,10 +16015,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {140797,"Under Construction!",nil,0,nil,{"wago"}},
     {140798,"Under Construction!",nil,0,nil,{"wago"}},
     {140799,"Under Construction!",nil,0,nil,{"wago"}},
-} end)())
+} end)
 
 -- Chunk 3/3: rows 16001..16696
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {140800,"Under Construction!",nil,0,nil,{"wago"}},
     {140801,"Under Construction!",nil,0,nil,{"wago"}},
     {140802,"Under Construction!",nil,0,nil,{"wago"}},
@@ -16715,5 +16715,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {142138,nil,nil,212431,nil,{"wago"},nil,nil,nil,774},
     {142139,nil,nil,1292996,nil,{"wago"},nil,nil,nil,852},
     {142140,nil,nil,1293135,nil,{"wago"},nil,nil,nil,852},
-} end)())
+} end)
 

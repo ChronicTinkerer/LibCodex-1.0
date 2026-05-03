@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("SpellPower", "id,spellID,sources,altPowerBarID,manaCost,manaCostPerLevel,manaPerSecond,optionalCost,optionalCostPct,orderIndex,powerCostMaxPct,powerCostPct,powerDisplayID,powerPctPerSecond,powerType,requiredAuraSpellID", {
+LibCodex:_FeedBundledRowsLazy("SpellPower", "id,spellID,sources,altPowerBarID,manaCost,manaCostPerLevel,manaPerSecond,optionalCost,optionalCostPct,orderIndex,powerCostMaxPct,powerCostPct,powerDisplayID,powerPctPerSecond,powerType,requiredAuraSpellID", function() return {
     {1,1,{"wago"},0,10,0,0,0,0,0,0,0,0,0,0,0},
     {2,3,{"wago"},0,10,0,0,0,0,0,0,0,0,0,0,0},
     {3,4,{"wago"},0,10,0,0,0,0,0,0,0,0,0,0,0},
@@ -5709,4 +5709,4 @@ LibCodex:_FeedBundledRows("SpellPower", "id,spellID,sources,altPowerBarID,manaCo
     {313575,1293340,{"wago"},0,25,0,0,0,0,0,0,0,0,0,3,0},
     {313656,1294067,{"wago"},0,0,0,0,0,0,0,0,2,0,0,0,0},
     {313657,1294068,{"wago"},0,0,0,0,0,0,0,0,2,0,0,0,0},
-})
+} end)

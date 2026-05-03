@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "Areas", "id,label,sources,continentID,factionGroupMask,parentAreaID,zoneName"
 
 -- Chunk 1/2: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {1,"Dun Morogh",{"wago"},0,2,0,"DunMorogh"},
     {2,"Longshore",{"wago"},0,0,40,"Longshore"},
     {3,"Badlands",{"wago"},0,0,0,"Badlands"},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {13561,"Sanctum of Domination",{"wago"},2450,0,0,"TorghastRaid"},
     {13567,"Terrace of the Collectors",{"wago"},2222,0,10534,"BastionTempleOfWisdomHub"},
     {13569,"Wrath of the Jailer",{"wago"},2222,0,11400,"WrathofTheJailerArea"},
-} end)())
+} end)
 
 -- Chunk 2/2: rows 8001..9880
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {13570,"Korthia",{"wago"},2222,0,0,"Korthia"},
     {13573,"The Sepulcher of the First Ones",{"wago"},2374,0,13536,"TheSepulcheroftheFirstOnes"},
     {13574,"PTH Test Area",{"wago"},1270,0,0,"PTHTestArea"},
@@ -9895,5 +9895,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {16875,"Den of the Undreamt",{"wago"},2939,0,16531,"DreamriftDenOfTheUndreamt"},
     {16939,"Ritual Site",{"wago"},3074,0,0,"RitualSite"},
     {16940,"Daggerspine Point",{"wago"},3074,0,16939,"DaggerspinePoint"},
-} end)())
+} end)
 

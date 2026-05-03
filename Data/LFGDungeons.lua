@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("LFGDungeons", "id,label,icon,side,expansion,mapID,description,sources,difficultyID,finalEncounterID,groupID,minGear,orderIndex,randomID,scenarioID,subtype,typeID", {
+LibCodex:_FeedBundledRowsLazy("LFGDungeons", "id,label,icon,side,expansion,mapID,description,sources,difficultyID,finalEncounterID,groupID,minGear,orderIndex,randomID,scenarioID,subtype,typeID", function() return {
     {1,"Wailing Caverns",136364,"B",0,43,nil,{"wago"},1,481,1,0,0,258,0,1,1},
     {2,"Scholomance",136355,"B",0,1007,nil,{"wago"},1,684,1,0,0,258,0,1,1},
     {4,"Ragefire Chasm",136350,"B",0,389,nil,{"wago"},1,697,1,0,0,258,0,1,1},
@@ -1831,4 +1831,4 @@ LibCodex:_FeedBundledRows("LFGDungeons", "id,label,icon,side,expansion,mapID,des
     {3212,"Ritual Site: Blinding Bloom",7478534,"B",11,3014,"Void forces seek to corrupt a creature with void abilities to unleash on the denizens of Azeroth.",{"wago"},12,0,0,0,0,0,3340,3,1},
     {3213,"Ritual Site: Rift of Aln",7570496,"B",11,3014,"Void forces seek to corrupt a creature with void abilities to unleash on the denizens of Azeroth.",{"wago"},12,0,0,0,0,0,3341,3,1},
     {3243,"Decor Duel",136361,"B",11,3022,nil,{"wago"},253,0,188,0,0,3243,0,6,1},
-})
+} end)

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("AchievementCategories", "id,label,parentID,sources,uiOrder", {
+LibCodex:_FeedBundledRowsLazy("AchievementCategories", "id,label,parentID,sources,uiOrder", function() return {
     {1,"Statistics",-1,{"wago"},17},
     {21,"Player vs. Player",1,{"wago"},10},
     {81,"Feats of Strength",-1,{"wago"},14},
@@ -249,4 +249,4 @@ LibCodex:_FeedBundledRows("AchievementCategories", "id,label,parentID,sources,ui
     {15608,"Ritual Sites",15301,{"wago"},18},
     {15609,"Slayer's Rise",95,{"wago"},16},
     {15610,"Void Assaults",15301,{"wago"},17},
-})
+} end)

@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "ItemBonuses", "id,flags,sources,bonuses"
 
 -- Chunk 1/2: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {1,0,{"wago"},{{type=2,orderIndex=0,value0=7,value1=15789,value2=0,value3=0},{type=4,orderIndex=1,value0=2015,value1=0,value2=0,value3=0},{type=7,orderIndex=2,value0=1,value1=1,value2=0,value3=0},{type=12,orderIndex=3,value0=60647,value1=0,value2=0,value3=0}}},
     {2,16,{"wago"},{{type=3,orderIndex=0,value0=4,value1=0,value2=0,value3=0},{type=4,orderIndex=1,value0=3759,value1=50,value2=0,value3=0},{type=4,orderIndex=2,value0=12790,value1=10,value2=0,value3=0},{type=9,orderIndex=3,value0=5,value1=100,value2=0,value3=0},{type=10,orderIndex=4,value0=500,value1=0,value2=0,value3=0}}},
     {3,0,{"wago"},{{type=49,orderIndex=0,value0=160,value1=0,value2=0,value3=0},{type=52,orderIndex=1,value0=20,value1=1,value2=10,value3=10},{type=52,orderIndex=2,value0=15,value1=1,value2=5,value3=5},{type=53,orderIndex=3,value0=5,value1=5,value2=0,value3=0},{type=53,orderIndex=4,value0=10,value1=10,value2=0,value3=0}}},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {11161,0,{"wago"},{{type=27,orderIndex=0,value0=70966,value1=2793,value2=0,value3=0},{type=13,orderIndex=1,value0=0,value1=0,value2=2793,value3=0}}},
     {11162,0,{"wago"},{{type=27,orderIndex=0,value0=70966,value1=2793,value2=0,value3=0},{type=13,orderIndex=1,value0=0,value1=0,value2=2793,value3=0}}},
     {11163,0,{"wago"},{{type=27,orderIndex=0,value0=70966,value1=2793,value2=0,value3=0},{type=13,orderIndex=1,value0=0,value1=0,value2=2793,value3=0}}},
-} end)())
+} end)
 
 -- Chunk 2/2: rows 8001..9946
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {11164,0,{"wago"},{{type=27,orderIndex=0,value0=70966,value1=2793,value2=0,value3=0},{type=13,orderIndex=1,value0=0,value1=0,value2=2793,value3=0}}},
     {11165,0,{"wago"},{{type=27,orderIndex=0,value0=70966,value1=2793,value2=0,value3=0},{type=13,orderIndex=1,value0=0,value1=0,value2=2793,value3=0},{type=6,orderIndex=2,value0=3,value1=24,value2=0,value3=0}}},
     {11166,0,{"wago"},{{type=27,orderIndex=0,value0=70966,value1=2793,value2=0,value3=0},{type=13,orderIndex=1,value0=0,value1=0,value2=2793,value3=0},{type=6,orderIndex=2,value0=3,value1=24,value2=0,value3=0}}},
@@ -9961,5 +9961,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {13729,0,{"wago"},{{type=27,orderIndex=0,value0=101224,value1=0,value2=0,value3=0},{type=47,orderIndex=1,value0=2,value1=0,value2=0,value3=0},{type=51,orderIndex=2,value0=434,value1=1,value2=0,value3=0}}},
     {13730,0,{"wago"},{{type=27,orderIndex=0,value0=101224,value1=0,value2=0,value3=0},{type=47,orderIndex=1,value0=2,value1=0,value2=0,value3=0},{type=51,orderIndex=2,value0=435,value1=1,value2=0,value3=0},{type=3,orderIndex=3,value0=3,value1=0,value2=0,value3=0}}},
     {13760,0,{"wago"},{{type=0,orderIndex=0,value0=0,value1=0,value2=0,value3=0}}},
-} end)())
+} end)
 

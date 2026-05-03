@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Vignettes", "id,label,flags,sources,objectiveType,playerCondition,rewardQuestID,vignetteType", {
+LibCodex:_FeedBundledRowsLazy("Vignettes", "id,label,flags,sources,objectiveType,playerCondition,rewardQuestID,vignetteType", function() return {
     {4,"Vignette Test Kill",66,{"wago"},0,0,0,0},
     {5,"Vignette Test Loot",0,{"wago"},0,18071,0,0},
     {9,"Vignette Test Event",2,{"wago"},0,10345,0,0},
@@ -6911,4 +6911,4 @@ LibCodex:_FeedBundledRows("Vignettes", "id,label,flags,sources,objectiveType,pla
     {7691,nil,0,{"wago"},0,155369,0,0},
     {7693,"Chest",0,{"wago"},0,150904,0,0},
     {7698,"Decor Duel",132098,{"wago"},0,0,0,0},
-})
+} end)

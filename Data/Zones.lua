@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Zones", "id,label,type,parentID,sources", {
+LibCodex:_FeedBundledRowsLazy("Zones", "id,label,type,parentID,sources", function() return {
     {1,"Durotar","Zone",12,{"wago"}},
     {2,"Burning Blade Coven","Micro",1,{"wago"}},
     {3,"Tiragarde Keep","Micro",1,{"wago"}},
@@ -1925,4 +1925,4 @@ LibCodex:_FeedBundledRows("Zones", "id,label,type,parentID,sources", {
     {2584,"Revantusk Sedge","Micro",2437,{"wago"}},
     {2585,"Zul'Aman","Zone",2437,{"wago"}},
     {2594,"Eversong Woods","Zone",2395,{"wago"}},
-})
+} end)

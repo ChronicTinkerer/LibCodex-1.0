@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("BattlePetAbilities", "id,label,icon,description,flags,sources,cooldown,petType,species,visualID", {
+LibCodex:_FeedBundledRowsLazy("BattlePetAbilities", "id,label,icon,description,flags,sources,cooldown,petType,species,visualID", function() return {
     {7,"Alexander's Hand",132109,"Rushes at the enemy to inflict damage.",0,{"wago"},0,2,{{requiredLevel=1,slot=0,speciesID=354}},0},
     {70,"Heal Back Line Test",135915,"Heal's back line 50, but has a 2-round cooldown",0,{"wago"},2,0,{{requiredLevel=1,slot=0,speciesID=354}},0},
     {71,"Damage Test",135807,nil,0,{"wago"},0,6,{{requiredLevel=1,slot=0,speciesID=354}},0},
@@ -1399,4 +1399,4 @@ LibCodex:_FeedBundledRows("BattlePetAbilities", "id,label,icon,description,flags
     {2527,"Surge of Darkness",1386551,"[StandardAccuracy(1,1)] |cffffffffHit Chance|r\n\n\n\nBlasts the opponent with a surge of dark energy, dealing [StandardDamage(1,1)] [School()] damage and has a [accuracy(1,3)]% chance to stun the target for [duration(1,3)] |4round:rounds;.\n\n\n\nThe chance to stun is increased to 100% if the weather is Sunlight.",0,{"wago"},3,0,{{requiredLevel=4,slot=2,speciesID=4756},{requiredLevel=20,slot=2,speciesID=5021}},0},
     {2528,"Void Burst",6238556,"[StandardAccuracy(1,1)] |cffffffffHit Chance|r\n\n\n\nInstantly deals [StandardDamage(1,1)] [School()] damage, plus [StandardDamage(1,3)] damage if the weather is Darkness. The user must recharge for two |4round:rounds; afterwards.\n\n\n\nWhile recharging, you cannot perform any other actions.",0,{"wago"},0,5,{{requiredLevel=20,slot=2,speciesID=4756},{requiredLevel=15,slot=1,speciesID=5022},{requiredLevel=20,slot=2,speciesID=5023}},0},
     {2539,"Fel Nova",135795,"[StandardAccuracy(1,1)] |cffffffffHit Chance|r\n\n\n\nCalls forth a wave of fel power, dealing [StandardDamage(1,1)] [School()] damage to all enemy pets.",0,{"wago"},3,6,{{requiredLevel=20,slot=2,speciesID=4802}},0},
-})
+} end)

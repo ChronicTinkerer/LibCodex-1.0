@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Battlemasters", "id,label,icon,flags,sources,gameType,instanceType,longDesc,maxGroupSize,maxLevel,maxPlayers,minLevel,minPlayers,pvpType,ratedPlayers,shortDesc", {
+LibCodex:_FeedBundledRowsLazy("Battlemasters", "id,label,icon,flags,sources,gameType,instanceType,longDesc,maxGroupSize,maxLevel,maxPlayers,minLevel,minPlayers,pvpType,ratedPlayers,shortDesc", function() return {
     {1,"Alterac Valley",136324,152,{"wago"},"Epic Battleground",3,nil,5,90,40,20,10,0,25},
     {2,"Classic Warsong Gulch",136365,0,{"wago"},"Capture the Flag",3,nil,5,0,10,0,5,0,10},
     {3,"Classic Arathi Basin",136322,0,{"wago"},"Domination",3,nil,5,0,15,0,8,0,10},
@@ -138,4 +138,4 @@ LibCodex:_FeedBundledRows("Battlemasters", "id,label,icon,flags,sources,gameType
     {1145,"Training Grounds",136324,256,{"wago"},nil,3,nil,5,90,10,60,1,0,10},
     {1146,"Training Grounds - Silvershard",136324,256,{"wago"},nil,3,nil,5,90,10,60,1,0,10},
     {1147,"Training Grounds  - Arathi Basin",136324,288,{"wago"},nil,3,nil,5,90,15,60,1,0,15},
-})
+} end)

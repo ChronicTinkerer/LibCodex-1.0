@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Mounts", "id,label,sourceType,spellID,factionID,sources", {
+LibCodex:_FeedBundledRowsLazy("Mounts", "id,label,sourceType,spellID,factionID,sources", function() return {
     {6,"Brown Horse",2,458,0,{"wago"}},
     {7,"Gray Wolf",2,459,0,{"wago"}},
     {8,"White Stallion",2,468,0,{"wago"}},
@@ -1630,4 +1630,4 @@ LibCodex:_FeedBundledRows("Mounts", "id,label,sourceType,spellID,factionID,sourc
     {3008,"Profit-Green Shreddertank",2,1296758,0,{"wago"}},
     {3009,"Speculative Shreddertank",2,1296760,0,{"wago"}},
     {3010,"High-Yield Shreddertank",2,1296759,0,{"wago"}},
-})
+} end)

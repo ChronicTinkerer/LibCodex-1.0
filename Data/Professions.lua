@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Professions", "id,label,icon,parentID,categoryID,description,sources,actionType,professionEnum", {
+LibCodex:_FeedBundledRowsLazy("Professions", "id,label,icon,parentID,categoryID,description,sources,actionType,professionEnum", function() return {
     {43,"Swords",136243,0,6,"Higher weapon skill increases your chance to hit.",{"wago"}},
     {44,"Axes",136243,0,6,"Higher weapon skill increases your chance to hit.",{"wago"}},
     {45,"Bows",136243,0,6,"Higher weapon skill increases your chance to hit.",{"wago"}},
@@ -401,4 +401,4 @@ LibCodex:_FeedBundledRows("Professions", "id,label,icon,parentID,categoryID,desc
     {2961,"Pet - Exotic Whiptail",0,0,7,nil,{"wago"}},
     {2984,"Dye Crafting",7449413,0,11,"Dyes can be crafted with the alchemy and inscription professions to change the color of Decor.",{"wago"}},
     {2987,"Language: Hara'ni",136243,0,10,nil,{"wago"}},
-})
+} end)

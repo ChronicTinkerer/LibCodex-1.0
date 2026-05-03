@@ -10,7 +10,7 @@ local LibCodex = LibStub("LibCodex-1.0")
 local _N, _C = "WMOAreaTables", "id,label,flags,sources,ambienceID,areaTableID,nameSetID,wmoGroupID,wmoID,zoneMusicID"
 
 -- Chunk 1/2: rows 1..8000
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {11586,"Ahn'Qiraj",0,{"wago"},1949,3428,0,-1,1178,249},
     {11715,"The Deadmines",0,{"wago"},56,0,0,-1,499,947},
     {11736,"Defias Hideout",0,{"wago"},0,0,0,175,499,0},
@@ -8011,10 +8011,10 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {91789,"Butcher's Stand",0,{"wago"},0,8911,2,21709,4600,0},
     {91790,"Containment Core",0,{"wago"},0,8911,2,21712,4600,0},
     {91792,"Stasis Block: Trion",0,{"wago"},0,8911,2,21715,4600,0},
-} end)())
+} end)
 
 -- Chunk 2/2: rows 8001..13913
-LibCodex:_FeedBundledRows(_N, _C, (function() return {
+LibCodex:_FeedBundledRowsLazy(_N, _C, function() return {
     {91793,"Stasis Block: Trion",0,{"wago"},0,8911,2,21716,4600,374},
     {91794,"Containment Core",0,{"wago"},0,8911,2,21783,4600,0},
     {91796,"Containment Core",0,{"wago"},0,8911,2,21785,4600,374},
@@ -13928,5 +13928,5 @@ LibCodex:_FeedBundledRows(_N, _C, (function() return {
     {140317,"Athenaeum",0,{"wago"},0,0,2,26176,3453,0},
     {140318,"Gallery of Treasures",0,{"wago"},0,0,2,26174,3453,0},
     {140319,"Gallery of Treasures",0,{"wago"},0,0,2,26173,3453,0},
-} end)())
+} end)
 

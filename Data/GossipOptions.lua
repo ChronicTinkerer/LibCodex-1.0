@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("GossipOptions", "id,sources,charShipmentID,covenantID,garrFollowerTypeID,garrTalentTreeID,gossipIndex,gossipNpcOption,lfgDungeonsID,professionID,trainerID,traitTreeID,uiItemInteractionID,uiMapID", {
+LibCodex:_FeedBundledRowsLazy("GossipOptions", "id,sources,charShipmentID,covenantID,garrFollowerTypeID,garrTalentTreeID,gossipIndex,gossipNpcOption,lfgDungeonsID,professionID,trainerID,traitTreeID,uiItemInteractionID,uiMapID", function() return {
     {27945,{"wago"},0,0,0,0,28014,1,0,0,0,0,0,0},
     {27946,{"wago"},0,0,0,0,28015,8,0,0,0,0,0,0},
     {27948,{"wago"},0,0,0,0,28026,1,0,0,0,0,0,0},
@@ -7251,4 +7251,4 @@ LibCodex:_FeedBundledRows("GossipOptions", "id,sources,charShipmentID,covenantID
     {60946,{"wago"},0,0,0,0,139664,1,0,0,0,0,0,0},
     {60986,{"wago"},0,0,0,0,139596,1,0,0,0,0,0,0},
     {61038,{"wago"},0,0,0,0,140067,1,0,0,0,0,0,0},
-})
+} end)

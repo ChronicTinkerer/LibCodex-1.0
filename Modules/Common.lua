@@ -95,11 +95,43 @@ function CC.New(name, opts)
         _keyField     = keyField,
     }
 
+    -- ------------------------------------------------------------------
+    -- Lazy chunks. The bake tool emits each Data/<Module>.lua chunk as a
+    -- thunk via _FeedBundledRowsLazy; we queue them here and only invoke
+    -- on first :Get / :Search / :All / :Add. Modules a consumer addon
+    -- never touches pay zero per-row memory.
+    -- ------------------------------------------------------------------
+    function self:_IngestLazyChunk(columnsCSV, thunk)
+        self._lazyChunks = self._lazyChunks or {}
+        self._lazyChunks[#self._lazyChunks + 1] = { columns = columnsCSV, thunk = thunk }
+    end
+
+    -- Materialize every queued lazy chunk by invoking its thunk and routing
+    -- the resulting rows through the standard _IngestRows path. Idempotent:
+    -- empties the queue once drained. Safe to call from anywhere — it's a
+    -- no-op when there are no pending chunks.
+    function self:_MaterializeLazyChunks()
+        if not self._lazyChunks or #self._lazyChunks == 0 then return end
+        local chunks = self._lazyChunks
+        self._lazyChunks = nil  -- prevent re-entry from inside _IngestRows
+        for i = 1, #chunks do
+            local p = chunks[i]
+            local ok, rows = pcall(p.thunk)
+            if ok and type(rows) == "table" then
+                self:_IngestRows(p.columns, rows)
+            end
+        end
+    end
+
     -- Add or merge an entry. Returns the resulting entry. Entries without a
     -- key field are still accepted but only addressable via :Search and :All.
     function self:Add(entry)
         if type(entry) ~= "table" then return nil end
         if normalize then entry = normalize(entry) or entry end
+
+        -- Runtime adds need to merge against bundled data; materialize any
+        -- pending lazy chunks first so existing entries get found.
+        if self._lazyChunks then self:_MaterializeLazyChunks() end
 
         local key = entry[keyField]
         if key ~= nil then
@@ -135,6 +167,8 @@ function CC.New(name, opts)
 
     -- Look up by exact key. If the entry isn't in the dict store, check the
     -- lazy bundled indexes (row table or TSV blob) and expand on demand.
+    -- Falls through to materializing any pending lazy chunks if the key
+    -- isn't found in already-known indexes.
     function self:Get(key)
         if key == nil then return nil end
         local hit = self._entries[key]
@@ -144,6 +178,15 @@ function CC.New(name, opts)
         end
         if self._tsvIndex and self._tsvIndex[key] then
             return self:_ExpandTSVRow(key)
+        end
+        -- Fall through: maybe the key lives in a chunk we haven't loaded yet.
+        if self._lazyChunks then
+            self:_MaterializeLazyChunks()
+            if self._rowIndex and self._rowIndex[key] then
+                return self:_ExpandRow(key)
+            end
+            local re = self._entries[key]
+            if re then return re end
         end
         return nil
     end
@@ -288,8 +331,9 @@ function CC.New(name, opts)
 
     -- Force-expand every lazy-backed entry into the dict store. Call this
     -- once when a consumer needs full iteration or a complete :Search().
-    -- Drains both the row index and the legacy TSV index. Idempotent.
+    -- Drains pending lazy chunks AND the row / TSV indexes. Idempotent.
     function self:ExpandAll()
+        if self._lazyChunks then self:_MaterializeLazyChunks() end
         local n = 0
         if self._rowIndex then
             for k, _ in pairs(self._rowIndex) do
@@ -318,6 +362,11 @@ function CC.New(name, opts)
     -- opts can also contain field-equality filters: { side = "A", mapID = 2248 }
     -- Returns an array of matching entries.
     function self:Search(query, opts)
+        -- Search needs to walk every row, so materialize any deferred chunks
+        -- first. After this the existing _entries / _rowIndex / _tsvIndex
+        -- scan logic covers everything.
+        if self._lazyChunks then self:_MaterializeLazyChunks() end
+
         opts = opts or {}
         local q = lower(query or "")
         local filterFn = opts.filter
@@ -484,8 +533,10 @@ function CC.New(name, opts)
 
     -- Iterate every entry. Yields (key, entry) for keyed entries and
     -- (nil, entry) for keyless extras. Use ipairs(self:All()) if you'd
-    -- prefer an array.
+    -- prefer an array. Materializes lazy chunks first so consumers see
+    -- the full bundled catalog.
     function self:All()
+        if self._lazyChunks then self:_MaterializeLazyChunks() end
         local function gen()
             for k, e in pairs(self._entries) do coroutine.yield(k, e) end
             if self._extras then
@@ -497,6 +548,7 @@ function CC.New(name, opts)
 
     -- Return entries as an array (useful for iteration in non-coroutine code).
     function self:AllArray()
+        if self._lazyChunks then self:_MaterializeLazyChunks() end
         local out = {}
         for _, e in pairs(self._entries) do out[#out + 1] = e end
         if self._extras then
@@ -506,11 +558,19 @@ function CC.New(name, opts)
     end
 
     -- Return the raw key->entry map. Used by SavedVariables persistence.
+    -- Materializes lazy chunks because callers expect the full catalog.
     function self:AllRaw()
+        if self._lazyChunks then self:_MaterializeLazyChunks() end
         return self._entries
     end
 
+    -- Total entry count INCLUDING unmaterialized lazy chunks. We count
+    -- materialized entries directly and then materialize+count any pending
+    -- lazy chunks. Note this does pay the materialization cost; callers
+    -- that need a cheap "approximate count" should check :Count() before
+    -- the first :Get/:Search/:All to get just the eager count.
     function self:Count()
+        if self._lazyChunks then self:_MaterializeLazyChunks() end
         return self._count
     end
 

@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Races", "id,label,token,side,playable,allied,sources", {
+LibCodex:_FeedBundledRowsLazy("Races", "id,label,token,side,playable,allied,sources", function() return {
     {1,"Human","Human","A",true,false,{"wago"}},
     {2,"Orc","Orc","H",true,false,{"wago"}},
     {3,"Dwarf","Dwarf","B",true,false,{"wago"}},
@@ -64,4 +64,4 @@ LibCodex:_FeedBundledRows("Races", "id,label,token,side,playable,allied,sources"
     {92,"Ethereal Airship","RostrumAirship","A",false,false,{"wago"}},
     {95,"TBD NPC Race 1","tbdNPCRaceX","A",false,false,{"wago"}},
     {96,"TBD NPC Race 2","tbdNPCRaceY","A",false,false,{"wago"}},
-})
+} end)

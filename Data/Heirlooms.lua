@@ -5,7 +5,7 @@
 
 local LibCodex = LibStub("LibCodex-1.0")
 
-LibCodex:_FeedBundledRows("Heirlooms", "id,itemID,classMask,sources", {
+LibCodex:_FeedBundledRowsLazy("Heirlooms", "id,itemID,classMask,sources", function() return {
     {1,122353,nil,{"wago"}},
     {2,122365,nil,{"wago"}},
     {3,122363,nil,{"wago"}},
@@ -141,4 +141,4 @@ LibCodex:_FeedBundledRows("Heirlooms", "id,itemID,classMask,sources", {
     {916,199686,nil,{"wago"}},
     {986,219325,nil,{"wago"}},
     {1062,269992,nil,{"wago"}},
-})
+} end)
