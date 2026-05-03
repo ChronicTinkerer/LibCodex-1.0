@@ -1,8 +1,0 @@
--- LibCodex-1.0 / Modules / Catalog / Reputations.lua
--- DEPRECATED. Reputations were merged into the unified Factions module.
--- This stub stays so a stale .toc/.xml entry won't error if someone forgot
--- to update both. Safe to delete this file outright.
---
--- Use LC:Factions():ByKind("reputation") or LC:Factions():Reputations()
--- to query reputation factions. The LC:Reputations() top-level accessor
--- is kept as a back-compat alias that returns the Factions module.
