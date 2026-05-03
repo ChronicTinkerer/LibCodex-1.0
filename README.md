@@ -1,5 +1,14 @@
 <p align="center">
-  <img src="LibCodex%20Logo.png" alt="LibCodex" width="220">
+  <picture>
+    <!--
+      Drop in a light-mode variant (LibCodexLogoLight.png) or dark-mode
+      variant (LibCodexLogoDark.png) and uncomment the matching <source>
+      below to switch automatically based on the visitor's GitHub theme.
+      <source media="(prefers-color-scheme: dark)" srcset="LibCodexLogoDark.png">
+      <source media="(prefers-color-scheme: light)" srcset="LibCodexLogoLight.png">
+    -->
+    <img src="LibCodexLogo.png" alt="LibCodex" width="220">
+  </picture>
 </p>
 
 # LibCodex-1.0
