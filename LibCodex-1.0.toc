@@ -87,6 +87,14 @@ Modules\Catalog\SpellDurations.lua
 Modules\Catalog\Glyphs.lua
 Modules\Catalog\AchievementCategories.lua
 Modules\Catalog\FriendshipReputations.lua
+Modules\Catalog\Maps.lua
+Modules\Catalog\MapDifficulties.lua
+Modules\Catalog\EncounterCreatures.lua
+Modules\Catalog\EncounterSections.lua
+Modules\Catalog\SkillRaceClass.lua
+Modules\Catalog\GossipOptions.lua
+Modules\Catalog\Movies.lua
+Modules\Catalog\Cinematics.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -154,6 +162,14 @@ Data\FriendshipReputations.lua
 Data\Regions.lua
 Data\Languages.lua
 Data\ChatChannels.lua
+Data\Maps.lua
+Data\MapDifficulties.lua
+Data\EncounterCreatures.lua
+Data\EncounterSections.lua
+Data\SkillRaceClass.lua
+Data\GossipOptions.lua
+Data\Movies.lua
+Data\Cinematics.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua

@@ -635,7 +635,9 @@ LibCodex:RegisterAdapter("Runtime", function(LC)
     f:RegisterEvent("QUEST_REMOVED")
     f:RegisterEvent("QUEST_LOG_UPDATE")
     f:RegisterEvent("TAXIMAP_OPENED")
-    f:SetScript("OnEvent", function(_, evt, arg1, arg2)
+    f:RegisterEvent("ENCOUNTER_START")
+    f:RegisterEvent("ENCOUNTER_END")
+    f:SetScript("OnEvent", function(_, evt, arg1, arg2, arg3, arg4, arg5)
         if     evt == "NAME_PLATE_UNIT_ADDED"   then readUnit(arg1)
         elseif evt == "UPDATE_MOUSEOVER_UNIT"   then readUnit("mouseover")
         elseif evt == "PLAYER_TARGET_CHANGED"   then readUnit("target")
@@ -736,6 +738,40 @@ LibCodex:RegisterAdapter("Runtime", function(LC)
             -- arg1 is the taxi map UI system: 1 = old flight master,
             -- 2 = modern flight map. The API surface is the same either way.
             scanTaxiMap(LC)
+        elseif evt == "ENCOUNTER_START" then
+            -- args: encounterID, encounterName, difficultyID, groupSize
+            local DE = LC:DungeonEncounters()
+            if DE and DE.Add and type(arg1) == "number" then
+                DE:Add({
+                    id = arg1,
+                    label = (type(arg2) == "string" and arg2) or nil,
+                    difficultyID = (type(arg3) == "number" and arg3) or nil,
+                    sources = { "runtime" },
+                })
+                vlog(string.format("Encounter start: %s [%d] difficulty=%s",
+                    tostring(arg2), arg1, tostring(arg3)))
+            end
+        elseif evt == "ENCOUNTER_END" then
+            -- args: encounterID, encounterName, difficultyID, groupSize, success
+            local DE = LC:DungeonEncounters()
+            if DE and type(arg1) == "number" then
+                local entry = DE:Get(arg1) or DE:Add({
+                    id = arg1,
+                    label = (type(arg2) == "string" and arg2) or nil,
+                    sources = { "runtime" },
+                })
+                if entry then
+                    -- Stash a small per-character success counter directly on
+                    -- the catalog entry so /codex info shows kill/wipe history.
+                    -- (For shared-catalog use, treat this as advisory only.)
+                    entry.runtimeAttempts = (entry.runtimeAttempts or 0) + 1
+                    if arg5 == 1 then
+                        entry.runtimeKills = (entry.runtimeKills or 0) + 1
+                    end
+                end
+                vlog(string.format("Encounter end:   %s [%d] success=%s",
+                    tostring(arg2), arg1, tostring(arg5)))
+            end
         end
     end)
 

@@ -80,6 +80,14 @@
     <Script file="Modules\Catalog\Glyphs.lua"/>
     <Script file="Modules\Catalog\AchievementCategories.lua"/>
     <Script file="Modules\Catalog\FriendshipReputations.lua"/>
+    <Script file="Modules\Catalog\Maps.lua"/>
+    <Script file="Modules\Catalog\MapDifficulties.lua"/>
+    <Script file="Modules\Catalog\EncounterCreatures.lua"/>
+    <Script file="Modules\Catalog\EncounterSections.lua"/>
+    <Script file="Modules\Catalog\SkillRaceClass.lua"/>
+    <Script file="Modules\Catalog\GossipOptions.lua"/>
+    <Script file="Modules\Catalog\Movies.lua"/>
+    <Script file="Modules\Catalog\Cinematics.lua"/>
 
     <Script file="Data\Classes.lua"/>
     <Script file="Data\Factions.lua"/>
@@ -144,6 +152,14 @@
     <Script file="Data\Regions.lua"/>
     <Script file="Data\Languages.lua"/>
     <Script file="Data\ChatChannels.lua"/>
+    <Script file="Data\Maps.lua"/>
+    <Script file="Data\MapDifficulties.lua"/>
+    <Script file="Data\EncounterCreatures.lua"/>
+    <Script file="Data\EncounterSections.lua"/>
+    <Script file="Data\SkillRaceClass.lua"/>
+    <Script file="Data\GossipOptions.lua"/>
+    <Script file="Data\Movies.lua"/>
+    <Script file="Data\Cinematics.lua"/>
     <Script file="Data\NPCs.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\GameObjects.lua"/>

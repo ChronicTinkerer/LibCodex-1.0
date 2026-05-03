@@ -330,12 +330,33 @@ function CC.New(name, opts)
             end
         end
 
+        -- Multi-token search: split the query on whitespace into N tokens.
+        -- A row matches only when EVERY token is found in its haystack
+        -- (substring AND, not OR). Empty query means "match everything".
+        --   "rune cloth"   -> matches haystacks containing both 'rune' and 'cloth'
+        --   "ironforge"    -> single token, same as before
+        local tokens
+        if q ~= "" then
+            tokens = {}
+            for tk in q:gmatch("%S+") do
+                tokens[#tokens + 1] = tk
+            end
+            if #tokens == 0 then q = "" end  -- whitespace-only collapses to "match everything"
+        end
+        local function haystackMatchesTokens(hay)
+            if not tokens then return true end
+            for i = 1, #tokens do
+                if not hay:find(tokens[i], 1, true) then return false end
+            end
+            return true
+        end
+
         -- Match against an already-materialized dict entry.
         local function matchesDict(e)
             if not e then return false end
-            if q ~= "" then
+            if tokens then
                 local hay = buildHaystack(e, self._searchFields)
-                if not hay:find(q, 1, true) then return false end
+                if not haystackMatchesTokens(hay) then return false end
             end
             for k, v in pairs(fieldFilters) do
                 if e[k] ~= v then return false end
@@ -391,7 +412,8 @@ function CC.New(name, opts)
                     local row = blob.rows[ref[2]]
                     if type(row) == "table" then
                         -- Substring test against searchable column values.
-                        local substrOk = (q == "")
+                        -- For multi-token queries, every token must match.
+                        local substrOk = (not tokens)
                         if not substrOk then
                             local idxs = searchIdxByBlob[blobIdx]
                             local parts = {}
@@ -399,7 +421,7 @@ function CC.New(name, opts)
                                 local v = row[idxs[i]]
                                 if v ~= nil then parts[#parts + 1] = tostring(v) end
                             end
-                            substrOk = lower(table.concat(parts, " ")):find(q, 1, true) ~= nil
+                            substrOk = haystackMatchesTokens(lower(table.concat(parts, " ")))
                         end
                         -- Field-equality test on positional values. Only run
                         -- if substring already passed.
@@ -439,7 +461,7 @@ function CC.New(name, opts)
                 if ref then
                     local blob = self._tsvBlobs[ref[1]]
                     local line = blob.blob:sub(ref[2], ref[3])
-                    local substrOk = (q == "") or lower(line):find(q, 1, true) ~= nil
+                    local substrOk = (not tokens) or haystackMatchesTokens(lower(line))
                     if substrOk then
                         local entry = self:_ExpandTSVRow(key)
                         if entry and matchesDict(entry) then

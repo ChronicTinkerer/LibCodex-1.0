@@ -169,6 +169,14 @@ Every module is keyed by `id`. Common fields across modules: `label` (display na
 | `Glyphs`       | wago `GlyphProperties`          | `spellID`, `glyphType`, `glyphExclusiveCategoryID`, `icon`. Legacy glyph catalog (system retired in Legion but DBC remains). |
 | `AchievementCategories` | wago `Achievement_Category` | `parentID`, `uiOrder`. Bucket names for the Achievements panel. `:Path(catID)` walks parents. Also enriches `Achievements.categoryName`. |
 | `FriendshipReputations` | wago `FriendshipReputation` + `FriendshipRepReaction` | `factionID` (-> Factions), `description`, `standingModified`, `standingChangedText`, `icon`, `tiers[]` (each: `reaction`, `threshold`, `color`). Custom-rank reputations like Nomi / Steamwheedle. |
+| `Maps`         | wago `Map`                      | `directory`, `mapType`, `instanceType`, `expansion`, `areaTableID`, `parentMapID`, `loadingScreenID`. Internal MapID catalog (continent/zone/instance/scenario). Distinct from `Zones` which exposes UiMap. |
+| `MapDifficulties` | wago `MapDifficulty`         | `mapID`, `difficultyID`, `message`, `maxPlayers`, `resetInterval`, `lockID`, `contentTuningID`. Per-map difficulty tier definitions. |
+| `EncounterCreatures` | wago `JournalEncounterCreature` | `journalEncounterID`, `creatureDisplayInfoID`, `fileDataID`, `orderIndex`. Boss + add creatures per dungeon-journal encounter. |
+| `EncounterSections` | wago `JournalEncounterSection` | `journalEncounterID`, `title`, `bodyText`, `parentSectionID`, `firstChildSectionID`, `nextSiblingSectionID`, `type`, `spellID`, `difficultyMask`. Strategy text sections of the dungeon journal (tree-structured). |
+| `SkillRaceClass` | wago `SkillRaceClassInfo`     | `skillID`, `raceMask`, `classMask`, `minLevel`, `availability`. Which races/classes can train each skill line. |
+| `GossipOptions` | wago `GossipNPCOption`         | `gossipNpcOption`, `lfgDungeonsID`, `trainerID`, `uiMapID`, `traitTreeID`, `professionID`, etc. Per-NPC gossip option metadata — what each gossip click triggers. |
+| `Movies`       | wago `Movie`                    | `volume`, `keyID`, `audioFileDataID`, `subtitleFileDataID`. Pre-rendered cinematic movie definitions. |
+| `Cinematics`   | wago `CinematicSequences`       | `soundID`, `cameras[]` (up to 8 CinematicCamera ids). In-engine cutscene scripts. |
 
 ### Enum tier (small, stable, hand-curated or DBC-sourced)
 
@@ -567,7 +575,10 @@ LibCodex-1.0/
       SpellChargeCategories.lua, SpellMechanics.lua, SpellCooldowns.lua,
       SpellCastTimes.lua, SpellPower.lua, SpellRanges.lua,
       SpellDurations.lua, Glyphs.lua,
-      AchievementCategories.lua, FriendshipReputations.lua
+      AchievementCategories.lua, FriendshipReputations.lua,
+      Maps.lua, MapDifficulties.lua, EncounterCreatures.lua,
+      EncounterSections.lua, SkillRaceClass.lua, GossipOptions.lua,
+      Movies.lua, Cinematics.lua
     Enums/
       Classes.lua, Factions.lua, Races.lua, Realms.lua,
       CreatureTypes.lua, Specs.lua, Stats.lua, Difficulty.lua,

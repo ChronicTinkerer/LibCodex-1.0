@@ -293,6 +293,14 @@ function LibCodex:FriendshipReputations() return self.modules.FriendshipReputati
 function LibCodex:Regions()         return self.modules.Regions end
 function LibCodex:Languages()       return self.modules.Languages end
 function LibCodex:ChatChannels()    return self.modules.ChatChannels end
+function LibCodex:Maps()            return self.modules.Maps end
+function LibCodex:MapDifficulties() return self.modules.MapDifficulties end
+function LibCodex:EncounterCreatures() return self.modules.EncounterCreatures end
+function LibCodex:EncounterSections()  return self.modules.EncounterSections end
+function LibCodex:SkillRaceClass()  return self.modules.SkillRaceClass end
+function LibCodex:GossipOptions()   return self.modules.GossipOptions end
+function LibCodex:Movies()          return self.modules.Movies end
+function LibCodex:Cinematics()      return self.modules.Cinematics end
 
 -- ============================================================================
 -- Diagnostic helpers exposed to consumers.
