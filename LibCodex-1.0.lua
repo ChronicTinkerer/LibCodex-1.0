@@ -251,6 +251,10 @@ function LibCodex:Heirlooms() return self.modules.Heirlooms end
 function LibCodex:Encounters() return self.modules.Encounters end
 function LibCodex:Vignettes() return self.modules.Vignettes end
 function LibCodex:Areas()     return self.modules.Areas end
+function LibCodex:Difficulty() return self.modules.Difficulty end
+function LibCodex:Holidays()  return self.modules.Holidays end
+function LibCodex:QuestPOI()  return self.modules.QuestPOI end
+function LibCodex:PvpTalents() return self.modules.PvpTalents end
 
 -- ============================================================================
 -- Diagnostic helpers exposed to consumers.

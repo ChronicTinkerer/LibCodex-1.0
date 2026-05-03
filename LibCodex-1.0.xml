@@ -20,6 +20,7 @@
     <Script file="Modules\Enums\CreatureTypes.lua"/>
     <Script file="Modules\Enums\Specs.lua"/>
     <Script file="Modules\Enums\Stats.lua"/>
+    <Script file="Modules\Enums\Difficulty.lua"/>
 
     <Script file="Modules\Catalog\NPCs.lua"/>
     <Script file="Modules\Catalog\Items.lua"/>
@@ -41,6 +42,9 @@
     <Script file="Modules\Catalog\Crafts.lua"/>
     <Script file="Modules\Catalog\Vignettes.lua"/>
     <Script file="Modules\Catalog\Areas.lua"/>
+    <Script file="Modules\Catalog\Holidays.lua"/>
+    <Script file="Modules\Catalog\QuestPOI.lua"/>
+    <Script file="Modules\Catalog\PvpTalents.lua"/>
 
     <Script file="Data\Classes.lua"/>
     <Script file="Data\Factions.lua"/>
@@ -66,6 +70,10 @@
     <Script file="Data\Stats.lua"/>
     <Script file="Data\Vignettes.lua"/>
     <Script file="Data\Areas.lua"/>
+    <Script file="Data\Difficulty.lua"/>
+    <Script file="Data\Holidays.lua"/>
+    <Script file="Data\QuestPOI.lua"/>
+    <Script file="Data\PvpTalents.lua"/>
     <Script file="Data\NPCs.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\GameObjects.lua"/>

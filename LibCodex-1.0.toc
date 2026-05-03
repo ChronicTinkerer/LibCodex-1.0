@@ -28,6 +28,7 @@ Modules\Enums\Realms.lua
 Modules\Enums\CreatureTypes.lua
 Modules\Enums\Specs.lua
 Modules\Enums\Stats.lua
+Modules\Enums\Difficulty.lua
 
 # ----- Tier 2 catalog modules (large, grow over time)
 Modules\Catalog\NPCs.lua
@@ -50,6 +51,9 @@ Modules\Catalog\Professions.lua
 Modules\Catalog\Crafts.lua
 Modules\Catalog\Vignettes.lua
 Modules\Catalog\Areas.lua
+Modules\Catalog\Holidays.lua
+Modules\Catalog\QuestPOI.lua
+Modules\Catalog\PvpTalents.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -79,6 +83,10 @@ Data\Crafts.lua
 Data\Stats.lua
 Data\Vignettes.lua
 Data\Areas.lua
+Data\Difficulty.lua
+Data\Holidays.lua
+Data\QuestPOI.lua
+Data\PvpTalents.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua
