@@ -1,4 +1,0 @@
--- LibCodex-1.0 / Data / Reputations.lua
--- DEPRECATED. Reputation factions live in the unified Factions module now.
--- This stub stays so a stale .toc/.xml entry won't error if someone forgot
--- to update both. Safe to delete this file outright.
