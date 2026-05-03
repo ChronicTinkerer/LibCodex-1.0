@@ -36,6 +36,8 @@ print(entry.label, entry.creatureType, entry.classification)
 
 ---
 
+**Method-level reference:** [`docs/API.md`](docs/API.md) — every public method, signature, and module-specific helper. Use this as the lookup; this README covers schema and architecture.
+
 ## Table of contents
 
 - [Quick start for consumers](#quick-start-for-consumers)

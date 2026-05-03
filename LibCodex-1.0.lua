@@ -21,7 +21,7 @@ local LIB_MAJOR = "LibCodex-1.0"
 -- compares it numerically to decide which copy of the library to keep
 -- when multiple addons embed different versions, so any later timestamp
 -- automatically wins. Lua doubles represent 10-digit integers exactly.
-local LIB_MINOR = 2605031226
+local LIB_MINOR = 2605031240
 
 assert(LibStub, LIB_MAJOR .. " requires LibStub.")
 local LibCodex, oldMinor = LibStub:NewLibrary(LIB_MAJOR, LIB_MINOR)
