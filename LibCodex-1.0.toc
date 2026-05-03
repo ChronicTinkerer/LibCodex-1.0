@@ -66,6 +66,8 @@ Modules\Catalog\BattlePetAbilities.lua
 Modules\Catalog\CustomizationOptions.lua
 Modules\Catalog\CustomizationChoices.lua
 Modules\Catalog\TransmogIllusions.lua
+Modules\Catalog\AreaTriggers.lua
+Modules\Catalog\PlayerConditions.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -111,6 +113,8 @@ Data\BattlePetAbilities.lua
 Data\CustomizationOptions.lua
 Data\CustomizationChoices.lua
 Data\TransmogIllusions.lua
+Data\AreaTriggers.lua
+Data\PlayerConditions.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua

@@ -267,6 +267,8 @@ function LibCodex:BattlePetAbilities() return self.modules.BattlePetAbilities en
 function LibCodex:CustomizationOptions() return self.modules.CustomizationOptions end
 function LibCodex:CustomizationChoices() return self.modules.CustomizationChoices end
 function LibCodex:TransmogIllusions() return self.modules.TransmogIllusions end
+function LibCodex:AreaTriggers() return self.modules.AreaTriggers end
+function LibCodex:PlayerConditions() return self.modules.PlayerConditions end
 
 -- ============================================================================
 -- Diagnostic helpers exposed to consumers.
