@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="LibCodex%20Logo.png" alt="LibCodex" width="220">
+</p>
+
 # LibCodex-1.0
 
-A reusable static-catalog library for World of Warcraft addons. **45 catalog and enum modules** covering every major DBC family the game ships:
+A reusable static-catalog library for World of Warcraft addons. **74 catalog and enum modules** covering every major DBC family the game ships:
 
 - **World**: NPCs, items, game objects, vignettes (rare spawns / treasures), area triggers, zones, sub-zones (areas), flight points
 - **Quests**: catalog with objectives, rewards (items / currency), quest lines, POI map markers, and quest-giver coordinates
