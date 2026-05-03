@@ -155,6 +155,10 @@ Every module is keyed by `id`. Common fields across modules: `label` (display na
 | `WMOAreaTables`| wago `WMOAreaTable`             | `wmoID`, `wmoGroupID`, `nameSetID`, `areaTableID`, `ambienceID`, `zoneMusicID`. Interior areas inside dungeons / detailed-geometry locations. |
 | `TaxiPaths`    | wago `TaxiPath` + `TaxiPathNode` | `fromNode`, `toNode` (-> FlightPoints), `cost`, `nodes[]` (each: `x`, `y`, `z`, `continentID`, `nodeIndex`, `flags`, `delay`). Actual flight routes between flight masters. |
 | `DungeonEncounters` | wago `DungeonEncounter`    | `mapID`, `difficultyID`, `orderIndex`, `bit`, `completeWorldStateID`, `icon`, `faction`. Combat-log encounter ids — distinct from `Encounters` which lists adventure-guide entries. |
+| `ItemAppearances` | wago `ItemAppearance`        | `displayType`, `displayInfoID`, `icon`, `uiOrder`, `transmogPlayerCondition`. Distinct visual appearances for transmog. |
+| `ItemModifiedAppearances` | wago `ItemModifiedAppearance` | `itemID`, `appearanceID`, `modifierID`, `orderIndex`, `sourceType`. Bridge from item-with-modifier to appearance — `TransmogSets.appearances[]` ids resolve here. |
+| `ItemBonuses`  | wago `ItemBonusList` + `ItemBonus` | `flags`, `bonuses[]` (each: `type`, `value0..3`, `orderIndex`). Item modifier system — the `:bonus_id1:bonus_id2:` segment in item hyperlinks. |
+| `ItemEffects`  | wago `ItemEffect` + `ItemXItemEffect` | `spellID`, `triggerType`, `charges`, `cooldownMS`, `categoryCooldownMS`, `spellCategoryID`, `specID`, `playerCondition`, `items[]` (which items grant this effect). |
 
 ### Enum tier (small, stable, hand-curated or DBC-sourced)
 
@@ -544,7 +548,9 @@ LibCodex-1.0/
       BattlePetAbilities.lua, CustomizationOptions.lua,
       CustomizationChoices.lua, TransmogIllusions.lua,
       AreaTriggers.lua, PlayerConditions.lua,
-      AreaPOI.lua, WMOAreaTables.lua, TaxiPaths.lua, DungeonEncounters.lua
+      AreaPOI.lua, WMOAreaTables.lua, TaxiPaths.lua, DungeonEncounters.lua,
+      ItemAppearances.lua, ItemModifiedAppearances.lua,
+      ItemBonuses.lua, ItemEffects.lua
     Enums/
       Classes.lua, Factions.lua, Races.lua, Realms.lua,
       CreatureTypes.lua, Specs.lua, Stats.lua, Difficulty.lua

@@ -63,6 +63,10 @@
     <Script file="Modules\Catalog\WMOAreaTables.lua"/>
     <Script file="Modules\Catalog\TaxiPaths.lua"/>
     <Script file="Modules\Catalog\DungeonEncounters.lua"/>
+    <Script file="Modules\Catalog\ItemAppearances.lua"/>
+    <Script file="Modules\Catalog\ItemModifiedAppearances.lua"/>
+    <Script file="Modules\Catalog\ItemBonuses.lua"/>
+    <Script file="Modules\Catalog\ItemEffects.lua"/>
 
     <Script file="Data\Classes.lua"/>
     <Script file="Data\Factions.lua"/>
@@ -110,6 +114,10 @@
     <Script file="Data\WMOAreaTables.lua"/>
     <Script file="Data\TaxiPaths.lua"/>
     <Script file="Data\DungeonEncounters.lua"/>
+    <Script file="Data\ItemAppearances.lua"/>
+    <Script file="Data\ItemModifiedAppearances.lua"/>
+    <Script file="Data\ItemBonuses.lua"/>
+    <Script file="Data\ItemEffects.lua"/>
     <Script file="Data\NPCs.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\GameObjects.lua"/>

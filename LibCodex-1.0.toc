@@ -71,6 +71,10 @@ Modules\Catalog\AreaPOI.lua
 Modules\Catalog\WMOAreaTables.lua
 Modules\Catalog\TaxiPaths.lua
 Modules\Catalog\DungeonEncounters.lua
+Modules\Catalog\ItemAppearances.lua
+Modules\Catalog\ItemModifiedAppearances.lua
+Modules\Catalog\ItemBonuses.lua
+Modules\Catalog\ItemEffects.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -121,6 +125,10 @@ Data\AreaPOI.lua
 Data\WMOAreaTables.lua
 Data\TaxiPaths.lua
 Data\DungeonEncounters.lua
+Data\ItemAppearances.lua
+Data\ItemModifiedAppearances.lua
+Data\ItemBonuses.lua
+Data\ItemEffects.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua

@@ -276,6 +276,10 @@ function LibCodex:AreaPOI()         return self.modules.AreaPOI end
 function LibCodex:WMOAreaTables()   return self.modules.WMOAreaTables end
 function LibCodex:TaxiPaths()       return self.modules.TaxiPaths end
 function LibCodex:DungeonEncounters() return self.modules.DungeonEncounters end
+function LibCodex:ItemAppearances() return self.modules.ItemAppearances end
+function LibCodex:ItemModifiedAppearances() return self.modules.ItemModifiedAppearances end
+function LibCodex:ItemBonuses()    return self.modules.ItemBonuses end
+function LibCodex:ItemEffects()    return self.modules.ItemEffects end
 
 -- ============================================================================
 -- Diagnostic helpers exposed to consumers.
