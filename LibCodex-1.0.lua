@@ -249,6 +249,8 @@ function LibCodex:Stats()     return self.modules.Stats end
 function LibCodex:Professions() return self.modules.Professions end
 function LibCodex:Heirlooms() return self.modules.Heirlooms end
 function LibCodex:Encounters() return self.modules.Encounters end
+function LibCodex:Vignettes() return self.modules.Vignettes end
+function LibCodex:Areas()     return self.modules.Areas end
 
 -- ============================================================================
 -- Diagnostic helpers exposed to consumers.

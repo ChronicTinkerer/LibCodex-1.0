@@ -48,6 +48,8 @@ Modules\Catalog\FlightPoints.lua
 Modules\Catalog\Talents.lua
 Modules\Catalog\Professions.lua
 Modules\Catalog\Crafts.lua
+Modules\Catalog\Vignettes.lua
+Modules\Catalog\Areas.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -75,6 +77,8 @@ Data\Talents.lua
 Data\Professions.lua
 Data\Crafts.lua
 Data\Stats.lua
+Data\Vignettes.lua
+Data\Areas.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua

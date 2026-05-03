@@ -39,6 +39,8 @@
     <Script file="Modules\Catalog\Talents.lua"/>
     <Script file="Modules\Catalog\Professions.lua"/>
     <Script file="Modules\Catalog\Crafts.lua"/>
+    <Script file="Modules\Catalog\Vignettes.lua"/>
+    <Script file="Modules\Catalog\Areas.lua"/>
 
     <Script file="Data\Classes.lua"/>
     <Script file="Data\Factions.lua"/>
@@ -62,6 +64,8 @@
     <Script file="Data\Professions.lua"/>
     <Script file="Data\Crafts.lua"/>
     <Script file="Data\Stats.lua"/>
+    <Script file="Data\Vignettes.lua"/>
+    <Script file="Data\Areas.lua"/>
     <Script file="Data\NPCs.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\GameObjects.lua"/>
