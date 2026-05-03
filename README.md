@@ -54,13 +54,25 @@ print(entry.label, entry.creatureType, entry.classification)
 
 ## Quick start for consumers
 
-Embed LibCodex into your addon's `embeds.xml`:
+LibCodex ships as a standalone addon. Two ways to use it from your addon:
+
+**Option A — depend on it as a sibling addon (recommended).** Add this line to your addon's `.toc`:
+
+```
+## Dependencies: LibCodex-1.0
+```
+
+WoW will load LibCodex first, and `LibStub("LibCodex-1.0")` works from anywhere in your code. No vendoring, no embed manifest. Users install LibCodex as a separate addon (CurseForge / WoWInterface / manual).
+
+**Option B — vendor a copy under `Libs/` and embed it** (self-contained distribution; no separate user install). Drop the `LibCodex-1.0` folder under your addon's `Libs/` directory and reference its embed manifest from your `embeds.xml`:
 
 ```xml
 <Include file="Libs\LibCodex-1.0\LibCodex-1.0.xml"/>
 ```
 
-Then in any of your Lua files:
+Both patterns work; LibStub guarantees only one copy is active at a time.
+
+Once loaded, the API is identical:
 
 ```lua
 local LC = LibStub("LibCodex-1.0")
@@ -530,11 +542,26 @@ After step 4, run the bake tool once and an empty `Data/Pots.lua` will appear, r
 
 ---
 
-## Embedding in a consumer addon
+## Distribution patterns
 
-LibCodex follows the standard LibStub convention. Two things to set up in your addon:
+LibCodex follows the standard LibStub convention and ships as a standalone addon. Two distribution patterns work, both fully supported:
 
-**1. Vendor LibStub and LibCodex** in your addon's libs folder:
+### Pattern A: Standalone dependency (recommended)
+
+LibCodex lives as its own addon at `Interface/AddOns/LibCodex-1.0/`. Your consumer addon declares it as a dependency in its `.toc`:
+
+```
+## Title: MyAddon
+## Dependencies: LibCodex-1.0
+```
+
+WoW loads LibCodex before MyAddon, and any code in MyAddon can call `LibStub("LibCodex-1.0")` to get the library handle. Users install both addons (typically via the same CurseForge / WoWInterface / Wago page if you bundle a manifest, or two separate installs).
+
+LibCodex declares its own `## SavedVariables: LibCodexDB` in its `.toc`, so all the runtime growth (NPC sightings, captured loot, chromie tags) persists at the library level — every addon that uses LibCodex shares the same catalog.
+
+### Pattern B: Vendored / embedded (self-contained)
+
+For addons that want to ship without external dependencies, drop the `LibCodex-1.0` folder inside your addon's `Libs/` directory and reference its embed manifest:
 
 ```
 MyAddon/
@@ -545,18 +572,20 @@ MyAddon/
       ... (the contents of this repo) ...
 ```
 
-**2. Reference LibCodex's embed manifest** from your addon's `embeds.xml`:
-
 ```xml
+<!-- MyAddon/embeds.xml -->
 <Ui>
     <Script file="Libs\LibStub\LibStub.lua"/>
     <Include file="Libs\LibCodex-1.0\LibCodex-1.0.xml"/>
 </Ui>
 ```
 
-Then call `LibStub("LibCodex-1.0")` from anywhere in your addon and use the API. Multiple addons can embed the same version with no conflict; LibStub only loads the highest-versioned copy.
+Multiple addons can embed the same version with no conflict; LibStub picks the highest-versioned copy at load time and the rest no-op. With Pattern B, the SavedVariables blob lives inside MyAddon's saved data — the catalog is private to that addon, not shared.
 
-LibCodex declares its own `## SavedVariables: LibCodexDB` when loaded as a standalone addon. When embedded inside a consumer addon, the consumer is responsible for declaring SavedVariables too, OR LibCodex can be loaded as a sibling addon (set `## LoadOnDemand: 0` in the embedded copy's TOC and let WoW load it normally).
+### Choosing between them
+
+- **Pattern A** if your addon assumes users want a shared catalog (most cases, since runtime captures across all addons accumulate together) and you're fine with a separate install for your users.
+- **Pattern B** if your addon is single-author, distribution-simple, or you want the catalog isolated to your addon's data.
 
 ---
 

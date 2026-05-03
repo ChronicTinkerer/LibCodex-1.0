@@ -971,6 +971,26 @@ local function buildFrame()
     local restoredTab = (LibCodexDB and LibCodexDB.dashboardTab) or "Stats"
     if not panels[restoredTab] then restoredTab = "Stats" end
     selectTab(restoredTab)
+
+    -- Edit Mode integration (soft-optional). When LibEditMode is loaded by
+    -- the host environment, register the dashboard frame so users can move
+    -- it through Blizzard's native Edit Mode UI alongside other movable
+    -- frames. The library handles drag, save, restore, and per-layout
+    -- positioning for us; the callback gets fired on layout-changed events
+    -- but we don't need it to do anything (LibEditMode mutates SetPoint
+    -- directly via the selection's drag handlers).
+    --
+    -- If LibEditMode isn't present, the dashboard remains a normal user-
+    -- draggable frame via the existing :SetMovable / OnDragStart hooks.
+    local LEM = LibStub and LibStub("LibEditMode", true)
+    if LEM and LEM.AddFrame then
+        local ok, err = pcall(LEM.AddFrame, LEM, frame, function() end,
+            { point = "CENTER", x = 0, y = 0 }, "LibCodex Dashboard")
+        if not ok then
+            out("|cffffd55a[Codex]|r LibEditMode register failed: " .. tostring(err))
+        end
+    end
+
     frame:Hide()
     return frame
 end

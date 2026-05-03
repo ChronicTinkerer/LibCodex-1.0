@@ -2,7 +2,7 @@
 ## Title: LibCodex-1.0
 ## Notes: A reusable static-catalog library for WoW addons. Tracks NPCs, items, spells, talents, quests, zones, flight points, currencies, reputations, crafts, achievements, pets, mounts, etc. Hybrid load model: bundled seed + runtime growth. Consumers embed via ## libs and call LibStub("LibCodex-1.0").
 ## Author: ChronicTinkerer
-## Version: 2605031118
+## Version: 2605031226
 ## SavedVariables: LibCodexDB
 ## LoadOnDemand: 0
 ## X-Curse-Project-ID: -
@@ -12,6 +12,23 @@
 #       for development/testing; in production the consumer addon supplies its
 #       own LibStub via embeds and this is a no-op since LibStub is idempotent)
 embeds\LibStub\LibStub.lua
+
+# ----- Vendored LibEditMode (p3lim's library). Lets the Dashboard window
+#       register with Blizzard's Edit Mode so users can move it via the
+#       native Edit Mode UI. Soft-optional in the Dashboard code: if the
+#       library isn't present, the dashboard still works as a draggable
+#       frame, just without Edit Mode integration.
+Libs\LibEditMode\LibEditMode.lua
+Libs\LibEditMode\pools.lua
+Libs\LibEditMode\widgets\button.lua
+Libs\LibEditMode\widgets\checkbox.lua
+Libs\LibEditMode\widgets\dialog.lua
+Libs\LibEditMode\widgets\divider.lua
+Libs\LibEditMode\widgets\dropdown.lua
+Libs\LibEditMode\widgets\expander.lua
+Libs\LibEditMode\widgets\extension.lua
+Libs\LibEditMode\widgets\slider.lua
+Libs\LibEditMode\widgets\colorpicker.lua
 
 # ----- Library core
 LibCodex-1.0.lua

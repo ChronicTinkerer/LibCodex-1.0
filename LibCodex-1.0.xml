@@ -9,6 +9,10 @@
         LibStub is idempotent so loading it twice is harmless.
     -->
 
+    <!-- Vendored LibEditMode (p3lim). Soft-optional: Dashboard registers
+         with it when present, falls back to plain draggable when not. -->
+    <Include file="Libs\LibEditMode\embed.xml"/>
+
     <Script file="LibCodex-1.0.lua"/>
 
     <Script file="Modules\Common.lua"/>
