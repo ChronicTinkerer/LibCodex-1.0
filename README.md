@@ -9,7 +9,7 @@ A reusable static-catalog library for World of Warcraft addons. **45 catalog and
 - **Collections**: pets (with abilities), pet-battle abilities, mounts, toys, heirlooms, transmog sets, transmog illusions
 - **Group content**: encounters (instances + bosses), LFG dungeons, battlemasters (BG / arena), scenarios (with steps), Premade Group Finder activities, difficulty enum
 - **Professions**: profession skill lines, recipes (crafts), trade-skill sub-categories, enchants, item sets (with tier bonuses)
-- **Social / meta**: factions, reputations, currencies, realms, holidays, character-creation customization options + choices, player-condition predicates
+- **Social / meta**: factions (player + reputation), currencies, realms, holidays, character-creation customization options + choices, player-condition predicates
 
 Hybrid load model: bundled seed (DBC-derived data shipped with the library) + runtime growth (events captured during play) + a pluggable adapter system for reading from other addons.
 
@@ -133,7 +133,6 @@ Every module is keyed by `id`. Common fields across modules: `label` (display na
 | `Zones`        | wago `UiMap`                    | `type`, `parentID`                                            |
 | `Areas`        | wago `AreaTable`                | `zoneName`, `continentID`, `parentAreaID`, `factionGroupMask` (sub-zones inside UiMaps; `:Path(areaID)` walks parent chain) |
 | `Currencies`   | wago `CurrencyTypes`            | `expansion`                                                   |
-| `Reputations`  | wago `Faction`                  | `expansion`, `parentFactionID`                                |
 | `Vignettes`    | wago `Vignette`                 | `vignetteType`, `rewardQuestID`, `playerCondition`, `objectiveType`, `flags` (rare spawns, treasures, world bosses) |
 | `Holidays`     | wago `Holidays` + `HolidayNames` | `region`, `looping`, `priority`, `filterType`, `nameID`     |
 | `QuestPOI`     | wago `QuestPOIBlob` + `QuestPOIPoint` | `questID`, `uiMapID`, `mapID`, `objectiveIndex`, `objectiveID`, `numPoints`, `points[]` (each: `x`, `y`, `z` normalized) |
@@ -160,7 +159,7 @@ Every module is keyed by `id`. Common fields across modules: `label` (display na
 | `Classes`        | wago `ChrClasses`     | `token` (e.g. "WARRIOR")             |
 | `Races`          | wago `ChrRaces`       | `token`, `side`, `playable`, `allied` |
 | `Realms`         | wago `Realm` (404 today; runtime via `GetAutoCompleteRealms`) | `region`, `locale`, `type`, `online`, `connectedTo[]` |
-| `Factions`       | hand-curated          | player faction enum                  |
+| `Factions`       | hand-curated (player) + wago `Faction` (reputation) | `kind` ("player" or "reputation"), `color` (player only), `expansion` + `parentFactionID` (reputation only). Mixed string + numeric ids; `:Players()` / `:Reputations()` filter by kind. |
 | `CreatureTypes`  | wago `CreatureType`   |                                      |
 | `Specs`          | wago `ChrSpecialization` | `classID`, `role`                |
 | `Stats`          | hand-curated          | `token` (ITEM_MOD_*), `kind`         |
@@ -534,7 +533,7 @@ LibCodex-1.0/
       NPCs.lua, Items.lua, GameObjects.lua, Spells.lua, Quests.lua,
       Talents.lua, FlightPoints.lua, Crafts.lua, Professions.lua,
       Pets.lua, Mounts.lua, Toys.lua, Heirlooms.lua, Achievements.lua,
-      Encounters.lua, Zones.lua, Currencies.lua, Reputations.lua,
+      Encounters.lua, Zones.lua, Currencies.lua,
       Areas.lua, Vignettes.lua, Holidays.lua, QuestPOI.lua, PvpTalents.lua,
       Enchants.lua, ItemSets.lua, TradeSkillCategories.lua, TransmogSets.lua,
       LFGDungeons.lua, Battlemasters.lua, Scenarios.lua, GroupFinder.lua,

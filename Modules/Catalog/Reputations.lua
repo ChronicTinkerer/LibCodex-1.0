@@ -1,10 +1,8 @@
 -- LibCodex-1.0 / Modules / Catalog / Reputations.lua
--- All Faction.dbc entries: player-facing reputation factions plus internal
--- NPC combat factions. Distinct from Modules/Enums/Factions.lua which lists
--- only the three player factions (Alliance/Horde/Neutral).
-local LibCodex = LibStub("LibCodex-1.0")
-local Reputations = LibCodex.CollectionFactory.New("Reputations", {
-    keyField = "id",
-    searchFields = { "label" },
-})
-LibCodex:RegisterModule("Reputations", Reputations)
+-- DEPRECATED. Reputations were merged into the unified Factions module.
+-- This stub stays so a stale .toc/.xml entry won't error if someone forgot
+-- to update both. Safe to delete this file outright.
+--
+-- Use LC:Factions():ByKind("reputation") or LC:Factions():Reputations()
+-- to query reputation factions. The LC:Reputations() top-level accessor
+-- is kept as a back-compat alias that returns the Factions module.

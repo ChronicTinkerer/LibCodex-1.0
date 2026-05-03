@@ -233,7 +233,10 @@ function LibCodex:Quests()    return self.modules.Quests end
 function LibCodex:Zones()     return self.modules.Zones end
 function LibCodex:FlightPoints() return self.modules.FlightPoints end
 function LibCodex:Currencies() return self.modules.Currencies end
-function LibCodex:Reputations() return self.modules.Reputations end
+-- DEPRECATED: reputations were merged into the unified Factions module.
+-- LC:Reputations() now returns the Factions module for back-compat. Filter
+-- with :ByKind("reputation") if you only want the rep-faction subset.
+function LibCodex:Reputations() return self.modules.Factions end
 function LibCodex:Crafts()    return self.modules.Crafts end
 function LibCodex:Achievements() return self.modules.Achievements end
 function LibCodex:Pets()      return self.modules.Pets end
