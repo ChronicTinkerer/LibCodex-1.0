@@ -58,6 +58,14 @@ Modules\Catalog\Enchants.lua
 Modules\Catalog\ItemSets.lua
 Modules\Catalog\TradeSkillCategories.lua
 Modules\Catalog\TransmogSets.lua
+Modules\Catalog\LFGDungeons.lua
+Modules\Catalog\Battlemasters.lua
+Modules\Catalog\Scenarios.lua
+Modules\Catalog\GroupFinder.lua
+Modules\Catalog\BattlePetAbilities.lua
+Modules\Catalog\CustomizationOptions.lua
+Modules\Catalog\CustomizationChoices.lua
+Modules\Catalog\TransmogIllusions.lua
 
 # ----- Bundled seed data (loaded by modules at module-construction time)
 Data\Classes.lua
@@ -95,6 +103,14 @@ Data\Enchants.lua
 Data\ItemSets.lua
 Data\TradeSkillCategories.lua
 Data\TransmogSets.lua
+Data\LFGDungeons.lua
+Data\Battlemasters.lua
+Data\Scenarios.lua
+Data\GroupFinder.lua
+Data\BattlePetAbilities.lua
+Data\CustomizationOptions.lua
+Data\CustomizationChoices.lua
+Data\TransmogIllusions.lua
 
 # ----- Adapters (runtime sources that feed data into the catalog)
 Adapters\Runtime.lua

@@ -259,6 +259,14 @@ function LibCodex:Enchants() return self.modules.Enchants end
 function LibCodex:ItemSets() return self.modules.ItemSets end
 function LibCodex:TradeSkillCategories() return self.modules.TradeSkillCategories end
 function LibCodex:TransmogSets() return self.modules.TransmogSets end
+function LibCodex:LFGDungeons()  return self.modules.LFGDungeons end
+function LibCodex:Battlemasters() return self.modules.Battlemasters end
+function LibCodex:Scenarios()    return self.modules.Scenarios end
+function LibCodex:GroupFinder()  return self.modules.GroupFinder end
+function LibCodex:BattlePetAbilities() return self.modules.BattlePetAbilities end
+function LibCodex:CustomizationOptions() return self.modules.CustomizationOptions end
+function LibCodex:CustomizationChoices() return self.modules.CustomizationChoices end
+function LibCodex:TransmogIllusions() return self.modules.TransmogIllusions end
 
 -- ============================================================================
 -- Diagnostic helpers exposed to consumers.

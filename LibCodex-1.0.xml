@@ -49,6 +49,14 @@
     <Script file="Modules\Catalog\ItemSets.lua"/>
     <Script file="Modules\Catalog\TradeSkillCategories.lua"/>
     <Script file="Modules\Catalog\TransmogSets.lua"/>
+    <Script file="Modules\Catalog\LFGDungeons.lua"/>
+    <Script file="Modules\Catalog\Battlemasters.lua"/>
+    <Script file="Modules\Catalog\Scenarios.lua"/>
+    <Script file="Modules\Catalog\GroupFinder.lua"/>
+    <Script file="Modules\Catalog\BattlePetAbilities.lua"/>
+    <Script file="Modules\Catalog\CustomizationOptions.lua"/>
+    <Script file="Modules\Catalog\CustomizationChoices.lua"/>
+    <Script file="Modules\Catalog\TransmogIllusions.lua"/>
 
     <Script file="Data\Classes.lua"/>
     <Script file="Data\Factions.lua"/>
@@ -82,6 +90,14 @@
     <Script file="Data\ItemSets.lua"/>
     <Script file="Data\TradeSkillCategories.lua"/>
     <Script file="Data\TransmogSets.lua"/>
+    <Script file="Data\LFGDungeons.lua"/>
+    <Script file="Data\Battlemasters.lua"/>
+    <Script file="Data\Scenarios.lua"/>
+    <Script file="Data\GroupFinder.lua"/>
+    <Script file="Data\BattlePetAbilities.lua"/>
+    <Script file="Data\CustomizationOptions.lua"/>
+    <Script file="Data\CustomizationChoices.lua"/>
+    <Script file="Data\TransmogIllusions.lua"/>
     <Script file="Data\NPCs.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\GameObjects.lua"/>

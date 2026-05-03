@@ -133,6 +133,14 @@ Every module is keyed by `id`. Common fields across modules: `label` (display na
 | `ItemSets`     | wago `ItemSet` + `ItemSetSpell` | `requiredSkill`, `items[]` (ItemIDs), `bonuses[]` (each: `threshold`, `spellID`, `specID`, `traitSubTreeID`) |
 | `TradeSkillCategories` | wago `TradeSkillCategory` | `parentID`, `skillLineID`, `orderIndex`, `hordeLabel` (profession sub-buckets) |
 | `TransmogSets` | wago `TransmogSet` + `TransmogSetItem` | `classMask`, `expansion`, `parentID`, `groupID`, `appearances[]` (ItemModifiedAppearanceIDs) |
+| `LFGDungeons`  | wago `LFGDungeons`              | `description`, `typeID`, `subtype`, `side`, `expansion`, `mapID`, `difficultyID`, `minGear`, `groupID`, `randomID`, `scenarioID`, `finalEncounterID` |
+| `Battlemasters`| wago `BattlemasterList`         | `gameType`, `shortDesc`, `longDesc`, `instanceType`, `pvpType`, `minLevel`, `maxLevel`, `minPlayers`, `maxPlayers`, `maxGroupSize` |
+| `Scenarios`    | wago `Scenario` + `ScenarioStep` | `areaTableID`, `type`, `steps[]` (each: `id`, `title`, `description`, `orderIndex`, `criteriaTreeID`, `rewardQuestID`) |
+| `GroupFinder`  | wago `GroupFinderActivity` + `GroupFinderCategory` + `GroupFinderActivityGrp` | `shortName`, `categoryID`, `categoryName`, `groupID`, `groupName`, `mapID`, `difficultyID`, `expansion`, `maxPlayers`, `minGearLevel` |
+| `BattlePetAbilities` | wago `BattlePetAbility` + `BattlePetSpeciesXAbility` | `description`, `icon`, `petType`, `cooldown`, `species[]` (each: `speciesID`, `requiredLevel`, `slot`). Also enriches `Pets[species].abilities[]`. |
+| `CustomizationOptions` | wago `ChrCustomizationOption`  | `chrModelID`, `categoryID`, `optionType`, `barberCost`, `requirement`, `orderIndex`, `addedInPatch` |
+| `CustomizationChoices` | wago `ChrCustomizationChoice`  | `optionID`, `swatchColor0`, `swatchColor1`, `orderIndex`, `addedInPatch`, `soundKitID` |
+| `TransmogIllusions` | wago `TransmogIllusion`        | `enchantID` (-> Enchants for label/icon), `unlockCondition`, `transmogCost` |
 
 ### Enum tier (small, stable, hand-curated or DBC-sourced)
 
@@ -517,7 +525,10 @@ LibCodex-1.0/
       Pets.lua, Mounts.lua, Toys.lua, Heirlooms.lua, Achievements.lua,
       Encounters.lua, Zones.lua, Currencies.lua, Reputations.lua,
       Areas.lua, Vignettes.lua, Holidays.lua, QuestPOI.lua, PvpTalents.lua,
-      Enchants.lua, ItemSets.lua, TradeSkillCategories.lua, TransmogSets.lua
+      Enchants.lua, ItemSets.lua, TradeSkillCategories.lua, TransmogSets.lua,
+      LFGDungeons.lua, Battlemasters.lua, Scenarios.lua, GroupFinder.lua,
+      BattlePetAbilities.lua, CustomizationOptions.lua,
+      CustomizationChoices.lua, TransmogIllusions.lua
     Enums/
       Classes.lua, Factions.lua, Races.lua, Realms.lua,
       CreatureTypes.lua, Specs.lua, Stats.lua, Difficulty.lua
