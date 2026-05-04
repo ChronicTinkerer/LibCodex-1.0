@@ -21,7 +21,10 @@ local LIB_MAJOR = "LibCodex-1.0"
 -- compares it numerically to decide which copy of the library to keep
 -- when multiple addons embed different versions, so any later timestamp
 -- automatically wins. Lua doubles represent 10-digit integers exactly.
-local LIB_MINOR = 2605031839
+-- IMPORTANT: 10-digit stamps exceed int32 (2^31 - 1 = 2147483647), so any
+-- string.format using %d on LIB_MINOR overflows on WoW's Lua 5.4. Always
+-- format LIB_MINOR with %s (and tostring if needed), never %d.
+local LIB_MINOR = 2605040045
 
 assert(LibStub, LIB_MAJOR .. " requires LibStub.")
 local LibCodex, oldMinor = LibStub:NewLibrary(LIB_MAJOR, LIB_MINOR)
@@ -355,8 +358,8 @@ function LibCodex:CountAll()
 end
 
 function LibCodex:VersionString()
-    return string.format("%s v%d (modules:%d adapters:%d)",
-        LIB_MAJOR, LIB_MINOR,
+    return string.format("%s v%s (modules:%d adapters:%d)",
+        LIB_MAJOR, tostring(LIB_MINOR),
         (function() local n=0; for _ in pairs(self.modules)  do n=n+1 end; return n end)(),
         (function() local n=0; for _ in pairs(self.adapters) do n=n+1 end; return n end)())
 end
