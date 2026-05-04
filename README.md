@@ -378,7 +378,7 @@ LibCodexDB = {
 /codex save               force-write to SavedVariables (no reload required)
 /codex debug              dump internal state for diagnosis
 /codex perf [Module]      lazy-load memory footprint (no arg = summary)
-/codex gui                open the dashboard window
+/codex gui                redirect to /forge codex (see note below)
 ```
 
 `/codex perf` with no argument prints a per-module summary of how many
@@ -388,17 +388,19 @@ name (`/codex perf Spells`) it forces a full expand of that one module
 and reports the Lua memory delta in KB, so you can see exactly what each
 catalog costs at runtime.
 
-`/codex gui` opens a tabbed dashboard:
+**Note:** the built-in dashboard was retired during v1.0 development and
+moved to the standalone **Forge_Codex** sub-addon (part of the Forge
+developer toolset). `/codex gui` now redirects to `/forge codex` if Forge
+is loaded; otherwise the slash logs a hint pointing the user to install
+Forge.
 
-- **Stats** — per-module counts and source breakdown
-- **Search** — same `:Search()` as the slash command, results in a scrollable pane
-- **Browse** — pick a module, optionally filter, click a row to inspect every field
-- **Where** — itemID -> drop sources with map locations
-- **Settings** — auto-scan toggle, friendly nameplates toggle, log echo
-- **Actions** — reload UI, force save, run adapters, etc.
-- **Log** — embedded view of the dedicated log window
+The Forge_Codex tab provides the same Stats / Search / Browse / Where /
+Settings / Actions / Log views, plus per-module entry inspection,
+deeper field rendering, and integration with Forge_Logs for filtered
+log views. Source for that lives in the `Forge_Codex/` addon folder.
 
-Dashboard open state is persisted across reloads (`LibCodexDB.dashboardOpen`).
+LibCodex-1.0 itself ships only the data layer and the slash-command
+layer; the GUI lives in Forge to keep this library lean for embedding.
 
 ---
 
@@ -647,8 +649,8 @@ LibCodex-1.0/
     LibStub/                  vendored LibStub for standalone use
 
   Log.lua                     dedicated debug-window helper
-  Dashboard.lua               GUI control panel (/codex gui)
-  SlashCommand.lua            /codex slash command suite
+  Dashboard.lua               stub (retained as load-order placeholder; UI lives in Forge_Codex)
+  SlashCommand.lua            /codex slash command suite (with /codex gui -> /forge codex redirect)
 
   tools/                      Python build tools (not loaded by WoW)
     bake.py                   merge SavedVariables into Data/
