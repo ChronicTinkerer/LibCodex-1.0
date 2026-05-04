@@ -618,25 +618,85 @@ end
 LibCodex:RegisterAdapter("Runtime", function(LC)
     if not CreateFrame then return end  -- not in WoW (smoke test)
 
-    local f = CreateFrame("Frame", "LibCodexRuntimeAdapter")
-    f:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-    f:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-    f:RegisterEvent("PLAYER_TARGET_CHANGED")
-    f:RegisterEvent("PLAYER_FOCUS_CHANGED")
-    f:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-    f:RegisterEvent("BAG_UPDATE_DELAYED")
-    f:RegisterEvent("AUTO_COMPLETE_ACCOUNT_LIST_UPDATED")
-    f:RegisterEvent("LOOT_OPENED")
-    f:RegisterEvent("LOOT_READY")
-    f:RegisterEvent("CHAT_MSG_LOOT")
-    f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-    f:RegisterEvent("QUEST_ACCEPTED")
-    f:RegisterEvent("QUEST_TURNED_IN")
-    f:RegisterEvent("QUEST_REMOVED")
-    f:RegisterEvent("QUEST_LOG_UPDATE")
-    f:RegisterEvent("TAXIMAP_OPENED")
-    f:RegisterEvent("ENCOUNTER_START")
-    f:RegisterEvent("ENCOUNTER_END")
+    -- Anonymous frame: named adapter frames surface RegisterEvent calls as
+    -- "protected" in modern Retail in some scenarios.
+    local f = CreateFrame("Frame")
+
+    -- Validate event names BEFORE registering. Calling RegisterEvent with
+    -- an unknown event taints the secure execution path even when wrapped
+    -- in pcall (the taint is set before the error fires).
+    local IsEventValid =
+        (C_EventUtils and C_EventUtils.IsEventValid)
+        or _G.IsEventValid
+        or nil
+
+    -- Persistent skip list. Events that triggered ADDON_ACTION_FORBIDDEN in
+    -- a past session won't be re-attempted. Stored in LibCodexDB.
+    LibCodexDB = LibCodexDB or {}
+    LibCodexDB.runtimeBadEvents = LibCodexDB.runtimeBadEvents or {}
+    local _badEvents  = LibCodexDB.runtimeBadEvents
+    local _attempting = nil  -- set just before each RegisterEvent
+
+    -- ADDON_ACTION_FORBIDDEN watcher. When our addon is blamed AND we're in
+    -- the middle of registering an event, that event is flagged forever.
+    local watcher = CreateFrame("Frame")
+    watcher:RegisterEvent("ADDON_ACTION_FORBIDDEN")
+    watcher:SetScript("OnEvent", function(_, _, addonName, fnName)
+        -- Log every ADDON_ACTION_FORBIDDEN we see so we can confirm the
+        -- watcher is firing at all (debug aid).
+        if LibCodex.Log and LibCodex.Log.Print then
+            LibCodex.Log.Print(string.format(
+                "Runtime adapter: ADDON_ACTION_FORBIDDEN fired for addon='%s' fn='%s' attempting='%s'",
+                tostring(addonName), tostring(fnName), tostring(_attempting)))
+        end
+        if addonName == "LibCodex-1.0" and _attempting then
+            if not _badEvents[_attempting] then
+                _badEvents[_attempting] = true
+                if LibCodex.Log and LibCodex.Log.Print then
+                    LibCodex.Log.Print("Runtime adapter: event '" ..
+                        _attempting .. "' triggers ADDON_ACTION_FORBIDDEN; " ..
+                        "added to skip list (persisted).")
+                end
+            end
+        end
+    end)
+
+    local function safeRegisterEvent(frame, evt)
+        if _badEvents[evt] then
+            return  -- previously found bad; skip silently
+        end
+        if IsEventValid and not IsEventValid(evt) then
+            if LibCodex.Log and LibCodex.Log.Print then
+                LibCodex.Log.Print("Runtime adapter: skipped unknown event '" ..
+                    tostring(evt) .. "'")
+            end
+            return
+        end
+        _attempting = evt
+        frame:RegisterEvent(evt)
+        _attempting = nil
+    end
+
+    local events = {
+        "NAME_PLATE_UNIT_ADDED",
+        "UPDATE_MOUSEOVER_UNIT",
+        "PLAYER_TARGET_CHANGED",
+        "PLAYER_FOCUS_CHANGED",
+        "GET_ITEM_INFO_RECEIVED",
+        "BAG_UPDATE_DELAYED",
+        "LOOT_OPENED",
+        "LOOT_READY",
+        "CHAT_MSG_LOOT",
+        "COMBAT_LOG_EVENT_UNFILTERED",
+        "QUEST_ACCEPTED",
+        "QUEST_TURNED_IN",
+        "QUEST_REMOVED",
+        "QUEST_LOG_UPDATE",
+        "TAXIMAP_OPENED",
+        "ENCOUNTER_START",
+        "ENCOUNTER_END",
+    }
+    for _, evt in ipairs(events) do safeRegisterEvent(f, evt) end
     f:SetScript("OnEvent", function(_, evt, arg1, arg2, arg3, arg4, arg5)
         if     evt == "NAME_PLATE_UNIT_ADDED"   then readUnit(arg1)
         elseif evt == "UPDATE_MOUSEOVER_UNIT"   then readUnit("mouseover")
@@ -679,7 +739,8 @@ LibCodex:RegisterAdapter("Runtime", function(LC)
                     recordKill(destGUID, destName)
                 end
             end
-        elseif evt == "AUTO_COMPLETE_ACCOUNT_LIST_UPDATED" then syncConnectedRealms()
+        -- AUTO_COMPLETE_ACCOUNT_LIST_UPDATED removed: gone in modern Retail.
+        -- Connected realms are seeded via syncConnectedRealms() at PLAYER_LOGIN.
         elseif evt == "QUEST_ACCEPTED" then
             -- arg1 is the quest log index in older clients, the questID in
             -- modern ones. Try the modern signature first.

@@ -124,9 +124,28 @@ end
 -- ----------------------------------------------------------------------------
 -- Public API.
 -- ----------------------------------------------------------------------------
+-- Cached Cairn.Log logger. Resolved lazily on first call so consumers
+-- that load LibCodex BEFORE Cairn-Log-1.0 still bridge correctly once
+-- Cairn loads. Soft dependency: if Cairn.Log isn't around, we just skip.
+local _cairnLogger
+local function getCairnLogger()
+    if _cairnLogger then return _cairnLogger end
+    if LibStub then
+        local CL = LibStub("Cairn-Log-1.0", true)
+        if CL then _cairnLogger = CL("LibCodex") end
+    end
+    return _cairnLogger
+end
+
 function L.Print(msg)
     if msg == nil then return end
     msg = tostring(msg)
+
+    -- Bridge to Cairn.Log so addons using Forge_Logs (or any other
+    -- Cairn.Log viewer) see LibCodex events alongside their own.
+    local logger = getCairnLogger()
+    if logger and logger.Info then logger:Info("%s", stripColors(msg)) end
+
     buildFrame()
     local ts = timestamp()
     local line = (ts ~= "" and ("|cff888888[" .. ts .. "]|r ") or "") .. msg

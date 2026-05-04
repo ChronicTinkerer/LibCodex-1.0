@@ -350,7 +350,7 @@ local function cmdHelp()
     line("  /codex verbose [on|off]- log every capture to the log window")
     line("  /codex log [...]       - show|hide|clear|copy|on|off the log window")
     line("  /codex perf [Module]   - measure lazy-load memory footprint (no arg = summary)")
-    line("  /codex gui             - open the GUI dashboard (no slash commands needed)")
+    line("  /codex gui             - (moved to Forge_Codex; use /forge codex)")
 end
 
 -- ----------------------------------------------------------------------------
@@ -477,11 +477,7 @@ local function dispatch(msg)
     elseif cmd == "log"     then cmdLog(rest)
     elseif cmd == "perf"    then cmdPerf(rest)
     elseif cmd == "gui" or cmd == "dashboard" or cmd == "panel" then
-        if LibCodex.Dashboard and LibCodex.Dashboard.Toggle then
-            LibCodex.Dashboard.Toggle()
-        else
-            out("Dashboard not loaded.")
-        end
+        out("The dashboard moved to Forge_Codex. Use |cffd87f3a/forge codex|r.")
     elseif cmd == "help" or cmd == "?" then cmdHelp()
     else
         out("Unknown subcommand: " .. cmd)

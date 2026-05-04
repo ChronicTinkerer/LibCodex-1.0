@@ -2,7 +2,7 @@
 ## Title: LibCodex-1.0
 ## Notes: A reusable static-catalog library for WoW addons. Tracks NPCs, items, spells, talents, quests, zones, flight points, currencies, reputations, crafts, achievements, pets, mounts, etc. Hybrid load model: bundled seed + runtime growth. Consumers embed via ## libs and call LibStub("LibCodex-1.0").
 ## Author: ChronicTinkerer
-## Version: 2605040045
+## Version: 2605041400
 ## SavedVariables: LibCodexDB
 ## LoadOnDemand: 0
 ## X-Curse-Project-ID: 1532131
@@ -15,7 +15,7 @@
 #       own LibStub via embeds and this is a no-op since LibStub is idempotent)
 embeds\LibStub\LibStub.lua
 
-# ----- Vendored LibEditMode (p3lim's library). Lets the Dashboard window
+# ----- Vendored LibEditMode. Lets the Dashboard window
 #       register with Blizzard's Edit Mode so users can move it via the
 #       native Edit Mode UI. Soft-optional in the Dashboard code: if the
 #       library isn't present, the dashboard still works as a draggable
@@ -196,8 +196,6 @@ Adapters\Runtime.lua
 # ----- Log window (used by SlashCommand and available to consumers)
 Log.lua
 
-# ----- GUI dashboard (/codex gui)
-Dashboard.lua
-
-# ----- Slash command interface (/codex)
+# ----- Slash command interface (/codex). The legacy GUI dashboard moved
+# to Forge_Codex; /codex gui now redirects users there.
 SlashCommand.lua
