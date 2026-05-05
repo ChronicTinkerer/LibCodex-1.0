@@ -1,8 +1,8 @@
-## Interface: 50500
+## Interface: 50503
 ## Title: LibCodex-1.0
 ## Notes: A reusable static-catalog library for WoW addons. Tracks NPCs, items, spells, talents, quests, zones, flight points, currencies, reputations, crafts, achievements, pets, mounts, etc. Hybrid load model: bundled seed + runtime growth. Consumers embed via ## libs and call LibStub("LibCodex-1.0").
 ## Author: ChronicTinkerer
-## Version: 4
+## Version: 5
 ## SavedVariables: LibCodexDB
 ## LoadOnDemand: 0
 ## X-Curse-Project-ID: 1532131
@@ -12,9 +12,8 @@
 #       project ID is present in the TOC, so the Mists zip will publish
 #       to CurseForge only. Add the two X-* lines once the flavor is
 #       validated.
-# NOTE: Interface 50500 is a guess at the current MoP Classic build
-#       number. Verify against the live Blizzard_*.toc inside the MoP
-#       Classic client before tagging a release.
+# Interface 50503 verified against .build.info (Version 5.5.3.67158)
+# on 2026-05-05.
 
 # ----- Vendored LibStub (only loaded when LibCodex runs as a standalone addon
 #       for development/testing; in production the consumer addon supplies its
