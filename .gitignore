@@ -1,36 +1,30 @@
 # LibCodex-1.0 .gitignore
-# Tracks: source code (Lua/XML/TOC), build tools, embedded libs, bundled Data.
-# Ignores: regenerable artifacts, caches, machine-specific config, editor junk.
+#
+# All dev-local artifacts (import dumps, caches, bake configs, downloaded
+# SQL, Wowhead HTML, etc.) live under /.dev/ at the repo root. One folder,
+# one ignore line. Add new tooling artifacts there and you don't have to
+# touch this file.
+.dev/
 
-# ---- Generated import artifacts ------------------------------------------
-# These are produced by tools/import-wago.py and tools/crawl-wowhead.py.
-# Multi-hundred-MB Lua files; regenerate from source whenever needed.
-wago-import.lua
-wowhead-import.lua
-wago-import-mists.lua
-wowhead-quests.lua
-test-*.lua
-*-import.lua
-
-# ---- Tool caches ---------------------------------------------------------
-# Downloaded CSV exports and HTML pages. Recreated on demand by the tools.
-.wago-cache/
-.wowhead-cache/
-
-# ---- Bake backups --------------------------------------------------------
-# bake.py writes a timestamped copy of each Data/*.lua before overwriting.
-# These accumulate quickly; never want them in git.
-.bake-backup/
+# bake.py writes timestamped backups of each Data/*.lua before overwriting.
+# These accumulate quickly across the per-flavor Data folders; never commit.
 **/.bake-backup/
 
-# ---- Local bake configs --------------------------------------------------
-# bake-config*.lua files contain absolute paths specific to the user's
-# WoW install / SavedVariables location. Per-user, never commit.
-# (If you want to share an example template, check in `bake-config.lua.example`
-# instead.)
-tools/*
+# Editor / IDE
+.vscode/
+.idea/
+.cursor/
+.claude/
+*.swp
+*.swo
+*~
 
-# ---- Python build artifacts ---------------------------------------------
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python build artifacts (mostly tools/__pycache__)
 __pycache__/
 *.pyc
 *.pyo
@@ -38,22 +32,7 @@ __pycache__/
 .Python
 *.egg-info/
 
-# ---- Editor / IDE -------------------------------------------------------
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.cursor/
-.claude/
-
-# ---- OS junk ------------------------------------------------------------
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# ---- Misc backups -------------------------------------------------------
+# Misc backups
 *.bak
 *.orig
 *.tmp
-*.ps1
