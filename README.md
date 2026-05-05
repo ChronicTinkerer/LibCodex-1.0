@@ -47,10 +47,12 @@ print(entry.label, entry.creatureType, entry.classification)
 - [Adapters](#adapters)
 - [SavedVariables](#savedvariables)
 - [Slash commands and GUI](#slash-commands-and-gui)
+- [Multi-flavor support](#multi-flavor-support)
 - [Build tools](#build-tools)
 - [Adding a new module](#adding-a-new-module)
-- [Embedding in a consumer addon](#embedding-in-a-consumer-addon)
+- [Distribution patterns](#distribution-patterns)
 - [Repo layout](#repo-layout)
+- [Versioning](#versioning)
 - [Releasing](#releasing)
 
 ---
@@ -404,32 +406,80 @@ layer; the GUI lives in Forge to keep this library lean for embedding.
 
 ---
 
+## Multi-flavor support
+
+LibCodex ships catalogs for three game flavors, with one TOC and one Data folder per flavor:
+
+| Flavor | TOC | Data folder | Bundled data sources |
+| --- | --- | --- | --- |
+| **Mainline** (Retail) | `LibCodex-1.0.toc` | `Data/` | wago.tools (DBC) + Wowhead enrichment |
+| **Mists** (MoP Classic) | `LibCodex-1.0_Mists.toc` | `Data_Mists/` | wago.tools (DBC) |
+| **TBC** (TBC Anniversary) | `LibCodex-1.0_TBC.toc` | `Data_TBC/` | cmangos server-emulator SQL + wago.tools |
+
+The BigWigs packager builds three separate zips at release time, one per flavor TOC. CurseForge / Wago / WoWInterface auto-tag each upload to the right game-version slot based on the TOC's `## Interface:` line.
+
+**Why three different data sources?** Blizzard ships stripped-down DBCs for non-Retail flavors and fills in the rest server-side at runtime. wago.tools' DBC mirror sees only what's in the static DBC, so Classic-flavor Creature catalogs from wago alone can be near-empty. For TBC, we instead ingest the cmangos server emulator's open-source world DB SQL dump, which contains the full creature/quest/object catalog assembled from years of community reverse-engineering. Mists (MoP Classic) currently uses wago alone because no maintained MoP server emulator with public SQL dumps is wired up yet; Wowhead-crawl enrichment fills the gap pending that work.
+
+**Adding a new flavor:**
+
+1. Append a row to `FLAVOR_DATA_DIR` and `FLAVOR_DEFAULT_SOURCE` maps in each tool (`bake.py`, `import-wago.py`, `import-emulator-sql.py`, `import-blizzard.py`, `crawl-wowhead.py`).
+2. Create `Data_<NewFlavor>/` with a stub for every module (run `bake.py --flavor <name>` once and it will auto-create empty stubs).
+3. Create `LibCodex-1.0_<NewFlavor>.toc` cloned from an existing flavor TOC; update `## Interface:` and the `Data_<NewFlavor>\*.lua` include list.
+4. Append the new TOC path to `release.ps1`'s `$FilesToBump` array so future bumps include it.
+5. Run an import (wago / emulator SQL / Wowhead) for the new flavor and bake.
+
+---
+
 ## Build tools
 
-All Python tools are in `tools/`. They use only the standard library (no pip installs needed). Tested on Python 3.10+.
+All Python tools live in `.dev/tools/` (see [Repo layout](#repo-layout) — everything dev-local lives under `.dev/`). They use only the standard library (no pip installs needed). Tested on Python 3.10+. Tools accept `--flavor mainline|mists|tbc` to target a specific Classic flavor; defaults to mainline.
 
-### `tools/import-wago.py`
+### `.dev/tools/refresh.ps1` (recommended entry point)
 
-Pulls DBC table CSV exports from [wago.tools](https://wago.tools), maps each row into Codex schema, writes a SavedVariables-shaped Lua file ready for the bake tool to merge.
+End-to-end pipeline wrapper. One command runs the full import + bake cycle for one flavor.
+
+```powershell
+.\.dev\tools\refresh.ps1 -Flavor mists
+.\.dev\tools\refresh.ps1 -Flavor mists -SkipWowhead   # wago only, fast
+.\.dev\tools\refresh.ps1 -Flavor tbc -MaxIds 500
+.\.dev\tools\refresh.ps1 -Flavor mainline -DryRun     # preview
+```
+
+Sequence: `import-wago` → `bake` → `crawl-wowhead` → `bake`. Each step is idempotent and resumable.
+
+### `.dev/tools/import-wago.py`
+
+Pulls DBC table CSV exports from [wago.tools](https://wago.tools), maps each row into Codex schema, writes a SavedVariables-shaped Lua file the bake tool can merge.
 
 ```
-py tools\import-wago.py
+py .dev\tools\import-wago.py --flavor mists
 ```
 
-Defaults to fetching every table listed in `TABLE_CONFIG` (currently 22 tables across 19 modules) and writing `wago-import.lua` in the current directory. Cache is persisted to `.wago-cache/` so re-runs only re-fetch new tables.
+Defaults: fetches every table in `TABLE_CONFIG` (~22 tables across 19 modules), caches CSVs under `.dev/wago-cache/`, writes `.dev/wago-import-<flavor>.lua`.
 
 Useful flags:
 
 ```
+--flavor mainline|mists|tbc     game flavor (sets default branch and output)
 --tables Creature,ItemSparse    only fetch named tables
---branch wow                     wago branch (wow=retail, wowt=PTR, wow_classic, ...)
---cache-dir .wago-cache          where to cache downloaded CSVs
---output wago-import.lua         output file path
+--branch wow                    explicit wago branch (overrides flavor default)
+--cache-dir .dev/wago-cache     where to cache downloaded CSVs
+--output <path>                 explicit output file
 ```
 
-After import, run the bake tool against `bake-config-wago.lua` (which points `wtf_path` at `wago-import.lua`).
+### `.dev/tools/import-emulator-sql.py`
 
-### `tools/crawl-wowhead.py`
+Ingests a server-emulator world DB SQL dump (cmangos schema) and produces a SavedVariables-shaped Lua file with rich NPC/Quest/GameObject data including spawn coordinates and quest relations. **The load-bearing tool for non-Retail flavors**, where wago.tools' Creature DBC is sparse but server emulators have complete content from years of community work.
+
+```
+py .dev\tools\import-emulator-sql.py --flavor tbc
+```
+
+Defaults: downloads the cmangos TBC dump (~15 MB gzipped) from `cmangos/tbc-db` on first run, caches under `.dev/emulator-sql-cache/`, writes `.dev/emulator-import-tbc.lua`.
+
+Tables ingested: `creature_template` (NPCs), `creature` (spawn instances), `quest_template`, `creature_questrelation`, `creature_involvedrelation`, `gameobject_template`, `item_template`. Output schema includes per-NPC spawn coordinates, faction, level range, and quest-start/end relations.
+
+### `.dev/tools/crawl-wowhead.py`
 
 Targeted Wowhead crawler. For each NPC/Item/Quest id you supply, fetches the Wowhead page and extracts what wago can't give us:
 
@@ -440,53 +490,50 @@ Targeted Wowhead crawler. For each NPC/Item/Quest id you supply, fetches the Wow
 Polite citizen by default: 1.5s between requests with jitter, recovery pause on 403, per-id disk cache, hard cap on total requests per run.
 
 ```
-py tools\crawl-wowhead.py --modules Quests --from-data Data --max-ids 65000
+py .dev\tools\crawl-wowhead.py --flavor mists --modules Quests --from-data Data_Mists --max-ids 1000
 ```
 
 Flag summary:
 
 ```
---from <savedvars.lua>           read ids from a SavedVariables file
---from-data <Data dir>           read ids from Data/*.lua (uses what's already baked)
---ids "12345,67890,100-200"      explicit id list / ranges
---modules NPCs,Items,Quests      which modules to crawl
---max-ids 1000                   hard cap per run
---rate 1.5                       seconds between requests (default 1.5)
---quality-min 4                  Items only: skip below this quality
---cache-dir .wowhead-cache       on-disk cache
---dry-run                        plan without fetching
---quiet                          only print errors and the final summary
+--flavor mainline|mists|tbc     URL prefix + cache + default output
+--from <savedvars.lua>          read ids from a SavedVariables file
+--from-data <Data dir>          read ids from Data/*.lua (uses what's already baked)
+--ids "12345,67890,100-200"     explicit id list / ranges
+--modules NPCs,Items,Quests     which modules to crawl
+--max-ids 1000                  hard cap per run
+--rate 1.5                      seconds between requests
+--quality-min 4                 Items only: skip below this quality
+--dry-run                       plan without fetching
+--quiet                         only print errors and the final summary
 ```
 
 The crawler is fully resumable. Cached pages are detected and skipped without a network round-trip, so re-running the same command after a cancelled run picks up where it left off.
 
-### `tools/bake.py`
+### `.dev/tools/bake.py`
 
-Reads SavedVariables (or the output of an importer or crawler) and merges learned entries into `Data/*.lua`. Hand-curated entries marked `_handcrafted=true` survive every bake.
-
-```
-py tools\bake.py --config tools\bake-config-wago.lua
-```
-
-The config file is tiny:
-
-```lua
-return {
-    wtf_path = "C:/path/to/SavedVariables/LibCodex-1.0.lua",
-    data_dir = "../Data",
-    backup = true,
-}
-```
-
-Backups land in `Data/.bake-backup/<timestamp>/` before any file is overwritten. Useful flags:
+Reads SavedVariables (or the output of an importer or crawler) and merges learned entries into `Data/*.lua` (Mainline) or `Data_<Flavor>/*.lua` (per Classic flavor). Hand-curated entries marked `_handcrafted=true` survive every bake.
 
 ```
---dry-run             show what would change without writing
---only Items,NPCs     only process named modules
---skip Realms         skip named modules
+py .dev\tools\bake.py --flavor mists --source .dev\wago-import-mists.lua
 ```
 
-The bake's location-dedup logic collapses near-duplicate `locations` entries within a small radius (`NPCs` ~50 yards, `GameObjects` ~15 yards) so repeated visits don't bloat coordinates.
+Useful flags:
+
+```
+--flavor mainline|mists|tbc     selects the Data folder + default source
+--source <path>                 SavedVariables-shaped Lua to merge from
+--data-dir <path>               override output Data folder (rarely needed)
+--dry-run                       show what would change without writing
+--only Items,NPCs               only process named modules
+--skip Realms                   skip named modules
+```
+
+Backups land in `Data_<Flavor>/.bake-backup/<timestamp>/` before any file is overwritten. The bake's location-dedup logic collapses near-duplicate `locations` entries within a small radius (`NPCs` ~50 yards, `GameObjects` ~15 yards) so repeated visits don't bloat coordinates.
+
+### `.dev/tools/import-blizzard.py`
+
+Fetches Item/Quest data from Blizzard's official Game Data API. Useful supplement for Mainline catalogs. Note: Blizzard's API does NOT expose individual creature lookup, so it cannot fill the NPC gap on Classic flavors — for that, use `import-emulator-sql.py` instead. Requires `BNET_CLIENT_ID` and `BNET_CLIENT_SECRET` environment variables; register a client at https://develop.battle.net.
 
 ---
 
@@ -607,75 +654,69 @@ Multiple addons can embed the same version with no conflict; LibStub picks the h
 ```
 LibCodex-1.0/
   LibCodex-1.0.lua            core: LibStub registration, top-level accessors
-  LibCodex-1.0.toc            standalone-addon manifest
+  LibCodex-1.0.toc            Mainline (Retail) manifest
+  LibCodex-1.0_Mists.toc      MoP Classic manifest
+  LibCodex-1.0_TBC.toc        TBC Anniversary manifest
   LibCodex-1.0.xml            embed manifest (consumer addons reference this)
-  README.md                   this file
+  README.md  CHANGELOG.md  LICENSE
+  .gitignore  .pkgmeta        one .gitignore line: .dev/
 
   Modules/
     Common.lua                collection factory
-    Catalog/
-      NPCs.lua, Items.lua, GameObjects.lua, Spells.lua, Quests.lua,
-      Talents.lua, FlightPoints.lua, Crafts.lua, Professions.lua,
-      Pets.lua, Mounts.lua, Toys.lua, Heirlooms.lua, Achievements.lua,
-      Encounters.lua, Zones.lua, Currencies.lua,
-      Areas.lua, Vignettes.lua, Holidays.lua, QuestPOI.lua, PvpTalents.lua,
-      Enchants.lua, ItemSets.lua, TradeSkillCategories.lua, TransmogSets.lua,
-      LFGDungeons.lua, Battlemasters.lua, Scenarios.lua, GroupFinder.lua,
-      BattlePetAbilities.lua, CustomizationOptions.lua,
-      CustomizationChoices.lua, TransmogIllusions.lua,
-      AreaTriggers.lua, PlayerConditions.lua,
-      AreaPOI.lua, WMOAreaTables.lua, TaxiPaths.lua, DungeonEncounters.lua,
-      ItemAppearances.lua, ItemModifiedAppearances.lua,
-      ItemBonuses.lua, ItemEffects.lua,
-      SpellChargeCategories.lua, SpellMechanics.lua, SpellCooldowns.lua,
-      SpellCastTimes.lua, SpellPower.lua, SpellRanges.lua,
-      SpellDurations.lua, Glyphs.lua,
-      AchievementCategories.lua, FriendshipReputations.lua,
-      Maps.lua, MapDifficulties.lua, EncounterCreatures.lua,
-      EncounterSections.lua, SkillRaceClass.lua, GossipOptions.lua,
-      Movies.lua, Cinematics.lua
-    Enums/
-      Classes.lua, Factions.lua, Races.lua, Realms.lua,
-      CreatureTypes.lua, Specs.lua, Stats.lua, Difficulty.lua,
-      Regions.lua, Languages.lua, ChatChannels.lua
+    Catalog/                  64 catalog modules (see Module catalog table)
+    Enums/                    11 enum modules
 
-  Data/                       bundled seed (one file per module; generated by bake.py)
-    NPCs.lua, Items.lua, ...
+  Data/                       Mainline seed data (one .lua per module)
+  Data_Mists/                 MoP Classic seed data
+  Data_TBC/                   TBC Anniversary seed data
 
   Adapters/
     Runtime.lua               WoW event hooks for live capture
 
   embeds/
     LibStub/                  vendored LibStub for standalone use
+  libs/
+    LibEditMode/              vendored LibEditMode
 
   Log.lua                     dedicated debug-window helper
-  Dashboard.lua               stub (retained as load-order placeholder; UI lives in Forge_Codex)
-  SlashCommand.lua            /codex slash command suite (with /codex gui -> /forge codex redirect)
+  SlashCommand.lua            /codex slash command suite
 
-  tools/                      Python build tools (not loaded by WoW)
-    bake.py                   merge SavedVariables into Data/
-    import-wago.py            fetch DBC CSVs from wago.tools
-    crawl-wowhead.py          fetch quest/NPC/item pages from Wowhead
-    bake-config-wago.lua      bake config pointing at wago-import.lua
-    bake-config-wowhead.lua   bake config pointing at wowhead-import.lua
-
-  .wago-cache/                downloaded CSVs (gitignored)
-  .wowhead-cache/             downloaded HTML pages (gitignored)
+  .dev/                       all dev-local artifacts (gitignored, pkgignored)
+    tools/                    Python build tools + refresh.ps1
+      bake.py                 merge import dumps into Data_<Flavor>/
+      import-wago.py          fetch DBC CSVs from wago.tools
+      import-emulator-sql.py  ingest cmangos-style server emulator SQL dumps
+      import-blizzard.py      fetch from Blizzard Game Data API (OAuth)
+      crawl-wowhead.py        targeted Wowhead enrichment
+      refresh.ps1             end-to-end pipeline wrapper
+    release.ps1               one-command tag + push (sequential bump)
+    configs/                  bake-config*.lua (per-source paths)
+    wago-cache/               downloaded CSVs
+    wowhead-cache-<flavor>/   per-flavor HTML cache
+    blizzard-cache-<flavor>/  per-flavor API JSON cache
+    emulator-sql-cache/       gzipped server emulator dumps
+    *-import-<flavor>.lua     intermediate import dumps from each tool
 ```
+
+The `.dev/` folder convention keeps the repo root tidy: a single `.gitignore` line (`.dev/`) and a single `.pkgmeta ignore:` entry (`- .dev`) cover every dev artifact. Adding a new tool or cache type does not require touching either file.
 
 ---
 
 ## Versioning
 
-LIB_MAJOR is `LibCodex-1.0`. The 1.0 in the major name is part of the LibStub contract: when consumers ask for `LibStub("LibCodex-1.0")` they're asking for the 1.x line. Breaking changes would mint a `LibCodex-2.0` major.
+LIB_MAJOR is `LibCodex-1.0`. The `1.0` in the major name is part of the LibStub contract: when consumers ask for `LibStub("LibCodex-1.0")` they're asking for the 1.x line. Breaking changes would mint a `LibCodex-2.0` major.
 
-LIB_MINOR is the integer revision. Bump it when shipping a backwards-compatible change so older copies of the library yield to newer ones at LibStub registration time.
+LIB_MINOR is a **sequential integer build number**. Each release.ps1 invocation reads the current version from the primary TOC and writes `N+1` to all configured TOCs and the lib MINOR in lockstep. First release of a new project starts at 1.
+
+This replaced the previous YYMMDDHHMM time-stamp scheme on 2026-05-05 because time-stamped versions go non-monotonic when builds happen from machines on different timezones (a UTC-stamped sandbox build vs an Eastern-time local build can produce timestamps that disagree with the wall clock). Sequential is always strictly increasing and free of timezone failure modes.
+
+All three flavor TOCs (`LibCodex-1.0.toc`, `LibCodex-1.0_Mists.toc`, `LibCodex-1.0_TBC.toc`) plus `LibCodex-1.0.lua`'s LIB_MINOR are bumped together by `release.ps1` so users on any client see the same release at the same time.
 
 ---
 
 ## Releasing
 
-Auto-packaging is wired up via [BigWigsMods/packager](https://github.com/BigWigsMods/packager) in `.github/workflows/release.yml`. A pushed git tag triggers a build that uploads to CurseForge, WoWInterface, and Wago, plus creates a GitHub Release with the zip attached.
+Auto-packaging is wired up via [BigWigsMods/packager](https://github.com/BigWigsMods/packager) in `.github/workflows/release.yml`. A pushed git tag triggers a build that produces three zips (Mainline, Mists, TBC), tags each with its game-version range based on the TOC's `## Interface:` line, and uploads to CurseForge / WoWInterface / Wago plus creates a GitHub Release.
 
 **One-time setup (per site):**
 
@@ -683,12 +724,13 @@ Auto-packaging is wired up via [BigWigsMods/packager](https://github.com/BigWigs
    - CurseForge: https://www.curseforge.com -> Author Tools -> Submit Project
    - WoWInterface: https://www.wowinterface.com/downloads/author.php
    - Wago: https://addons.wago.io
-2. Copy the numeric project ID from each site into the `.toc`:
+2. Copy the numeric project ID from each site into each flavor's `.toc`:
    ```
    ## X-Curse-Project-ID: 12345
    ## X-Wago-ID: AbC123
    ## X-WoWI-ID: 67890
    ```
+   Per-flavor staging tip: omit `X-Wago-ID` / `X-WoWI-ID` from a flavor's TOC to publish that flavor to CurseForge only on its first release. Add the lines back once the flavor is validated.
 3. Generate an API token on each site and add as a GitHub repo secret (Settings -> Secrets and variables -> Actions):
    - `CF_API_KEY` -> https://www.curseforge.com/account/api-tokens
    - `WAGO_API_TOKEN` -> https://addons.wago.io/account/apikeys
@@ -698,20 +740,23 @@ A missing secret causes the packager to silently skip that site, so you can publ
 
 **Releasing a new build:**
 
-```sh
-# 1. Bump ## Version: in the .toc and LIB_MINOR in LibCodex-1.0.lua
-#    to the same fresh YYMMDDHHMM stamp.
-# 2. Commit.
-git commit -am "Build 2605041030"
-
-# 3. Tag with the same stamp (with optional v-prefix) and push.
-git tag 2605041030
-git push origin main --tags
+```powershell
+# One command: bumps all four version markers (3 TOCs + LIB_MINOR) by +1,
+# commits, tags with the new build number, pushes HEAD + tag.
+.\.dev\release.ps1 "v3: short description of changes"
 ```
 
-The push of the tag fires the workflow. Watch progress under the **Actions** tab in GitHub.
+What the script does:
 
-The packager respects a hardcoded `## Version:` line and will not rewrite it from the tag, so the YYMMDDHHMM in the .toc is the authoritative version published to all sites. The tag exists only to trigger the workflow and label the GitHub Release.
+1. Reads `## Version: N` from `LibCodex-1.0.toc` (the primary).
+2. Writes `N+1` to all three TOCs and `LibCodex-1.0.lua`'s `LIB_MINOR`.
+3. `git add -A && git commit -m "<msg>"`.
+4. `git tag -a <N+1> -m <N+1>` (annotated, never lightweight — VSCode silently skips lightweight tags).
+5. `git push origin HEAD && git push origin <tag>`.
+
+The push of the tag fires the workflow. Watch progress under the **Actions** tab on GitHub.
+
+Use `-DryRun` to preview the changes without writing files or running git. Use `-NoPush` to bump + commit + tag locally without pushing.
 
 ---
 
