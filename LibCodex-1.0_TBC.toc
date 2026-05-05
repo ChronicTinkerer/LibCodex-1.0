@@ -1,0 +1,209 @@
+## Interface: 20504
+## Title: LibCodex-1.0
+## Notes: A reusable static-catalog library for WoW addons. Tracks NPCs, items, spells, talents, quests, zones, flight points, currencies, reputations, crafts, achievements, pets, mounts, etc. Hybrid load model: bundled seed + runtime growth. Consumers embed via ## libs and call LibStub("LibCodex-1.0").
+## Author: ChronicTinkerer
+## Version: 2605051511
+## SavedVariables: LibCodexDB
+## LoadOnDemand: 0
+## X-Curse-Project-ID: 1532131
+## X-License: MIT
+# NOTE: X-Wago-ID and X-WoWI-ID intentionally omitted on this first TBC
+#       Anniversary ship. The BigWigs packager only uploads to sites
+#       whose project ID is present in the TOC, so the TBC zip will
+#       publish to CurseForge only. Add the two X-* lines once the
+#       flavor is validated.
+# NOTE: Interface 20504 is a guess at the current TBC Anniversary build
+#       number. Verify against the live Blizzard_*.toc inside the TBC
+#       Anniversary client before tagging a release.
+# NOTE: This TOC's data is sourced from wago.tools branch "wow_anniversary"
+#       via tools/import-wago.py --flavor tbc.
+
+# ----- Vendored LibStub (only loaded when LibCodex runs as a standalone addon
+#       for development/testing; in production the consumer addon supplies its
+#       own LibStub via embeds and this is a no-op since LibStub is idempotent)
+embeds\LibStub\LibStub.lua
+
+# ----- Vendored LibEditMode. Lets the Dashboard window
+#       register with Blizzard's Edit Mode so users can move it via the
+#       native Edit Mode UI. Soft-optional in the Dashboard code: if the
+#       library isn't present, the dashboard still works as a draggable
+#       frame, just without Edit Mode integration.
+Libs\LibEditMode\LibEditMode.lua
+Libs\LibEditMode\pools.lua
+Libs\LibEditMode\widgets\button.lua
+Libs\LibEditMode\widgets\checkbox.lua
+Libs\LibEditMode\widgets\dialog.lua
+Libs\LibEditMode\widgets\divider.lua
+Libs\LibEditMode\widgets\dropdown.lua
+Libs\LibEditMode\widgets\expander.lua
+Libs\LibEditMode\widgets\extension.lua
+Libs\LibEditMode\widgets\slider.lua
+Libs\LibEditMode\widgets\colorpicker.lua
+
+# ----- Library core
+LibCodex-1.0.lua
+
+# ----- Reusable collection factory (every module is built from this)
+Modules\Common.lua
+
+# ----- Tier 1 enums (small, stable, hand-curated)
+Modules\Enums\Classes.lua
+Modules\Enums\Factions.lua
+Modules\Enums\Races.lua
+Modules\Enums\Realms.lua
+Modules\Enums\CreatureTypes.lua
+Modules\Enums\Specs.lua
+Modules\Enums\Stats.lua
+Modules\Enums\Difficulty.lua
+Modules\Enums\Regions.lua
+Modules\Enums\Languages.lua
+Modules\Enums\ChatChannels.lua
+
+# ----- Tier 2 catalog modules (large, grow over time)
+Modules\Catalog\NPCs.lua
+Modules\Catalog\Items.lua
+Modules\Catalog\GameObjects.lua
+Modules\Catalog\Pets.lua
+Modules\Catalog\Mounts.lua
+Modules\Catalog\Toys.lua
+Modules\Catalog\Heirlooms.lua
+Modules\Catalog\Achievements.lua
+Modules\Catalog\Encounters.lua
+Modules\Catalog\Spells.lua
+Modules\Catalog\Zones.lua
+Modules\Catalog\Currencies.lua
+Modules\Catalog\Quests.lua
+Modules\Catalog\FlightPoints.lua
+Modules\Catalog\Talents.lua
+Modules\Catalog\Professions.lua
+Modules\Catalog\Crafts.lua
+Modules\Catalog\Vignettes.lua
+Modules\Catalog\Areas.lua
+Modules\Catalog\Holidays.lua
+Modules\Catalog\QuestPOI.lua
+Modules\Catalog\PvpTalents.lua
+Modules\Catalog\Enchants.lua
+Modules\Catalog\ItemSets.lua
+Modules\Catalog\TradeSkillCategories.lua
+Modules\Catalog\TransmogSets.lua
+Modules\Catalog\LFGDungeons.lua
+Modules\Catalog\Battlemasters.lua
+Modules\Catalog\Scenarios.lua
+Modules\Catalog\GroupFinder.lua
+Modules\Catalog\BattlePetAbilities.lua
+Modules\Catalog\CustomizationOptions.lua
+Modules\Catalog\CustomizationChoices.lua
+Modules\Catalog\TransmogIllusions.lua
+Modules\Catalog\AreaTriggers.lua
+Modules\Catalog\PlayerConditions.lua
+Modules\Catalog\AreaPOI.lua
+Modules\Catalog\WMOAreaTables.lua
+Modules\Catalog\TaxiPaths.lua
+Modules\Catalog\DungeonEncounters.lua
+Modules\Catalog\ItemAppearances.lua
+Modules\Catalog\ItemModifiedAppearances.lua
+Modules\Catalog\ItemBonuses.lua
+Modules\Catalog\ItemEffects.lua
+Modules\Catalog\SpellChargeCategories.lua
+Modules\Catalog\SpellMechanics.lua
+Modules\Catalog\SpellCooldowns.lua
+Modules\Catalog\SpellCastTimes.lua
+Modules\Catalog\SpellPower.lua
+Modules\Catalog\SpellRanges.lua
+Modules\Catalog\SpellDurations.lua
+Modules\Catalog\Glyphs.lua
+Modules\Catalog\AchievementCategories.lua
+Modules\Catalog\FriendshipReputations.lua
+Modules\Catalog\Maps.lua
+Modules\Catalog\MapDifficulties.lua
+Modules\Catalog\EncounterCreatures.lua
+Modules\Catalog\EncounterSections.lua
+Modules\Catalog\SkillRaceClass.lua
+Modules\Catalog\GossipOptions.lua
+Modules\Catalog\Movies.lua
+Modules\Catalog\Cinematics.lua
+
+# ----- Bundled seed data (loaded by modules at module-construction time)
+Data_TBC\Classes.lua
+Data_TBC\Factions.lua
+Data_TBC\Races.lua
+Data_TBC\Realms.lua
+Data_TBC\CreatureTypes.lua
+Data_TBC\Specs.lua
+Data_TBC\Pets.lua
+Data_TBC\Mounts.lua
+Data_TBC\Toys.lua
+Data_TBC\Heirlooms.lua
+Data_TBC\Achievements.lua
+Data_TBC\Encounters.lua
+Data_TBC\NPCs.lua
+Data_TBC\Items.lua
+Data_TBC\GameObjects.lua
+Data_TBC\Spells.lua
+Data_TBC\Zones.lua
+Data_TBC\Currencies.lua
+Data_TBC\Quests.lua
+Data_TBC\FlightPoints.lua
+Data_TBC\Talents.lua
+Data_TBC\Professions.lua
+Data_TBC\Crafts.lua
+Data_TBC\Stats.lua
+Data_TBC\Vignettes.lua
+Data_TBC\Areas.lua
+Data_TBC\Difficulty.lua
+Data_TBC\Holidays.lua
+Data_TBC\QuestPOI.lua
+Data_TBC\PvpTalents.lua
+Data_TBC\Enchants.lua
+Data_TBC\ItemSets.lua
+Data_TBC\TradeSkillCategories.lua
+Data_TBC\TransmogSets.lua
+Data_TBC\LFGDungeons.lua
+Data_TBC\Battlemasters.lua
+Data_TBC\Scenarios.lua
+Data_TBC\GroupFinder.lua
+Data_TBC\BattlePetAbilities.lua
+Data_TBC\CustomizationOptions.lua
+Data_TBC\CustomizationChoices.lua
+Data_TBC\TransmogIllusions.lua
+Data_TBC\AreaTriggers.lua
+Data_TBC\PlayerConditions.lua
+Data_TBC\AreaPOI.lua
+Data_TBC\WMOAreaTables.lua
+Data_TBC\TaxiPaths.lua
+Data_TBC\DungeonEncounters.lua
+Data_TBC\ItemAppearances.lua
+Data_TBC\ItemModifiedAppearances.lua
+Data_TBC\ItemBonuses.lua
+Data_TBC\ItemEffects.lua
+Data_TBC\SpellChargeCategories.lua
+Data_TBC\SpellMechanics.lua
+Data_TBC\SpellCooldowns.lua
+Data_TBC\SpellCastTimes.lua
+Data_TBC\SpellPower.lua
+Data_TBC\SpellRanges.lua
+Data_TBC\SpellDurations.lua
+Data_TBC\Glyphs.lua
+Data_TBC\AchievementCategories.lua
+Data_TBC\FriendshipReputations.lua
+Data_TBC\Regions.lua
+Data_TBC\Languages.lua
+Data_TBC\ChatChannels.lua
+Data_TBC\Maps.lua
+Data_TBC\MapDifficulties.lua
+Data_TBC\EncounterCreatures.lua
+Data_TBC\EncounterSections.lua
+Data_TBC\SkillRaceClass.lua
+Data_TBC\GossipOptions.lua
+Data_TBC\Movies.lua
+Data_TBC\Cinematics.lua
+
+# ----- Adapters (runtime sources that feed data into the catalog)
+Adapters\Runtime.lua
+
+# ----- Log window (used by SlashCommand and available to consumers)
+Log.lua
+
+# ----- Slash command interface (/codex). The legacy GUI dashboard moved
+# to Forge_Codex; /codex gui now redirects users there.
+SlashCommand.lua

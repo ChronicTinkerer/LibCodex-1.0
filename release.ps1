@@ -51,11 +51,25 @@ $VersionStampFmt = 'yyMMddHHmm'   # produces a 10-digit YYMMDDHHMM stamp
 # regex that finds the version-stamp digits. (?m) enables multiline so the
 # ^ anchor matches each line. Group 1 is everything up to the digits and
 # is preserved; \d+ is replaced with the new stamp.
+# All flavor TOCs share one version stamp so users on any client see the
+# same release at the same time. To add a new flavor: append the new TOC
+# here, create the matching Data_<Flavor>/ folder, and add the flavor to
+# tools/bake.py and tools/import-wago.py FLAVOR_* maps.
 $FilesToBump = @(
     @{
         Path        = 'LibCodex-1.0.toc'
         Pattern     = '(?m)^(## Version:\s*)\d+'
-        Description = 'TOC Version'
+        Description = 'Mainline TOC Version'
+    },
+    @{
+        Path        = 'LibCodex-1.0_Mists.toc'
+        Pattern     = '(?m)^(## Version:\s*)\d+'
+        Description = 'Mists TOC Version'
+    },
+    @{
+        Path        = 'LibCodex-1.0_TBC.toc'
+        Pattern     = '(?m)^(## Version:\s*)\d+'
+        Description = 'TBC TOC Version'
     },
     @{
         Path        = 'LibCodex-1.0.lua'

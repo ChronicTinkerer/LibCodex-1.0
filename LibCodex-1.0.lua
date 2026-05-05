@@ -24,7 +24,7 @@ local LIB_MAJOR = "LibCodex-1.0"
 -- IMPORTANT: 10-digit stamps exceed int32 (2^31 - 1 = 2147483647), so any
 -- string.format using %d on LIB_MINOR overflows on WoW's Lua 5.4. Always
 -- format LIB_MINOR with %s (and tostring if needed), never %d.
-local LIB_MINOR = 2605041932
+local LIB_MINOR = 2605051511
 
 assert(LibStub, LIB_MAJOR .. " requires LibStub.")
 local LibCodex, oldMinor = LibStub:NewLibrary(LIB_MAJOR, LIB_MINOR)
