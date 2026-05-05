@@ -45,7 +45,19 @@ $ErrorActionPreference = 'Stop'
 
 $AddonName       = 'LibCodex-1.0'
 $RepoOwner       = 'ChronicTinkerer'
-$VersionStampFmt = 'yyMMddHHmm'   # produces a 10-digit YYMMDDHHMM stamp
+
+# Versioning convention (changed 2026-05-05): we use sequential build
+# numbers instead of YYMMDDHHMM stamps. The script reads the current
+# version from the primary TOC ($PrimaryVersionFile) and increments by 1.
+# If the file's version digit is 0 or missing, the counter starts at 1.
+# Rationale: time-stamped versions go non-monotonic when builds happen
+# from machines on different timezones (or when a sandbox runs UTC).
+# Sequential is always strictly increasing, simpler to reason about.
+# Caveat for already-published projects: when the new sequential value is
+# numerically lower than the last published YYMMDDHHMM stamp, users on
+# the old version won't auto-update. They have to update manually once,
+# then auto-updates resume from the next bump.
+$PrimaryVersionFile = 'LibCodex-1.0.toc'
 
 # Each entry: a file at the repo root (relative to this script) plus the
 # regex that finds the version-stamp digits. (?m) enables multiline so the
@@ -92,7 +104,18 @@ function Invoke-Git {
 # where the user cd'd from.
 Push-Location $PSScriptRoot
 try {
-    $stamp = Get-Date -Format $VersionStampFmt
+    # Read the current version from the primary TOC and increment by 1.
+    # The pattern matches the same `## Version: N` line we'll then rewrite.
+    if (-not (Test-Path $PrimaryVersionFile)) {
+        throw "Primary version file not found: $PrimaryVersionFile"
+    }
+    $primaryContent = Get-Content $PrimaryVersionFile -Raw
+    if ($primaryContent -match '(?m)^## Version:\s*(\d+)') {
+        $currentVersion = [long]$matches[1]
+    } else {
+        $currentVersion = 0
+    }
+    $stamp = ($currentVersion + 1).ToString()
 
     Write-Host ''
     Write-Host "Release $AddonName -> $stamp" -ForegroundColor Cyan
