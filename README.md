@@ -414,7 +414,9 @@ LibCodex ships catalogs for three game flavors, with one TOC and one Data folder
 | --- | --- | --- | --- |
 | **Mainline** (Retail) | `LibCodex-1.0.toc` | `Data/` | wago.tools (DBC) + Wowhead enrichment |
 | **Mists** (MoP Classic) | `LibCodex-1.0_Mists.toc` | `Data_Mists/` | wago.tools (DBC) |
-| **TBC** (TBC Anniversary) | `LibCodex-1.0_TBC.toc` | `Data_TBC/` | cmangos server-emulator SQL + wago.tools |
+| **TBC** (TBC Anniversary) | `LibCodex-1.0_TBC.toc` | `Data_TBC/` | cmangos `tbc-db` SQL + wago.tools |
+| **Vanilla** (Classic Era / Hardcore) | `LibCodex-1.0_Vanilla.toc` | `Data_Vanilla/` | cmangos `classic-db` SQL + wago.tools |
+| **XPTR** (Retail experimental PTR) | `LibCodex-1.0_XPTR.toc` | `Data_XPTR/` | wago.tools (DBC) |
 
 The BigWigs packager builds three separate zips at release time, one per flavor TOC. CurseForge / Wago / WoWInterface auto-tag each upload to the right game-version slot based on the TOC's `## Interface:` line.
 
