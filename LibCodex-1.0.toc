@@ -2,7 +2,7 @@
 ## Title: LibCodex-1.0
 ## Notes: A reusable static-catalog library for WoW addons. Tracks NPCs, items, spells, talents, quests, zones, flight points, currencies, reputations, crafts, achievements, pets, mounts, etc. Hybrid load model: bundled seed + runtime growth. Consumers embed via ## libs and call LibStub("LibCodex-1.0").
 ## Author: ChronicTinkerer
-## Version: 1
+## Version: 2
 ## SavedVariables: LibCodexDB
 ## LoadOnDemand: 0
 ## X-Curse-Project-ID: 1532131
