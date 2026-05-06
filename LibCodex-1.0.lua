@@ -40,6 +40,69 @@ LibCodex.pendingHydrate = LibCodex.pendingHydrate or {}   -- module-name -> arra
 LibCodex.events         = LibCodex.events         or {}   -- callback registry
 
 -- ============================================================================
+-- Detail addon: LibCodex-1.0-Detail is a sibling LoadOnDemand addon that
+-- carries every Data\<Module>.lua file. Splitting it out keeps the core
+-- library's bytecode constant pool tiny; without the split, idle Lua memory
+-- on a fully-baked Mainline install was ~1.7 GB.
+--
+-- Auto-load mechanic: the collection factory's :Get() calls LoadDetail()
+-- on its very first miss for any module. Modules that already have data
+-- (because some other consumer already triggered the load, or because a
+-- runtime adapter pushed entries in) hit before reaching the auto-load
+-- branch, so this only fires when data is genuinely absent.
+--
+-- LoadDetail() is idempotent: a successful first call sets _detailLoaded;
+-- subsequent calls return true immediately. A failed call sets
+-- _detailLoadAttempted so we don't pound the LoadAddOn API on every miss.
+-- ============================================================================
+
+LibCodex._detailLoadAttempted = LibCodex._detailLoadAttempted or false
+LibCodex._detailLoaded        = LibCodex._detailLoaded        or false
+
+-- Try to load the LibCodex-1.0-Detail companion addon. Returns true if the
+-- addon is now available (whether we just loaded it or it was already
+-- present). Returns false if it's missing, disabled, or unavailable.
+-- Callers should treat false as "Detail data not present; the catalog still
+-- works for whatever runtime / SVs / Adapters have populated".
+function LibCodex:LoadDetail()
+    if self._detailLoaded then return true end
+    if self._detailLoadAttempted then return self._detailLoaded end
+    self._detailLoadAttempted = true
+
+    local loadFn = (C_AddOns and C_AddOns.LoadAddOn) or _G.LoadAddOn
+    if not loadFn then return false end
+
+    local ok = loadFn("LibCodex-1.0-Detail")
+    -- LoadAddOn return shape varies across clients: 1/true on success,
+    -- nil + reason on failure. Cover both.
+    if ok == 1 or ok == true then
+        self._detailLoaded = true
+        return true
+    end
+    -- Fallback: some clients return nothing useful but the addon did load.
+    -- Probe via IsAddOnLoaded.
+    local CA = C_AddOns
+    if CA and CA.IsAddOnLoaded and CA.IsAddOnLoaded("LibCodex-1.0-Detail") then
+        self._detailLoaded = true
+        return true
+    end
+    return false
+end
+
+function LibCodex:HasDetail()
+    return self._detailLoaded == true
+end
+
+-- Internal helper called by the collection factory on a :Get miss. Triggers
+-- LoadDetail at most once per session; subsequent misses skip the load.
+-- Returns true only when this call ACTUALLY loaded the addon (so callers
+-- know to retry their lookup); returns false on already-attempted-or-loaded.
+function LibCodex:_TryLoadDetail()
+    if self._detailLoadAttempted then return false end
+    return self:LoadDetail()
+end
+
+-- ============================================================================
 -- Module registration. Called by each Modules\*.lua file as it loads. The
 -- module file builds its collection object (using Modules\Common.lua) and
 -- hands it back to the library here.
