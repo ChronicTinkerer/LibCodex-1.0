@@ -4,6 +4,18 @@ All notable changes to LibCodex-1.0 are recorded here. Version stamps were YYMMD
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 8 — SubAddons source layout (2026-05-06)
+
+Internal cleanup. No user-visible changes; the published zip is byte-identical to build 7 because the packager flattens the new nested layout the same way.
+
+### Changed
+
+- **Source layout:** All 73 per-module LoD companion folders (`LibCodex-1.0-<Module>/`) moved from the repo root into `LibCodex-1.0/SubAddons/`. Repo root drops from 74 addon folders to 1. The packager's `move-folders` directive still flattens to siblings at install time, so users see no difference.
+- `.pkgmeta` `move-folders` source paths updated to `LibCodex-1.0/SubAddons/LibCodex-1.0-<Module>`.
+- `release.ps1` nested-TOC glob now `SubAddons\LibCodex-1.0-*\*.toc`; `$isNested` predicate updated to match.
+- `bake.py`, `import-blizzard.py`, `rechunk-taxipaths.py` path constants now resolve sub-addons under `SubAddons/`.
+- Establishes `SubAddons/` as the universal sub-addon container name for all author repos (Forge / Cairn migrations to follow).
+
 ## 7 — Per-module LoadOnDemand split (2026-05-06)
 
 Major architectural release. Bundled seed data moves out of the core library and into 73 per-module LoadOnDemand companion addons. Idle memory cost drops from ~1.84 GB (everything always-on) to ~140 MB for a Vellum-style consumer that only queries a handful of modules. No public API changes for consumers.
