@@ -1,0 +1,15 @@
+## Interface: 20505
+## Title: LibCodex-1.0-Currencies
+## Notes: Bundled seed data for LibCodex-1.0 / Currencies (TBC Anniversary flavor). LoadOnDemand: LibCodex-1.0 auto-loads this on first :Get() miss against the Currencies module. Per-module split keeps the core lib's bytecode pool tiny and lets consumers pay only for modules they query.
+## Author: ChronicTinkerer
+## Version: 1
+## LoadOnDemand: 1
+## Dependencies: LibCodex-1.0
+## X-Curse-Project-ID: 1532131
+## X-License: MIT
+
+# Single-module LoD addon. Loads exactly one Data file: the bundled
+# Currencies catalog for the TBC Anniversary flavor. The core library will
+# auto-LoadAddOn this addon on the first :Get miss against Currencies.
+
+Data_TBC\Currencies.lua

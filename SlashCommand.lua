@@ -84,9 +84,46 @@ local function dumpValue(v, indent)
 end
 
 local function cmdInfo(rest)
+    if not rest or rest == "" then
+        out("Usage:")
+        out("  /codex info <id>                  - query every module (loads ALL module LoD addons)")
+        out("  /codex info <ModuleName> <id>     - query a single module only (LoD-friendly)")
+        return
+    end
+
+    -- Two-arg form: <ModuleName> <id>. Loads only that one module's LoD addon
+    -- and probes only that module. The recommended form for measuring
+    -- per-module memory cost via `/codex perf` deltas.
+    local moduleName, idStr = rest:match("^(%S+)%s+(%S+)$")
+    if moduleName and idStr then
+        local id = tonumber(idStr)
+        if not id then
+            out("Usage: /codex info <ModuleName> <id>  - <id> must be numeric")
+            return
+        end
+        local mod = LibCodex.modules[moduleName]
+        if not mod then
+            out("Unknown module: " .. moduleName)
+            out("Run `/codex stats` for the full module list (case-sensitive).")
+            return
+        end
+        local e = mod.Get and mod:Get(id)
+        if e then
+            out(string.format("%s[%s]:", moduleName, tostring(id)))
+            line(dumpValue(e, "  "))
+        else
+            out(string.format("No entry with id %s in module %s.", tostring(id), moduleName))
+        end
+        return
+    end
+
+    -- One-arg form: <id> only. Iterates every module — this is the worst case
+    -- for per-module LoD because it loads every LibCodex-1.0-<Module> addon.
+    -- Useful for "find which modules know about this id"; for memory probing,
+    -- prefer the two-arg form above.
     local id = tonumber(rest)
     if not id then
-        out("Usage: /codex info <numeric id>")
+        out("Usage: /codex info <id>  |  /codex info <ModuleName> <id>")
         return
     end
     local hits = 0

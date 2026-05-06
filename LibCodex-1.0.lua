@@ -40,66 +40,80 @@ LibCodex.pendingHydrate = LibCodex.pendingHydrate or {}   -- module-name -> arra
 LibCodex.events         = LibCodex.events         or {}   -- callback registry
 
 -- ============================================================================
--- Detail addon: LibCodex-1.0-Detail is a sibling LoadOnDemand addon that
--- carries every Data\<Module>.lua file. Splitting it out keeps the core
--- library's bytecode constant pool tiny; without the split, idle Lua memory
--- on a fully-baked Mainline install was ~1.7 GB.
+-- Per-module LoadOnDemand companions. Each LibCodex module has its own
+-- LoadOnDemand sibling addon named `LibCodex-1.0-<ModuleName>` that carries
+-- ONLY that module's bundled Data\<Module>.lua. Splitting per-module keeps
+-- the core library's bytecode constant pool tiny AND lets consumers pay only
+-- for the modules they actually query (Vellum hits Quests; Forge_Codex hits
+-- whatever the user opens; AddonProfiler-only sessions pay for nothing).
 --
--- Auto-load mechanic: the collection factory's :Get() calls LoadDetail()
--- on its very first miss for any module. Modules that already have data
--- (because some other consumer already triggered the load, or because a
--- runtime adapter pushed entries in) hit before reaching the auto-load
--- branch, so this only fires when data is genuinely absent.
+-- Auto-load mechanic: the collection factory's :Get() calls
+-- LoadModule(self._name) on its very first miss for THAT module. Modules
+-- that already have data (because some other consumer already triggered the
+-- load, or because a runtime adapter pushed entries in) hit before reaching
+-- the auto-load branch, so this only fires when data is genuinely absent.
 --
--- LoadDetail() is idempotent: a successful first call sets _detailLoaded;
--- subsequent calls return true immediately. A failed call sets
--- _detailLoadAttempted so we don't pound the LoadAddOn API on every miss.
+-- LoadModule() is idempotent: a successful first call adds the module to
+-- _loadedModules; subsequent calls return true immediately. A failed call
+-- adds the module to _loadAttempts so we don't pound the LoadAddOn API on
+-- every miss for a permanently-missing module.
+--
+-- Naming convention: addon name = "LibCodex-1.0-" .. moduleName
+--     "Items"   -> LibCodex-1.0-Items
+--     "Quests"  -> LibCodex-1.0-Quests
+--     "NPCs"    -> LibCodex-1.0-NPCs
+-- (case is preserved exactly, matching the module name registered via
+-- RegisterModule and the Data\<Module>.lua filename convention.)
 -- ============================================================================
 
-LibCodex._detailLoadAttempted = LibCodex._detailLoadAttempted or false
-LibCodex._detailLoaded        = LibCodex._detailLoaded        or false
+LibCodex._loadedModules = LibCodex._loadedModules or {}   -- moduleName -> true
+LibCodex._loadAttempts  = LibCodex._loadAttempts  or {}   -- moduleName -> true (any attempt, success or not)
 
--- Try to load the LibCodex-1.0-Detail companion addon. Returns true if the
--- addon is now available (whether we just loaded it or it was already
+-- Try to load the LibCodex-1.0-<ModuleName> companion addon. Returns true if
+-- the addon is now available (whether we just loaded it or it was already
 -- present). Returns false if it's missing, disabled, or unavailable.
--- Callers should treat false as "Detail data not present; the catalog still
--- works for whatever runtime / SVs / Adapters have populated".
-function LibCodex:LoadDetail()
-    if self._detailLoaded then return true end
-    if self._detailLoadAttempted then return self._detailLoaded end
-    self._detailLoadAttempted = true
+-- Callers should treat false as "this module's bundled data not present;
+-- the catalog still works for whatever runtime / SVs / Adapters populated".
+function LibCodex:LoadModule(moduleName)
+    if not moduleName or moduleName == "" then return false end
+    if self._loadedModules[moduleName] then return true end
+    if self._loadAttempts[moduleName]  then return self._loadedModules[moduleName] == true end
+    self._loadAttempts[moduleName] = true
 
     local loadFn = (C_AddOns and C_AddOns.LoadAddOn) or _G.LoadAddOn
     if not loadFn then return false end
 
-    local ok = loadFn("LibCodex-1.0-Detail")
+    local addonName = "LibCodex-1.0-" .. moduleName
+    local ok = loadFn(addonName)
     -- LoadAddOn return shape varies across clients: 1/true on success,
     -- nil + reason on failure. Cover both.
     if ok == 1 or ok == true then
-        self._detailLoaded = true
+        self._loadedModules[moduleName] = true
         return true
     end
     -- Fallback: some clients return nothing useful but the addon did load.
     -- Probe via IsAddOnLoaded.
     local CA = C_AddOns
-    if CA and CA.IsAddOnLoaded and CA.IsAddOnLoaded("LibCodex-1.0-Detail") then
-        self._detailLoaded = true
+    if CA and CA.IsAddOnLoaded and CA.IsAddOnLoaded(addonName) then
+        self._loadedModules[moduleName] = true
         return true
     end
     return false
 end
 
-function LibCodex:HasDetail()
-    return self._detailLoaded == true
+function LibCodex:IsModuleLoaded(moduleName)
+    return self._loadedModules[moduleName] == true
 end
 
 -- Internal helper called by the collection factory on a :Get miss. Triggers
--- LoadDetail at most once per session; subsequent misses skip the load.
--- Returns true only when this call ACTUALLY loaded the addon (so callers
--- know to retry their lookup); returns false on already-attempted-or-loaded.
-function LibCodex:_TryLoadDetail()
-    if self._detailLoadAttempted then return false end
-    return self:LoadDetail()
+-- LoadModule for that module at most once per session; subsequent misses
+-- skip the load. Returns true only when this call ACTUALLY loaded the addon
+-- (so callers know to retry their lookup); returns false on
+-- already-attempted-or-loaded.
+function LibCodex:_TryLoadModule(moduleName)
+    if not moduleName then return false end
+    if self._loadAttempts[moduleName] then return false end
+    return self:LoadModule(moduleName)
 end
 
 -- ============================================================================

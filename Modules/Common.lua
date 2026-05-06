@@ -188,15 +188,16 @@ function CC.New(name, opts)
             local re = self._entries[key]
             if re then return re end
         end
-        -- Last resort: the bundled data may live in LibCodex-1.0-Detail
-        -- (LoadOnDemand companion addon). Trigger the load once per session.
-        -- When Detail's Data files run, they call _FeedBundledRowsLazy on
-        -- their target collections, which fills self._lazyChunks here. We
-        -- retry the lookup once to materialize any rows that just landed.
+        -- Last resort: the bundled data for this specific module may live in
+        -- LibCodex-1.0-<ModuleName> (LoadOnDemand companion addon, one per
+        -- module). Trigger the load once per session per module. When the
+        -- companion addon's Data\<Module>.lua runs, it calls _FeedBundled* on
+        -- this collection, which fills self._lazyChunks / self._rowIndex here.
+        -- We retry the lookup once to materialize any rows that just landed.
         local LC = LibStub and LibStub("LibCodex-1.0", true)
-        if LC and not LC._detailLoadAttempted and LC._TryLoadDetail then
-            if LC:_TryLoadDetail() then
-                -- Detail loaded: re-check our indexes and lazy chunks.
+        if LC and LC._TryLoadModule and not LC._loadAttempts[self._name] then
+            if LC:_TryLoadModule(self._name) then
+                -- Module loaded: re-check our indexes and lazy chunks.
                 if self._entries[key] then return self._entries[key] end
                 if self._rowIndex and self._rowIndex[key] then
                     return self:_ExpandRow(key)

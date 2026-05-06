@@ -24,7 +24,7 @@ A reusable static-catalog library for World of Warcraft addons. **74 catalog and
 - **Professions**: profession skill lines, recipes (crafts), trade-skill sub-categories, enchants, item sets (with tier bonuses)
 - **Social / meta**: factions (player + reputation), currencies, realms, holidays, character-creation customization options + choices, player-condition predicates
 
-Hybrid load model: bundled seed (DBC-derived data shipped with the library) + runtime growth (events captured during play) + a pluggable adapter system for reading from other addons.
+Hybrid load model: per-module LoadOnDemand seed data (each module's bundled rows ship in its own LoD companion addon, loaded only when queried) + runtime growth (events captured during play) + a pluggable adapter system for reading from other addons. Idle memory cost is tiny because consumers only pay for the modules they actually touch.
 
 Consumer addons embed it the same way they embed any LibStub library.
 
@@ -105,7 +105,7 @@ Every module exposes the same five-method surface: `:Get(id)`, `:Search(query, o
 
 ## Architecture
 
-Three layers, loaded in this order at addon startup:
+Four layers, loaded in this order. Bundled seed data lives in 73 per-module LoadOnDemand companion addons, NOT inside the core library, so the always-on cost is small and consumers only pay for the modules they query.
 
 ```
 1. Module factory            (Modules/Common.lua)
@@ -114,24 +114,33 @@ Three layers, loaded in this order at addon startup:
 2. Module registrations      (Modules/Catalog/*.lua, Modules/Enums/*.lua)
    |
    v
-3. Bundled seed data         (Data/*.lua  -> _FeedBundledRows)
-   |
-   v
-4. PLAYER_LOGIN
+3. PLAYER_LOGIN
    - SavedVariables hydrate  (LibCodexDB.modules -> :Add)
    - Adapters run            (Adapters/*.lua)
+   |
+   v
+4. Lazy per-module LoD       (first :Get() miss for any module triggers
+                              C_AddOns.LoadAddOn("LibCodex-1.0-<Module>");
+                              that addon's Data\<Module>.lua then runs and
+                              calls _FeedBundled* on the registered module)
 ```
 
 **Layer 1: factory.** `Modules/Common.lua` exports `LibCodex.CollectionFactory.New(name, opts)` which builds an id-keyed collection with the standard `:Get / :Search / :Add / :All / :Count` shape.
 
 **Layer 2: modules.** Each `Modules/Catalog/*.lua` and `Modules/Enums/*.lua` calls the factory, attaches module-specific helpers, and registers itself with `LibCodex:RegisterModule(name, collection)`.
 
-**Layer 3: bundled seed.** Each `Data/*.lua` file calls `LibCodex:_FeedBundledRows(name, columnsCSV, rowsTable)`. Rows are stored lazily; entries are materialized into dicts only when something calls `:Get(id)`. This keeps memory low even for the 400K-row Spells catalog.
+**Layer 3: runtime.** At PLAYER_LOGIN, the library hydrates `LibCodexDB` (everything captured in previous sessions) and runs every registered adapter. The runtime adapter (`Adapters/Runtime.lua`) hooks events like `NAME_PLATE_UNIT_ADDED`, `LOOT_OPENED`, `QUEST_ACCEPTED`, `TAXIMAP_OPENED` to keep the catalog growing as the player moves through the world.
 
-**Layer 4: runtime.** At PLAYER_LOGIN, the library hydrates `LibCodexDB` (everything captured in previous sessions) and runs every registered adapter. The runtime adapter (`Adapters/Runtime.lua`) hooks events like `NAME_PLATE_UNIT_ADDED`, `LOOT_OPENED`, `QUEST_ACCEPTED`, `TAXIMAP_OPENED` to keep the catalog growing as the player moves through the world.
+**Layer 4: per-module bundled seed (LoadOnDemand).** This is the big one for memory. The core library ships zero `Data/` files itself. Instead, each module has a sibling LoadOnDemand companion addon named `LibCodex-1.0-<ModuleName>` (e.g. `LibCodex-1.0-Items`, `LibCodex-1.0-Quests`, `LibCodex-1.0-NPCs`) that ships exactly one `Data\<Module>.lua` with that module's bundled rows.
+
+When something calls `LC:Items():Get(25)` for the first time, `Modules/Common.lua` checks `_entries / _rowIndex / _tsvIndex / _lazyChunks` and on a complete miss invokes `LibCodex:_TryLoadModule("Items")`. That LoadAddOns the `LibCodex-1.0-Items` companion, which runs `Data\Items.lua`, which feeds rows into the registered `Items` collection. The retry then expands the row and returns the entry.
+
+Result: a session that only touches `Quests` and `NPCs` pays the bytecode cost for those two modules and nothing else. The 400K-row Spells catalog stays unloaded unless somebody queries Spells. Real-world test: querying every module loads ~1.18 GB of Lua memory; querying Items + NPCs alone loads ~140 MB. Compare to ~1.84 GB if every module's data was always in the core lib's bytecode pool.
+
+The `LoadModule` mechanism is idempotent — a successful load is recorded in `_loadedModules`, and a failed load is recorded in `_loadAttempts` so the retry path doesn't pound `LoadAddOn` on every miss for a permanently-missing companion.
 
 Catalog modules grow from any of three sources tagged in `entry.sources`:
-- `bundled` — shipped in `Data/*.lua`
+- `bundled` — shipped in `LibCodex-1.0-<Module>/Data*/<Module>.lua`
 - `runtime` — captured via API events
 - `wago` / `wowhead` — written into SavedVariables by an importer or external addon, then merged on next load
 
@@ -606,24 +615,37 @@ After step 4, run the bake tool once and an empty `Data/Pots.lua` will appear, r
 
 ## Distribution patterns
 
-LibCodex follows the standard LibStub convention and ships as a standalone addon. Two distribution patterns work, both fully supported:
+LibCodex follows the standard LibStub convention and ships as a standalone addon plus its 73 per-module LoD companions. Two distribution patterns work:
 
 ### Pattern A: Standalone dependency (recommended)
 
-LibCodex lives as its own addon at `Interface/AddOns/LibCodex-1.0/`. Your consumer addon declares it as a dependency in its `.toc`:
+LibCodex's published zip unpacks to **74 sibling folders** inside `Interface/AddOns/`:
+
+```
+Interface/AddOns/
+  LibCodex-1.0/             core library (always-on)
+  LibCodex-1.0-Items/       LoadOnDemand companion (loads on first Items query)
+  LibCodex-1.0-NPCs/
+  LibCodex-1.0-Quests/
+  ... 70 more LibCodex-1.0-<Module>/ folders ...
+```
+
+WoW only loads top-level AddOns folders, so the 73 LoD companions need to live as siblings of the core, not nested inside it. The CurseForge / WoWInterface / Wago packages handle this layout automatically — users just install "LibCodex-1.0" through their addon manager and end up with all 74 folders.
+
+Your consumer addon declares the core as a dependency in its `.toc`:
 
 ```
 ## Title: MyAddon
 ## Dependencies: LibCodex-1.0
 ```
 
-WoW loads LibCodex before MyAddon, and any code in MyAddon can call `LibStub("LibCodex-1.0")` to get the library handle. Users install both addons (typically via the same CurseForge / WoWInterface / Wago page if you bundle a manifest, or two separate installs).
+You do NOT need to declare each `LibCodex-1.0-<Module>` as a dependency — the core lib auto-loads them on demand. WoW will load LibCodex-1.0 before MyAddon, then `LibStub("LibCodex-1.0")` works from anywhere in your code, and any `:Get(id)` call against a module triggers the matching LoD companion if it isn't already loaded.
 
 LibCodex declares its own `## SavedVariables: LibCodexDB` in its `.toc`, so all the runtime growth (NPC sightings, captured loot, chromie tags) persists at the library level — every addon that uses LibCodex shares the same catalog.
 
-### Pattern B: Vendored / embedded (self-contained)
+### Pattern B: Vendored / embedded core (no bundled data)
 
-For addons that want to ship without external dependencies, drop the `LibCodex-1.0` folder inside your addon's `Libs/` directory and reference its embed manifest:
+You can vendor the core library under your addon's `Libs/` and embed it the standard way:
 
 ```
 MyAddon/
@@ -631,7 +653,7 @@ MyAddon/
     LibStub/
       LibStub.lua
     LibCodex-1.0/
-      ... (the contents of this repo) ...
+      ... (core lib only — Modules/, Adapters/, Log.lua, SlashCommand.lua) ...
 ```
 
 ```xml
@@ -642,12 +664,19 @@ MyAddon/
 </Ui>
 ```
 
-Multiple addons can embed the same version with no conflict; LibStub picks the highest-versioned copy at load time and the rest no-op. With Pattern B, the SavedVariables blob lives inside MyAddon's saved data — the catalog is private to that addon, not shared.
+**Caveat — vendoring drops the bundled seed data.** The 73 `LibCodex-1.0-<Module>` companion addons can't be vendored because WoW's loader doesn't see nested folders. Vendoring gives you the registration surface, the runtime adapter, the SavedVariables persistence, and the slash commands, but every `:Get(id)` will return `nil` until something populates the module via runtime capture, an adapter, or `:Add(entry)`.
+
+This pattern is useful for addons that:
+- Capture data at runtime and don't need a pre-baked seed catalog
+- Already get their data from another source and only want LibCodex's storage / search / merge behavior
+- Want to ship as a single-folder addon with no external dependency declaration
+
+If you DO want bundled seed data in a vendored install, you'd have to also distribute the per-module addon folders as siblings of your addon — at which point Pattern A is simpler.
 
 ### Choosing between them
 
-- **Pattern A** if your addon assumes users want a shared catalog (most cases, since runtime captures across all addons accumulate together) and you're fine with a separate install for your users.
-- **Pattern B** if your addon is single-author, distribution-simple, or you want the catalog isolated to your addon's data.
+- **Pattern A** for production / public release. Standard layout, full catalog, shared SavedVariables, modules load on demand so memory cost matches what you actually query.
+- **Pattern B** for self-contained internal addons that drive their own data and just want LibCodex's data-shape conventions.
 
 ---
 
@@ -655,23 +684,44 @@ Multiple addons can embed the same version with no conflict; LibStub picks the h
 
 ```
 LibCodex-1.0/
-  LibCodex-1.0.lua            core: LibStub registration, top-level accessors
-  LibCodex-1.0.toc            Mainline (Retail) manifest
+  LibCodex-1.0.lua            core: LibStub registration, accessors, LoadModule
+  LibCodex-1.0.toc            Mainline (Retail) manifest, no Data/ entries
   LibCodex-1.0_Mists.toc      MoP Classic manifest
   LibCodex-1.0_TBC.toc        TBC Anniversary manifest
+  LibCodex-1.0_Vanilla.toc    Classic Era / Hardcore manifest
+  LibCodex-1.0_XPTR.toc       Experimental PTR manifest
   LibCodex-1.0.xml            embed manifest (consumer addons reference this)
   README.md  CHANGELOG.md  LICENSE
-  .gitignore  .pkgmeta        one .gitignore line: .dev/
+  .gitignore  .pkgmeta        .pkgmeta has 73 move-folders entries (see below)
 
   Modules/
     Common.lua                collection factory
-    Catalog/                  64 catalog modules (see Module catalog table)
-    Enums/                    11 enum modules
+    Catalog/                  catalog module declarations (registration only)
+    Enums/                    enum module declarations (small + hand-curated)
 
-  Data/                       Mainline seed data (one .lua per module)
-  Data_Mists/                 MoP Classic seed data
-  Data_TBC/                   TBC Anniversary seed data
+  LibCodex-1.0-Items/         per-module LoD companion (1 of 73)
+    LibCodex-1.0-Items.toc        Mainline TOC, ## LoadOnDemand: 1
+    LibCodex-1.0-Items_Mists.toc  MoP Classic TOC
+    LibCodex-1.0-Items_TBC.toc    TBC Anniversary TOC
+    LibCodex-1.0-Items_Vanilla.toc
+    LibCodex-1.0-Items_XPTR.toc
+    Data/Items.lua            Mainline bundled rows (~11 MB on disk)
+    Data_Mists/Items.lua
+    Data_TBC/Items.lua
+    Data_Vanilla/Items.lua
+    Data_XPTR/Items.lua
+  LibCodex-1.0-NPCs/          ... 72 more sibling per-module addons
+  LibCodex-1.0-Quests/        each follows the exact same structure as
+  LibCodex-1.0-Spells/        LibCodex-1.0-Items above
+  ...
+```
 
+The 73 per-module addon folders are nested inside `LibCodex-1.0/` in the source repo for git / packaging convenience. The BigWigs packager's `move-folders` directive in `.pkgmeta` lifts each one to a sibling at the published-zip root, so end users end up with `Interface/AddOns/LibCodex-1.0/` and `Interface/AddOns/LibCodex-1.0-Items/` at the top level. WoW only loads top-level AddOns folders, never nested ones — that's why the flatten-at-package step is required.
+
+Adapters and slash commands live alongside Modules/ inside the core repo:
+
+```
+LibCodex-1.0/
   Adapters/
     Runtime.lua               WoW event hooks for live capture
 
@@ -681,23 +731,26 @@ LibCodex-1.0/
     LibEditMode/              vendored LibEditMode
 
   Log.lua                     dedicated debug-window helper
+                              (also bridges to Cairn-Log-1.0 if present)
   SlashCommand.lua            /codex slash command suite
 
   .dev/                       all dev-local artifacts (gitignored, pkgignored)
     tools/                    Python build tools + refresh.ps1
-      bake.py                 merge import dumps into Data_<Flavor>/
+      bake.py                 merge import dumps into per-module Data folders
       import-wago.py          fetch DBC CSVs from wago.tools
       import-emulator-sql.py  ingest cmangos-style server emulator SQL dumps
       import-blizzard.py      fetch from Blizzard Game Data API (OAuth)
       crawl-wowhead.py        targeted Wowhead enrichment
       refresh.ps1             end-to-end pipeline wrapper
-    release.ps1               one-command tag + push (sequential bump)
+    release.ps1               one-command tag + push; bumps the Core TOCs
+                              AND every nested per-module TOC in lockstep
     configs/                  bake-config*.lua (per-source paths)
     wago-cache/               downloaded CSVs
     wowhead-cache-<flavor>/   per-flavor HTML cache
     blizzard-cache-<flavor>/  per-flavor API JSON cache
     emulator-sql-cache/       gzipped server emulator dumps
     *-import-<flavor>.lua     intermediate import dumps from each tool
+```
 ```
 
 The `.dev/` folder convention keeps the repo root tidy: a single `.gitignore` line (`.dev/`) and a single `.pkgmeta ignore:` entry (`- .dev`) cover every dev artifact. Adding a new tool or cache type does not require touching either file.
