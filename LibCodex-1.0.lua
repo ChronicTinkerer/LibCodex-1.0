@@ -17,13 +17,10 @@
 --   for _, hit in ipairs(LC:Items():Search("rune", { quality=4 })) do ... end
 
 local LIB_MAJOR = "LibCodex-1.0"
--- LIB_MINOR is a YYMMDDHHMM build stamp. Bumped on every edit. LibStub
--- compares it numerically to decide which copy of the library to keep
--- when multiple addons embed different versions, so any later timestamp
--- automatically wins. Lua doubles represent 10-digit integers exactly.
--- IMPORTANT: 10-digit stamps exceed int32 (2^31 - 1 = 2147483647), so any
--- string.format using %d on LIB_MINOR overflows on WoW's Lua 5.4. Always
--- format LIB_MINOR with %s (and tostring if needed), never %d.
+-- LIB_MINOR is a sequential integer build number bumped by release.ps1 on
+-- every release pass (+1 per run). LibStub compares minors numerically and
+-- keeps the higher value, so a newer release loaded by any consumer takes
+-- precedence over older copies still embedded in other addons.
 local LIB_MINOR = 7
 
 assert(LibStub, LIB_MAJOR .. " requires LibStub.")
