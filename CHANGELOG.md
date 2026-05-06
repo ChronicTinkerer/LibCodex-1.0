@@ -1,19 +1,46 @@
 # Changelog
 
-All notable changes to LibCodex-1.0 are recorded here. The version stamp follows the YYMMDDHHMM build-number convention; later timestamps are newer.
+All notable changes to LibCodex-1.0 are recorded here. Version stamps were YYMMDDHHMM build numbers through 2605031257; the convention switched to sequential integer build numbers (one increment per `release.ps1` run) on 2026-05-05. Higher integers are newer than any YYMMDDHHMM stamp.
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## 7 — Per-module LoadOnDemand split (2026-05-06)
+
+Major architectural release. Bundled seed data moves out of the core library and into 73 per-module LoadOnDemand companion addons. Idle memory cost drops from ~1.84 GB (everything always-on) to ~140 MB for a Vellum-style consumer that only queries a handful of modules. No public API changes for consumers.
 
 ### Added
 
-- Auto-packaging workflow (`.github/workflows/release.yml`) using
-  BigWigsMods/packager v2. Tag push (`git tag <stamp> && git push --tags`)
-  triggers a build that uploads to CurseForge, WoWInterface, and Wago, and
-  creates a matching GitHub Release. `.pkgmeta` excludes dev/build infra
-  (tools/, import-cache/, .py, .bat) from the published zip. README has a
-  Releasing section with the per-site setup walkthrough.
+- **Per-module LoadOnDemand companions.** 73 sibling addons named `LibCodex-1.0-<ModuleName>` (e.g. `LibCodex-1.0-Items`, `LibCodex-1.0-Quests`, `LibCodex-1.0-NPCs`), each shipping exactly one module's bundled rows for all 5 flavors. The first `:Get()` miss against any module triggers `C_AddOns.LoadAddOn("LibCodex-1.0-<Module>")` which then runs that module's `Data\<Module>.lua` and feeds rows into the registered collection.
+- **Core library API:** `LibCodex:LoadModule(name)`, `:IsModuleLoaded(name)`, internal `:_TryLoadModule(name)`. Idempotent, soft-optional, single-attempt-per-module-per-session.
+- **Multi-flavor support** for MoP Classic (Interface 50503), TBC Anniversary (20505), Classic Era / Hardcore (11508), and Experimental PTR (120007). Adds `LibCodex-1.0_Mists.toc`, `_TBC.toc`, `_Vanilla.toc`, `_XPTR.toc` to the core lib and matching per-flavor TOCs to every per-module companion.
+- **Cairn-Log-1.0 bridge** in `Log.lua` (lazy resolution via `LibStub("Cairn-Log-1.0", true)`). When Cairn is installed, every `LibCodex.Log.Print` also emits to a `LibCodex` source on Cairn.Log, which Forge_Logs then displays. Soft-optional — runs unchanged when Cairn is absent.
+- **`/codex info <ModuleName> <id>` two-arg form** for targeted single-module probing. Loads only that one module's LoD companion. Pairs with `/codex perf` to measure per-module memory deltas. The legacy single-arg form (`/codex info <id>`) still works and iterates every module.
+- **`.pkgmeta` `move-folders` block** — 73 entries that lift each nested per-module addon to a zip-root sibling at package time. Source repo nests them under `LibCodex-1.0/` for git convenience; the published zip flattens them to the layout WoW's loader expects.
+- **`import-emulator-sql.py`** — ingests cmangos-style server emulator SQL dumps for non-Retail flavors where Blizzard ships sparse DBCs (TBC Anniversary, Vanilla). Pulls 11K+ NPCs with spawn coords for TBC.
+- **`import-blizzard.py`** — fetches NPC / Quest / Item data from Blizzard's official Game Data API (OAuth client_credentials flow). Per-flavor namespaces, on-disk JSON cache, polite rate limiting.
+- **Auto-packaging workflow** (`.github/workflows/release.yml`) using BigWigsMods/packager v2. Tag push triggers a build that uploads to CurseForge, WoWInterface, and Wago, and creates a matching GitHub Release.
+- `Maps:WorldToUiMap(continentID, worldX, worldY)` and `Maps:UiMapToWorld(uiMapID, x, y)` wrap `C_Map.GetMapPosFromWorldPos` / `GetWorldPosFromMapPos` with type-checked, nil-safe surface. Plus `Maps:UiDistance(uiMapID, ax, ay, bx, by)` for yard distance between two normalized UI points on the same map.
+- `/codex perf` slash command — with no arg, prints a per-module summary of pending lazy chunks vs. materialized entries vs. row-indexed entries. With a module name (e.g. `/codex perf Spells`), forces a full expand and reports the Lua memory delta in KB.
+
+### Changed
+
+- **BREAKING (distribution layout, NOT API):** Bundled seed `Data/*.lua` files moved out of the core `LibCodex-1.0/` and into 73 per-module sibling addons. The published zip now installs as 74 sibling folders under `Interface/AddOns/` instead of 1. Pattern A consumers see no change — `## Dependencies: LibCodex-1.0` plus standard `LibStub("LibCodex-1.0"):Module():Get(id)` works as before, with the per-module addons loaded on demand. Pattern B (vendoring) now ships only the core registration / adapter / runtime layer; vendored installs lose bundled seed data and rely entirely on runtime capture or external `:Add` calls.
+- **Versioning convention:** switched from YYMMDDHHMM build stamps to sequential integer build numbers, one increment per `release.ps1` run. This is build 7. Previous YYMMDDHHMM stamps are older than any sequential number.
+- **`bake.py`** resolves output paths per-module via a new `module_data_dir(name, flavor)` helper, instead of against a single global Data folder. Backups are per-module under each addon's Data folder. The `--data-dir` override still pins all modules to one folder for one-off exports.
+- **`import-blizzard.py`** uses a `path_for_module` callable in `collect_ids_from_data` for per-module Data path resolution.
+- **`release.ps1`** dynamically discovers every nested per-module TOC via `Get-ChildItem 'LibCodex-1.0-*\*.toc'` and bumps all 365 of them in lockstep with the core. The validation print is condensed to a single summary line for the nested batch (would otherwise be ~1095 lines).
+- **All dev-local artifacts** consolidated under `.dev/` at the repo root: `tools/`, `release.ps1`, `configs/`, every `*-cache-<flavor>/`, every `*-import-<flavor>.lua`. One folder, one `.gitignore` line, one `.pkgmeta` exclusion.
+
+### Removed
+
+- **`LibCodex-1.0-Detail` single-blob LoadOnDemand companion** — intermediate architecture from earlier in 2026-05-06. Loading it pulled in the entire 1.8 GB bytecode pool on the first `:Get()` miss, which defeated the purpose. Replaced by the 73 per-module split.
+- **`:LoadDetail()`, `:HasDetail()`, `:_TryLoadDetail()`** on the core library — replaced by `:LoadModule(name)`, `:IsModuleLoaded(name)`, `:_TryLoadModule(name)`. State moved from boolean `_detailLoaded` / `_detailLoadAttempted` to per-module hashes `_loadedModules` / `_loadAttempts`.
+- HEAVY_MODULES allow-list gate on the auto-load path — the auto-load now applies universally to every module, not a curated subset.
+
+### Fixed
+
+- `bake.py` chunked-readback regex didn't match the `_FeedBundledRowsLazy(_N, _C, fn)` emit form, so re-baking a chunked module (>8000 rows, like `TaxiPaths`) silently dropped rows. Now correctly round-trips both the dense and chunked emit forms.
+- `TaxiPaths` chunk-size override — default 8000 rows-per-chunk overflowed Lua's 262K constant limit because TaxiPath rows carry nested `nodes[]` tables. Added `_CHUNK_SIZE_OVERRIDES` for modules with structurally heavy rows.
 
 ## 2605031257 — Polish pass (2026-05-03)
 

@@ -279,9 +279,13 @@ Difficulty:ForInstanceType(t)
 
 ## Lazy materialization semantics
 
-LibCodex defers row-table allocation until first use. Two layers of laziness exist:
+LibCodex defers data load and row-table allocation until first use. Three layers of laziness exist, in order of when they trigger:
 
-**Module-level lazy chunks.** The bake tool emits each chunk as a thunk: `LibCodex:_FeedBundledRowsLazy(name, cols, function() return {rows} end)`. The thunk's body isn't evaluated until the consumer queries the module. **All chunks for a module materialize together** the first time any of these is called:
+**Addon-level LoadOnDemand (per module).** Each module's bundled seed data lives in a sibling LoadOnDemand companion addon named `LibCodex-1.0-<ModuleName>`. The core library ships zero `Data/` files itself. On the first `:Get(id)` miss against a module, `Modules/Common.lua` calls `LibCodex:_TryLoadModule(self._name)`, which `C_AddOns.LoadAddOn`s the matching companion. That companion's `Data\<Module>.lua` then runs and feeds rows into the registered collection. Modules whose companion is never loaded pay **zero** memory cost — not even string interning, because the Lua source for that file is never parsed.
+
+The auto-load attempt is recorded so a permanently-missing companion doesn't get retried on every miss. Consumers can also pre-load explicitly via `LibCodex:LoadModule("Items")` if they know they'll need a module shortly.
+
+**Module-level lazy chunks.** Once the companion addon is loaded, the bake tool emits each chunk as a thunk: `LibCodex:_FeedBundledRowsLazy(name, cols, function() return {rows} end)`. The thunk's body isn't evaluated until the consumer queries the module. **All chunks for a module materialize together** the first time any of these is called:
 
 - `:Get(key)` (only after the materialized + indexed paths miss)
 - `:Search(query, opts)` (needs to scan every row)
@@ -294,9 +298,23 @@ LibCodex defers row-table allocation until first use. Two layers of laziness exi
 
 A consumer addon that only touches a few modules (e.g. `LC:Quests()` and `LC:Items():Get(...)` for one specific item) pays:
 
-- The string interning cost of the constants pool for every Data file (unavoidable; Lua interns strings at parse time)
-- Zero per-row table cost for modules never queried
+- The bytecode constants pool ONLY for the modules it actually queries
+- Zero memory for modules whose LoadOnDemand companion never loaded
+- Zero per-row table cost for chunks never materialized
 - Zero per-entry dict cost for individual rows never accessed
+
+Real-world numbers from a fully-baked Mainline install: querying every module loads ~1.18 GB of Lua memory; querying just Items + NPCs loads ~140 MB; the always-on core is ~1.4 MB.
+
+### LoadOnDemand companion control
+
+```lua
+LibCodex:LoadModule(name)        -- explicitly load that module's companion
+                                 -- returns true if loaded (now or already), false if absent
+LibCodex:IsModuleLoaded(name)    -- query without triggering a load
+LibCodex:_TryLoadModule(name)    -- internal: single-attempt-per-session, called by :Get
+```
+
+`LoadModule` is idempotent and soft-optional. A successful first call records the module in `_loadedModules`; a failed call records it in `_loadAttempts` so the auto-load path won't retry indefinitely. Consumer addons normally don't call `_TryLoadModule` directly — `:Get(id)` handles it.
 
 ---
 
@@ -337,7 +355,7 @@ Module registration happens at module-file load time. The factory in `Modules/Co
 
 ## Internal data-feed APIs
 
-Used by the `Data/*.lua` files emitted by the bake tool. Consumer addons normally don't call these.
+Used by the `Data\<Module>.lua` files inside each per-module LoadOnDemand companion addon (`LibCodex-1.0-<Module>/Data*/<Module>.lua`), emitted by the bake tool. Consumer addons normally don't call these.
 
 ```lua
 LibCodex:_FeedBundledRows(name, columnsCSV, rows)

@@ -2,7 +2,7 @@
 ## Title: LibCodex-1.0-Quests
 ## Notes: Bundled seed data for LibCodex-1.0 / Quests (Mainline / Retail flavor). LoadOnDemand: LibCodex-1.0 auto-loads this on first :Get() miss against the Quests module. Per-module split keeps the core lib's bytecode pool tiny and lets consumers pay only for modules they query.
 ## Author: ChronicTinkerer
-## Version: 1
+## Version: 7
 ## LoadOnDemand: 1
 ## Dependencies: LibCodex-1.0
 ## X-Curse-Project-ID: 1532131
