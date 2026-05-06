@@ -1,0 +1,83 @@
+name: Data correction
+description: A row in a LibCodex catalog has wrong or missing data (name, ID, faction, etc.).
+title: "[Data]: "
+labels: ["data", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for data-only issues — the library code works, but the bundled value for a specific row is wrong, missing, or out of date.
+        For runtime errors or crashes, file a **Bug report** instead.
+
+  - type: input
+    id: module
+    attributes:
+      label: Module
+      description: Which LibCodex module owns the row? See `Modules/Catalog/` or `Modules/Enums/`.
+      placeholder: "Quests / NPCs / Items / Zones / Spells / ..."
+    validations:
+      required: true
+
+  - type: input
+    id: rowid
+    attributes:
+      label: Row ID
+      description: The numeric ID of the row in question (questID, npcID, itemID, spellID, etc.).
+      placeholder: "12345"
+    validations:
+      required: true
+
+  - type: input
+    id: field
+    attributes:
+      label: Field
+      description: Which field on the row is wrong? (e.g., `name`, `factionID`, `level`, `raceMask`)
+      placeholder: "name"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current value in LibCodex
+      description: What does LibCodex currently say? Paste the row from `/dump LibStub("LibCodex-1.0"):Get("Quests"):Get(12345)` if helpful.
+    validations:
+      required: true
+
+  - type: textarea
+    id: correct
+    attributes:
+      label: Correct value
+      description: What should it actually be?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: client
+    attributes:
+      label: Client flavor where you observed this
+      options:
+        - Retail (Live)
+        - Retail (PTR / Beta / Midnight)
+        - Mists of Pandaria Classic
+        - TBC Anniversary (Burning Crusade)
+        - Classic Era (Vanilla)
+        - Multiple / All
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: Source / citation
+      description: Where did the correct value come from? Wowhead URL, in-game screenshot, DBC dump, official patch notes, etc. Citations get this fixed faster.
+      placeholder: |
+        https://www.wowhead.com/quest=12345
+        Verified in-game on a level 70 character, May 6 2026.
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?

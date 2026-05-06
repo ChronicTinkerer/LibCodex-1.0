@@ -1,0 +1,105 @@
+name: Bug report
+description: Something in LibCodex-1.0 throws an error, crashes, taints, or returns wrong data at runtime.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please fill out as much as you can — the more detail, the faster I can fix it.
+        For data that is simply wrong (e.g., an NPC's name is misspelled, a quest's faction is incorrect), please file a **Data correction** instead.
+
+  - type: input
+    id: version
+    attributes:
+      label: LibCodex build number
+      description: The integer in the `## Version:` line of `LibCodex-1.0.toc`, or shown in `/codex` if it loaded.
+      placeholder: "7"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: client
+    attributes:
+      label: WoW client
+      description: Which client flavor are you running?
+      options:
+        - Retail (Live)
+        - Retail (PTR / Beta / Midnight)
+        - Mists of Pandaria Classic
+        - TBC Anniversary (Burning Crusade)
+        - Classic Era (Vanilla)
+    validations:
+      required: true
+
+  - type: input
+    id: interface
+    attributes:
+      label: Interface number
+      description: From `/dump select(4, GetBuildInfo())` in-game.
+      placeholder: "120005"
+    validations:
+      required: true
+
+  - type: textarea
+    id: modules
+    attributes:
+      label: LibCodex modules involved
+      description: If known, which `LibCodex-1.0-<Module>` sub-addon(s) the bug touches. Leave blank if unsure.
+      placeholder: |
+        e.g. LibCodex-1.0-Quests, LibCodex-1.0-NPCs
+
+  - type: textarea
+    id: consumers
+    attributes:
+      label: Consumer addons in use
+      description: Other addons that embed or depend on LibCodex (Vellum, Forge, ElvUI, etc.).
+      placeholder: |
+        Vellum (build 12), Forge (build 5)
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: What did you do? Be specific.
+      placeholder: |
+        1. Log in on a level 70 hunter
+        2. Open Forge_Codex and select the Quests tab
+        3. Click row for quest ID 12345
+        4. Error fires
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      placeholder: Quest details panel populates with name, level, faction.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      placeholder: Lua error / blank panel / wrong data shown.
+    validations:
+      required: true
+
+  - type: textarea
+    id: error
+    attributes:
+      label: BugGrabber / Lua error
+      description: Paste the full error from `!BugGrabber`, BugSack, or the default error frame. Triple backticks already added.
+      render: text
+      placeholder: |
+        Message: ...
+        Time: ...
+        Count: ...
+        Stack: ...
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, SavedVariables snippets, anomalies, hunches.

@@ -1,0 +1,63 @@
+name: Feature request
+description: Propose a new module, new field on an existing module, new helper API, or new runtime adapter.
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. The more concrete the use case, the easier it is to evaluate.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of feature?
+      options:
+        - New module (catalog or enum)
+        - New field on an existing module
+        - New helper API on the library core
+        - New runtime adapter (data source feeding the catalog)
+        - Tooling / build / packaging
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: target
+    attributes:
+      label: Target module / API name
+      description: If applicable. Otherwise leave blank.
+      placeholder: "e.g. LibCodex-1.0-Toys, or new helper :GetByName()"
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What is the feature? Be specific.
+    validations:
+      required: true
+
+  - type: textarea
+    id: usecase
+    attributes:
+      label: Use case
+      description: What addon or workflow would consume this? What problem does it solve?
+      placeholder: |
+        Vellum needs to show a recommended item reward for each quest step. Currently I have to cross-reference Quests with Items manually...
+    validations:
+      required: true
+
+  - type: textarea
+    id: source
+    attributes:
+      label: Where does the data live in the WoW client?
+      description: For new modules / fields. Which DBC file, which `C_*` API call, which event payload. Skip if not applicable.
+      placeholder: |
+        DBC: ItemSparse.db2
+        API: C_Item.GetItemInfo / C_Item.GetItemQualityByID
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Mockups, prior art in other addons, edge cases, alternatives you considered.
