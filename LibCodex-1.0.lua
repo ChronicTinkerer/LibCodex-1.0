@@ -21,7 +21,7 @@ local LIB_MAJOR = "LibCodex-1.0"
 -- every release pass (+1 per run). LibStub compares minors numerically and
 -- keeps the higher value, so a newer release loaded by any consumer takes
 -- precedence over older copies still embedded in other addons.
-local LIB_MINOR = 8
+local LIB_MINOR = 9
 
 assert(LibStub, LIB_MAJOR .. " requires LibStub.")
 local LibCodex, oldMinor = LibStub:NewLibrary(LIB_MAJOR, LIB_MINOR)

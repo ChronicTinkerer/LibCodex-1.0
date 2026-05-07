@@ -2,7 +2,7 @@
 ## Title: LibCodex-1.0-SpellPower
 ## Notes: Bundled seed data for LibCodex-1.0 / SpellPower (Vanilla / Hardcore flavor). LoadOnDemand: LibCodex-1.0 auto-loads this on first :Get() miss against the SpellPower module. Per-module split keeps the core lib's bytecode pool tiny and lets consumers pay only for modules they query.
 ## Author: ChronicTinkerer
-## Version: 8
+## Version: 9
 ## LoadOnDemand: 1
 ## Dependencies: LibCodex-1.0
 ## X-Curse-Project-ID: 1532131

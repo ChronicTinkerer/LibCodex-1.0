@@ -4,6 +4,18 @@ All notable changes to LibCodex-1.0 are recorded here. Version stamps were YYMMD
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 9 — Wago packaging fix: exclude `_XPTR.toc` (2026-05-07)
+
+### Fixed
+
+- **Wago "Processing failed" on every release since `_XPTR.toc` files entered the package.** Wago's package validator parses each TOC filename as `<AddonName>_<FlavorSuffix>.toc` and rejects the upload when the suffix isn't a WoW-canonical flavor; it logged: *"We found different named TOC files in your addon. LibCodex-1.0, LibCodex-1.0_XPTR"*. `_XPTR` is not canonical (`_Mainline`, `_Mists`, `_TBC`, `_Vanilla`, `_Wrath`, `_Cata` are). Experimental PTR is Retail with a different Interface number, not its own flavor.
+- **Fix:** added `- "*_XPTR.toc"` to `.pkgmeta` ignore. The glob matches by basename anywhere in the package, so it covers both the core `LibCodex-1.0_XPTR.toc` and all 73 per-module `LibCodex-1.0-<Module>_XPTR.toc` files in one line. XPTR support stays in the local working tree for dev installs (and via the `120005,120007` multi-Interface line on `LibCodex-1.0.toc` for users who want XPTR support from the released zip) but the unrecognized-suffix TOC files never enter the published zip. CF and WoWI accept the unrecognized suffix silently; only Wago rejects.
+
+### Notes
+
+- No code changes; pure packaging hygiene. All published flavor TOCs (`_Mists`, `_TBC`, `_Vanilla`, base `LibCodex-1.0.toc`) ship unchanged.
+- Wago releases 6, 7, 8 stay marked "Processing failed"; this release is the first that should land green on Wago since the multi-flavor build started.
+
 ## 8 — SubAddons source layout (2026-05-06)
 
 Internal cleanup. No user-visible changes; the published zip is byte-identical to build 7 because the packager flattens the new nested layout the same way.
