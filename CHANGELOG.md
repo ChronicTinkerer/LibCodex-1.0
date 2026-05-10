@@ -4,6 +4,14 @@ All notable changes to LibCodex-1.0 are recorded here. Version stamps were YYMMD
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- **Realms catalog populated (1101 entries).** Replaced the empty seed at `LibCodex-1.0-Realms/Data/Realms.lua` (and the four flavor siblings: `Data_Mists`, `Data_TBC`, `Data_Vanilla`, `Data_XPTR`) with a full normalized realm catalog covering Mainline / Classic / Anniversary realms across US / EU / KR / CN / TW / Australia / Brazil. Source: chat-pasted Lua dump 2026-05-09. Schema: `id,name,type,locale,region,timezone,englishName,sources` — unified row format with nullable fields. `timezone` is populated for US-region realms (PST/MST/CST/EST/AEST/BRT) and nil elsewhere. `englishName` is populated for non-Latin-script locales (koKR/zhCN/zhTW/ruRU) and nil elsewhere. Realm types covered: PvE / PvP / RP / PvP RP. Cleanups during normalization (printed by the bake tool): four Brazilian rows had a duplicated region typo `US,US,BRT` (rows 3208/3209/3210/3234) collapsed back to `US,BRT`. Connection-group members were validated against the realm catalog; zero phantoms found in this dump.
+- **New module `LibCodex-1.0-RealmConnections`.** Maps Blizzard connection-group IDs to their member realm IDs (post-merge groupings). Schema: `id,region,members,sources` where `members` is a list of realm IDs that exist in the Realms catalog. 319 connection groups seeded. Group IDs are NOT realm IDs (synthetic anchors Blizzard assigns when realms are merged); some groups are single-realm and some bundle up to 10 realms. Per-flavor LoD addon following the existing `LibCodex-1.0-<Module>` convention: 5 TOC variants + 5 per-flavor `Data` folders. Wired into `.pkgmeta` `move-folders:` so the BigWigs packager flattens it to a sibling of `LibCodex-1.0` at the zip root. `release.ps1` auto-discovers the new TOCs via the `SubAddons\LibCodex-1.0-*\*.toc` glob; no script edits required.
+- **New tool `.dev/tools/normalize_realms.py`.** Standalone Python normalizer (no third-party deps). Reads `.dev/tools/realm_dump_raw.lua` (also new), splits the unified data into Realms.lua + RealmConnections.lua, prints a cleanup summary to stderr (categorized: cleaned typos / phantom members dropped / other anomalies). Re-runnable: replace the raw dump file and re-execute.
+
 ## 9 — Wago packaging fix: exclude `_XPTR.toc` (2026-05-07)
 
 ### Fixed
