@@ -1,48 +1,39 @@
 -- LibCodex-1.0 / Modules / Catalog / AreaPOI.lua
--- Named map points-of-interest. Distinct from AreaTrigger (invisible volumes
--- that fire scripts) — these are the labeled markers Blizzard's world map
--- draws: capital portals, world bosses, gathering nodes (named ones),
--- flight points, mailboxes, vendors highlighted by Blizzard's UI, etc.
---
--- Schema:
---   id              AreaPoiID
---   label           Name_lang
---   description     Description_lang
---   x, y, z         world-space position (Pos_0/1/2)
---   continentID    ContinentID (instance / world map)
---   areaID          AreaTable id this POI sits in
---   portLocID       portal destination ref (when this POI teleports)
---   playerCondition  PlayerConditionID gate
---   uiAtlasMember   UiTextureAtlasMemberID (icon)
---   poiDataType     enum describing PoiData payload
---   poiData         payload (varies by poiDataType)
---   worldStateID    WorldStateID this POI is keyed to (for state-driven icons)
---   widgetSetID     UiWidgetSetID
---   flags           raw AreaPOI.Flags
---   states          array of state overlays from AreaPOIState (post-processor)
---                   each: { worldStateValue, iconEnumValue, description, atlasMember }
---   sources         provenance tags
-
 local LibCodex = LibStub("LibCodex-1.0")
-local AreaPOI = LibCodex.CollectionFactory.New("AreaPOI", {
-    keyField = "id",
-    searchFields = { "label", "description" },
-})
-
-function AreaPOI:ForContinent(continentID)
-    local out = {}
-    for _, e in pairs(self:AllRaw()) do
-        if e.continentID == continentID then out[#out + 1] = e end
-    end
-    return out
+local AreaPOI = LibCodex.CollectionFactory.New("AreaPOI", { keyField = "id", searchFields = { "label", "description" } })
+local function decodeZ85String(z85str)
+    if type(z85str) ~= "string" or z85str == "" then return nil end
+    local Z85 = LibStub and LibStub("LibZ85-1.0", true)
+    if not Z85 then return nil end
+    local ok, bytes = pcall(Z85.decode, z85str)
+    if not ok or type(bytes) ~= "string" or #bytes < 1 then return nil end
+    local pad = string.byte(bytes, 1)
+    if pad < 0 or pad > 3 then return nil end
+    local tail_end = #bytes - pad
+    if tail_end < 1 then return "" end
+    return string.sub(bytes, 2, tail_end)
 end
-
-function AreaPOI:ForArea(areaID)
-    local out = {}
-    for _, e in pairs(self:AllRaw()) do
-        if e.areaID == areaID then out[#out + 1] = e end
-    end
-    return out
+function AreaPOI:_DecodeV2Row(slots, schemaVersion, build)
+    if type(slots) ~= "table" then return end
+    local id = slots[1]; if type(id) ~= "number" or id <= 0 then return end
+    local entry = { id = id, sources = { "bundled" } }
+    if type(slots[2])  == "string" then entry.label           = decodeZ85String(slots[2])  end
+    if type(slots[3])  == "number" then entry.x               = slots[3]  end
+    if type(slots[4])  == "number" then entry.y               = slots[4]  end
+    if type(slots[5])  == "string" then entry.description     = decodeZ85String(slots[5])  end
+    if type(slots[6])  == "number" then entry.flags           = slots[6]  end
+    if type(slots[7])  == "number" then entry.areaID          = slots[7]  end
+    if type(slots[8])  == "number" then entry.continentID     = slots[8]  end
+    if type(slots[9])  == "number" then entry.playerCondition = slots[9]  end
+    if type(slots[10]) == "number" then entry.poiData         = slots[10] end
+    if type(slots[11]) == "number" then entry.poiDataType     = slots[11] end
+    if type(slots[12]) == "number" then entry.portLocID       = slots[12] end
+    if type(slots[13]) == "number" then entry.states          = slots[13] end
+    if type(slots[14]) == "number" then entry.uiAtlasMember   = slots[14] end
+    if type(slots[15]) == "number" then entry.widgetSetID     = slots[15] end
+    if type(slots[16]) == "number" then entry.worldStateID    = slots[16] end
+    if type(slots[17]) == "number" then entry.z               = slots[17] end
+    if build then entry._build = build end
+    self._entries[id] = entry; self._count = (self._count or 0) + 1
 end
-
 LibCodex:RegisterModule("AreaPOI", AreaPOI)

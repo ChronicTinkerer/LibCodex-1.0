@@ -1,22 +1,6 @@
 -- LibCodex-1.0 / Modules / Enums / Factions.lua
--- Unified faction catalog. Covers TWO kinds of "faction":
---   * Player factions: Alliance ("A"), Horde ("H"), Neutral ("N").
---     Hand-curated, string ids.
---   * Reputation factions: every Faction DBC row (Argent Dawn, Cenarion
---     Circle, Brawler's Guild, etc.). Imported from wago, numeric ids.
---
--- Schema:
---   id              "A" | "H" | "N" (player) OR numeric FactionID (reputation)
---   label           display name
---   kind            "player" | "reputation"
---   color           { r, g, b, hex } — for player factions only
---   expansion       Expansion enum — for reputation factions only
---   parentFactionID  ParentFactionID — for reputation factions only
---   sources         provenance tags
---
--- Mixed-type ids (string + number) coexist in the same module without
--- collision because Lua tables key by both type and value. Consumers that
--- only want one kind should use :ByKind.
+-- v2 slots: 1:id, 2:label (Z85), 3:expansion, 4:color (Z85),
+--           5:parentFactionID, 6:kind (Z85)
 
 local LibCodex = LibStub("LibCodex-1.0")
 local Factions = LibCodex.CollectionFactory.New("Factions", {
@@ -24,30 +8,32 @@ local Factions = LibCodex.CollectionFactory.New("Factions", {
     searchFields = { "label" },
 })
 
+local function decodeZ85String(z85str)
+    if type(z85str) ~= "string" or z85str == "" then return nil end
+    local Z85 = LibStub and LibStub("LibZ85-1.0", true)
+    if not Z85 then return nil end
+    local ok, bytes = pcall(Z85.decode, z85str)
+    if not ok or type(bytes) ~= "string" or #bytes < 1 then return nil end
+    local pad = string.byte(bytes, 1)
+    if pad < 0 or pad > 3 then return nil end
+    local tail_end = #bytes - pad
+    if tail_end < 1 then return "" end
+    return string.sub(bytes, 2, tail_end)
+end
+
+function Factions:_DecodeV2Row(slots, schemaVersion, build)
+    if type(slots) ~= "table" then return end
+    local id = slots[1]
+    if type(id) ~= "number" or id <= 0 then return end
+    local entry = { id = id, sources = { "bundled" } }
+    if type(slots[2]) == "string" then entry.label            = decodeZ85String(slots[2]) end
+    if type(slots[3]) == "number" then entry.expansion        = slots[3] end
+    if type(slots[4]) == "string" then entry.color            = decodeZ85String(slots[4]) end
+    if type(slots[5]) == "number" then entry.parentFactionID  = slots[5] end
+    if type(slots[6]) == "string" then entry.kind             = decodeZ85String(slots[6]) end
+    if build then entry._build = build end
+    self._entries[id] = entry
+    self._count = (self._count or 0) + 1
+end
+
 LibCodex:RegisterModule("Factions", Factions)
-
--- Convenience: GetForPlayer() returns the Alliance/Horde/Neutral entry
--- matching the current player's faction group. Returns the Neutral entry
--- as a fallback (e.g., a Pandaren who hasn't picked a side yet).
-function Factions:GetForPlayer()
-    if UnitFactionGroup then
-        local f = UnitFactionGroup("player")
-        if f == "Alliance" then return self:Get("A") end
-        if f == "Horde"    then return self:Get("H") end
-    end
-    return self:Get("N")
-end
-
--- Filter by kind: "player" returns A/H/N, "reputation" returns the rep
--- factions imported from wago.
-function Factions:ByKind(kind)
-    local out = {}
-    for _, e in pairs(self:AllRaw()) do
-        if e.kind == kind then out[#out + 1] = e end
-    end
-    return out
-end
-
--- Convenience aliases for the common queries.
-function Factions:Players()      return self:ByKind("player") end
-function Factions:Reputations()  return self:ByKind("reputation") end

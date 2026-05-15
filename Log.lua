@@ -132,7 +132,17 @@ local function getCairnLogger()
     if _cairnLogger then return _cairnLogger end
     if LibStub then
         local CL = LibStub("Cairn-Log-1.0", true)
-        if CL then _cairnLogger = CL("LibCodex") end
+        if CL then
+            -- Cairn-Log-1.0 API: :Get(name) returns existing logger if any,
+            -- :New(name) creates one. Either works for our bridge case;
+            -- prefer Get so we don't double-register if Cairn already
+            -- handed out a "LibCodex" logger.
+            if CL.Get then
+                _cairnLogger = CL:Get("LibCodex") or (CL.New and CL:New("LibCodex"))
+            elseif CL.New then
+                _cairnLogger = CL:New("LibCodex")
+            end
+        end
     end
     return _cairnLogger
 end

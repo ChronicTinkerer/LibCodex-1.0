@@ -1,42 +1,16 @@
 -- LibCodex-1.0 / Modules / Catalog / AreaTriggers.lua
--- AreaTrigger catalog. Server-defined invisible volumes that fire scripted
--- actions when a player walks through them. Used for: dungeon/raid entrance
--- portals, instance portals, zone-line transitions, "you have discovered X"
--- toasts, holiday event triggers, and many quest scripts.
---
--- Schema:
---   id              AreaTriggerID
---   continentID     ContinentID (the world map / instance map this lives in)
---   x, y, z         world-space position (Pos_0, Pos_1, Pos_2)
---   shapeType       0=Sphere, 1=Box, 2=Polygon, 3=Cylinder
---   shapeID         per-shape definition row id
---   radius          for sphere / cylinder shapes
---   boxLength       Box_length (for box shape)
---   boxWidth        Box_width
---   boxHeight       Box_height
---   boxYaw          Box_yaw (rotation)
---   actionSetID     AreaTriggerActionSetID (script bundle to run on entry)
---   phaseID         PhaseID (visibility gating)
---   phaseGroupID    PhaseGroupID
---   phaseUseFlags   PhaseUseFlags
---   flags           raw AreaTrigger.Flags
---   sources         provenance tags
---
--- Note: AreaTriggers have no Name_lang. Consumers identify them by id +
--- continent + position. Wowhead and similar tools annotate them externally.
-
 local LibCodex = LibStub("LibCodex-1.0")
-local AreaTriggers = LibCodex.CollectionFactory.New("AreaTriggers", {
-    keyField = "id",
-    searchFields = {},  -- no text fields; lookup by id or continent
-})
-
-function AreaTriggers:ForContinent(continentID)
-    local out = {}
-    for _, e in pairs(self:AllRaw()) do
-        if e.continentID == continentID then out[#out + 1] = e end
+local AreaTriggers = LibCodex.CollectionFactory.New("AreaTriggers", { keyField = "id", searchFields = {} })
+local NAMES = {nil,"x","y","flags","actionSetID","boxHeight","boxLength","boxWidth","boxYaw",
+               "continentID","phaseGroupID","phaseID","phaseUseFlags","radius","shapeID","shapeType","z"}
+function AreaTriggers:_DecodeV2Row(slots, schemaVersion, build)
+    if type(slots) ~= "table" then return end
+    local id = slots[1]; if type(id) ~= "number" or id <= 0 then return end
+    local entry = { id = id, sources = { "bundled" } }
+    for i = 2, #NAMES do
+        if type(slots[i]) == "number" then entry[NAMES[i]] = slots[i] end
     end
-    return out
+    if build then entry._build = build end
+    self._entries[id] = entry; self._count = (self._count or 0) + 1
 end
-
 LibCodex:RegisterModule("AreaTriggers", AreaTriggers)

@@ -1,39 +1,28 @@
 -- LibCodex-1.0 / Modules / Catalog / Areas.lua
--- AreaTable catalog. Areas are sub-zones within UiMaps. The Zones module
--- gives you the map-level entries (Elwynn Forest, Stormwind City, etc.)
--- whereas Areas gives you the finer-grained sub-zone names (Goldshire,
--- Northshire Abbey, the Trade District). Both fire to the player as the
--- "you have entered ..." text and minimap subzone label.
---
--- Schema:
---   id              AreaID
---   label           AreaName_lang (player-facing sub-zone name)
---   zoneName        ZoneName (internal/short name; sometimes empty)
---   continentID     ContinentID (matches the legacy continent enum)
---   parentAreaID    AreaTable.ParentAreaID — usually the enclosing zone
---   factionGroupMask  bitmask of factions this sub-zone applies to
---   sources         provenance tags
-
 local LibCodex = LibStub("LibCodex-1.0")
-local Areas = LibCodex.CollectionFactory.New("Areas", {
-    keyField = "id",
-    searchFields = { "label", "zoneName" },
-})
-
--- Walk up the parent chain. Returns a list of areas from this one to the
--- root, e.g. for Goldshire -> { Goldshire, Elwynn Forest, Eastern Kingdoms }.
-function Areas:Path(areaID, maxDepth)
-    maxDepth = maxDepth or 16
-    local out = {}
-    local cur = areaID
-    for _ = 1, maxDepth do
-        if cur == nil then break end
-        local entry = self:Get(cur)
-        if not entry then break end
-        out[#out + 1] = entry
-        cur = entry.parentAreaID
-    end
-    return out
+local Areas = LibCodex.CollectionFactory.New("Areas", { keyField = "id", searchFields = { "label", "zoneName" } })
+local function decodeZ85String(z85str)
+    if type(z85str) ~= "string" or z85str == "" then return nil end
+    local Z85 = LibStub and LibStub("LibZ85-1.0", true)
+    if not Z85 then return nil end
+    local ok, bytes = pcall(Z85.decode, z85str)
+    if not ok or type(bytes) ~= "string" or #bytes < 1 then return nil end
+    local pad = string.byte(bytes, 1)
+    if pad < 0 or pad > 3 then return nil end
+    local tail_end = #bytes - pad
+    if tail_end < 1 then return "" end
+    return string.sub(bytes, 2, tail_end)
 end
-
+function Areas:_DecodeV2Row(slots, schemaVersion, build)
+    if type(slots) ~= "table" then return end
+    local id = slots[1]; if type(id) ~= "number" or id <= 0 then return end
+    local entry = { id = id, sources = { "bundled" } }
+    if type(slots[2]) == "string" then entry.label            = decodeZ85String(slots[2]) end
+    if type(slots[3]) == "number" then entry.continentID      = slots[3] end
+    if type(slots[4]) == "number" then entry.factionGroupMask = slots[4] end
+    if type(slots[5]) == "number" then entry.parentAreaID     = slots[5] end
+    if type(slots[6]) == "string" then entry.zoneName         = decodeZ85String(slots[6]) end
+    if build then entry._build = build end
+    self._entries[id] = entry; self._count = (self._count or 0) + 1
+end
 LibCodex:RegisterModule("Areas", Areas)

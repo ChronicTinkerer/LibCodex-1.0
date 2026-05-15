@@ -230,6 +230,21 @@ function CC.New(name, opts)
         end
     end
 
+
+    -- Trigger LoD load of the module's companion subaddon (if not yet
+    -- attempted), then drain any chunks the load queued. Idempotent; safe
+    -- to call from any read-side method that finds entries empty.
+    function self:_EnsureBundledLoaded()
+        if (self._count or 0) > 0 then return end
+        local LC = LibStub and LibStub("LibCodex-1.0", true)
+        if not (LC and LC._TryLoadModule) then return end
+        if LC._loadAttempts and LC._loadAttempts[self._name] then return end
+        if LC:_TryLoadModule(self._name) then
+            if self._lazyChunks then self:_MaterializeLazyChunks() end
+            if self._v2Chunks   then self:_MaterializeV2Chunks()   end
+        end
+    end
+
     -- Add or merge an entry. Returns the resulting entry. Entries without a
     -- key field are still accepted but only addressable via :Search and :All.
     function self:Add(entry)
@@ -501,6 +516,8 @@ function CC.New(name, opts)
         -- first. After this the existing _entries / _rowIndex / _tsvIndex
         -- scan logic covers everything.
         if self._lazyChunks then self:_MaterializeLazyChunks() end
+        if self._v2Chunks   then self:_MaterializeV2Chunks()   end
+        self:_EnsureBundledLoaded()
 
         opts = opts or {}
         local q = lower(query or "")
@@ -672,6 +689,8 @@ function CC.New(name, opts)
     -- the full bundled catalog.
     function self:All()
         if self._lazyChunks then self:_MaterializeLazyChunks() end
+        if self._v2Chunks   then self:_MaterializeV2Chunks()   end
+        self:_EnsureBundledLoaded()
         local function gen()
             for k, e in pairs(self._entries) do coroutine.yield(k, e) end
             if self._extras then
@@ -684,6 +703,8 @@ function CC.New(name, opts)
     -- Return entries as an array (useful for iteration in non-coroutine code).
     function self:AllArray()
         if self._lazyChunks then self:_MaterializeLazyChunks() end
+        if self._v2Chunks   then self:_MaterializeV2Chunks()   end
+        self:_EnsureBundledLoaded()
         local out = {}
         for _, e in pairs(self._entries) do out[#out + 1] = e end
         if self._extras then
@@ -696,6 +717,8 @@ function CC.New(name, opts)
     -- Materializes lazy chunks because callers expect the full catalog.
     function self:AllRaw()
         if self._lazyChunks then self:_MaterializeLazyChunks() end
+        if self._v2Chunks   then self:_MaterializeV2Chunks()   end
+        self:_EnsureBundledLoaded()
         return self._entries
     end
 
@@ -706,6 +729,8 @@ function CC.New(name, opts)
     -- the first :Get/:Search/:All to get just the eager count.
     function self:Count()
         if self._lazyChunks then self:_MaterializeLazyChunks() end
+        if self._v2Chunks   then self:_MaterializeV2Chunks()   end
+        self:_EnsureBundledLoaded()
         return self._count
     end
 

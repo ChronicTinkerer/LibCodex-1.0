@@ -1,37 +1,26 @@
 -- LibCodex-1.0 / Modules / Enums / Stats.lua
--- Player stat enum. Wago doesn't publish a Stat DBC (the values are largely
--- baked into client code), so this module is hand-curated. The seed data
--- lives in Data/Stats.lua.
---
--- Schema:
---   id        small numeric ID we assign for ordering (NOT a Blizzard ID)
---   label     localized display name placeholder ("Strength", "Critical Strike")
---   token     ITEM_MOD_* token used by GetItemStats() responses (e.g.
---             "ITEM_MOD_STRENGTH_SHORT", "ITEM_MOD_CRIT_RATING_SHORT")
---   kind      "primary" | "secondary" | "tertiary"
---   sources   provenance tags
-
 local LibCodex = LibStub("LibCodex-1.0")
-local Stats = LibCodex.CollectionFactory.New("Stats", {
-    keyField = "id",
-    searchFields = { "label", "token", "kind" },
-})
-
-function Stats:ByKind(kind)
-    local out = {}
-    for _, e in pairs(self:AllRaw()) do
-        if e.kind == kind then out[#out + 1] = e end
-    end
-    return out
+local Stats = LibCodex.CollectionFactory.New("Stats", { keyField = "id", searchFields = { "label", "token", "kind" } })
+local function decodeZ85String(z85str)
+    if type(z85str) ~= "string" or z85str == "" then return nil end
+    local Z85 = LibStub and LibStub("LibZ85-1.0", true)
+    if not Z85 then return nil end
+    local ok, bytes = pcall(Z85.decode, z85str)
+    if not ok or type(bytes) ~= "string" or #bytes < 1 then return nil end
+    local pad = string.byte(bytes, 1)
+    if pad < 0 or pad > 3 then return nil end
+    local tail_end = #bytes - pad
+    if tail_end < 1 then return "" end
+    return string.sub(bytes, 2, tail_end)
 end
-
--- Convenience: look up a stat by its ITEM_MOD_* token.
-function Stats:ByToken(token)
-    if not token then return nil end
-    for _, e in pairs(self:AllRaw()) do
-        if e.token == token then return e end
-    end
-    return nil
+function Stats:_DecodeV2Row(slots, schemaVersion, build)
+    if type(slots) ~= "table" then return end
+    local id = slots[1]; if type(id) ~= "number" or id <= 0 then return end
+    local entry = { id = id, sources = { "bundled" } }
+    if type(slots[2]) == "string" then entry.label = decodeZ85String(slots[2]) end
+    if type(slots[3]) == "string" then entry.token = decodeZ85String(slots[3]) end
+    if type(slots[4]) == "string" then entry.kind  = decodeZ85String(slots[4]) end
+    if build then entry._build = build end
+    self._entries[id] = entry; self._count = (self._count or 0) + 1
 end
-
 LibCodex:RegisterModule("Stats", Stats)
