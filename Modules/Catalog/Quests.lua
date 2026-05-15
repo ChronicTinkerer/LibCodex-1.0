@@ -21,6 +21,134 @@ local Quests = LibCodex.CollectionFactory.New("Quests", {
 })
 
 -- ----------------------------------------------------------------------------
+-- v2 compressed-format support. bake_v2 emits Quests rows as positional
+-- arrays in the locked 11-slot schema with Z85-packed location strings:
+--
+--   {id, level, locsZ85, side, minLevel, raceMask, classMask, areaID,
+--    preQ, nextQ, questLineID}
+--
+-- This block defines the per-row decoder the CollectionFactory's v2 path
+-- calls (Common.lua: _MaterializeV2Chunks). Output entries match the
+-- legacy Quests entry shape so existing :Get / :Search / consumer code
+-- keeps working unchanged.
+-- ----------------------------------------------------------------------------
+
+local _SIDE_INT_TO_STR = { [0] = "B", [1] = "A", [2] = "H" }
+local _POINT_INT_TO_STR = { [0] = "start", [1] = "end", [2] = "requirement" }
+
+-- Decode a Z85-packed location buffer to a list of {mapID, x, y, point,
+-- npcID?, objID?, z?} dicts. Walks records by minimum-record-size (6) and
+-- stops at the all-zero header sentinel that marks Z85 trailing padding.
+-- Returns nil on invalid input rather than raising; the decode path is
+-- log-and-continue per the v2 spec.
+local function _DecodeLocationsZ85(packed)
+    if type(packed) ~= "string" or packed == "" then return nil end
+
+    local Z85 = LibStub and LibStub("LibZ85-1.0", true)
+    if not Z85 then return nil end
+
+    local ok, bytes = pcall(Z85.decode, packed)
+    if not ok or type(bytes) ~= "string" then return nil end
+
+    local locs = {}
+    local i = 1
+    local n = #bytes
+    local floor = math.floor
+    local sb = string.byte
+
+    while i + 5 <= n do  -- minimum record size = 6 bytes
+        local b0 = sb(bytes, i)
+        local b1 = sb(bytes, i + 1)
+        local b2 = sb(bytes, i + 2)
+        local b3 = sb(bytes, i + 3)
+        local b4 = sb(bytes, i + 4)
+        local b5 = sb(bytes, i + 5)
+
+        -- All-zero header = Z85 trailing pad zone; stop.
+        if b0 + b1 + b2 + b3 + b4 + b5 == 0 then break end
+
+        -- Field extraction by div/mod (avoids 32-bit limits in the
+        -- bit library; clearer than bit ops at sub-byte boundaries).
+        local mapID   = b0 + (b1 % 64) * 256
+        local x_int   = floor(b1 / 64) + b2 * 4 + (b3 % 16) * 1024
+        local y_int   = floor(b3 / 16) + b4 * 16 + (b5 % 4) * 4096
+        local p_int   = floor(b5 / 4) % 4
+        local has_z   = floor(b5 / 16) % 2 == 1
+        local has_npc = floor(b5 / 32) % 2 == 1
+        local has_obj = floor(b5 / 64) % 2 == 1
+
+        i = i + 6
+
+        local loc = {
+            mapID = mapID,
+            x = x_int / 10000,
+            y = y_int / 10000,
+            point = _POINT_INT_TO_STR[p_int] or "start",
+        }
+
+        if has_z then
+            if i + 1 > n then break end
+            local zu = sb(bytes, i) + sb(bytes, i + 1) * 256
+            loc.z = ((zu >= 32768) and (zu - 65536) or zu) / 10
+            i = i + 2
+        end
+
+        if has_npc then
+            if i + 2 > n then break end
+            loc.npcID = sb(bytes, i) + sb(bytes, i + 1) * 256 + sb(bytes, i + 2) * 65536
+            i = i + 3
+        end
+
+        if has_obj then
+            if i + 2 > n then break end
+            loc.objID = sb(bytes, i) + sb(bytes, i + 1) * 256 + sb(bytes, i + 2) * 65536
+            i = i + 3
+        end
+
+        locs[#locs + 1] = loc
+    end
+
+    return locs
+end
+
+-- Per-row decoder called by Common.lua's _MaterializeV2Chunks. Translates
+-- a positional v2 slot list (or sparse [N]=v dict) into the legacy entry
+-- shape and inserts into self._entries.
+function Quests:_DecodeV2Row(slots, schemaVersion, build)
+    if type(slots) ~= "table" then return end
+
+    -- Slot accessor: handles both dense list (slots[i]) and sparse dict
+    -- (slots["1"], slots["2"], ...). Lua array constructors put both forms
+    -- under integer keys, so a single accessor works for both.
+    local id = slots[1]
+    if type(id) ~= "number" or id <= 0 then return end
+
+    local entry = { id = id, sources = { "bundled" } }
+
+    if type(slots[2]) == "number" then entry.level = slots[2] end
+    if type(slots[3]) == "string" then
+        local locs = _DecodeLocationsZ85(slots[3])
+        if locs then entry.locations = locs end
+    end
+    if type(slots[4]) == "number" then
+        entry.side = _SIDE_INT_TO_STR[slots[4]] or "B"
+    end
+    if type(slots[5]) == "number" then entry.requiredLevel = slots[5] end
+    if type(slots[6]) == "number" then entry.raceMask = slots[6] end
+    if type(slots[7]) == "number" then entry.classMask = slots[7] end
+    if type(slots[8]) == "number" then entry.categoryID = slots[8] end
+    if type(slots[9]) == "table" then entry.preQ = slots[9] end
+    if type(slots[10]) == "table" then entry.nextQ = slots[10] end
+    if type(slots[11]) == "number" then entry.questLineID = slots[11] end
+
+    -- Tag the entry's source build for future delta-overlay support.
+    if build then entry._build = build end
+
+    self._entries[id] = entry
+    self._count = (self._count or 0) + 1
+end
+
+-- ----------------------------------------------------------------------------
 -- Runtime helpers (called by Adapters/Runtime.lua on quest events).
 -- ----------------------------------------------------------------------------
 

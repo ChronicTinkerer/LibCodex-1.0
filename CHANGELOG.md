@@ -6,6 +6,10 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/en/
 
 ## [Unreleased]
 
+### Changed
+
+- **Z85 codec extracted to standalone `LibZ85-1.0`.** The Z85 encoder/decoder that was internal to LibCodex (registered as `LibCodex-Z85-1.0`) is now its own published WoW library at `https://github.com/ChronicTinkerer/LibZ85-1.0` — CurseForge project 1539921, WoWInterface project 27139 (Wago project TBD). LibCodex consumes it as a vendored library at `Libs/LibZ85-1.0/`. The BigWigs packager will refresh that folder from the upstream repo at release time once the externals block is uncommented in `.pkgmeta`. Consumer impact: none. The internal LibStub MAJOR was renamed from `LibCodex-Z85-1.0` to `LibZ85-1.0`; the only caller (the v2 location-decoder in `Modules/Catalog/Quests.lua`) was updated in the same change. Public LibCodex API is unchanged — the codec was never part of LibCodex's documented surface in the first place.
+
 ### Added
 
 - **Realms catalog populated (1101 entries).** Replaced the empty seed at `LibCodex-1.0-Realms/Data/Realms.lua` (and the four flavor siblings: `Data_Mists`, `Data_TBC`, `Data_Vanilla`, `Data_XPTR`) with a full normalized realm catalog covering Mainline / Classic / Anniversary realms across US / EU / KR / CN / TW / Australia / Brazil. Source: chat-pasted Lua dump 2026-05-09. Schema: `id,name,type,locale,region,timezone,englishName,sources` — unified row format with nullable fields. `timezone` is populated for US-region realms (PST/MST/CST/EST/AEST/BRT) and nil elsewhere. `englishName` is populated for non-Latin-script locales (koKR/zhCN/zhTW/ruRU) and nil elsewhere. Realm types covered: PvE / PvP / RP / PvP RP. Cleanups during normalization (printed by the bake tool): four Brazilian rows had a duplicated region typo `US,US,BRT` (rows 3208/3209/3210/3234) collapsed back to `US,BRT`. Connection-group members were validated against the realm catalog; zero phantoms found in this dump.

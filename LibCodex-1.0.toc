@@ -35,6 +35,12 @@ Libs\LibEditMode\widgets\colorpicker.lua
 # ----- Library core
 LibCodex-1.0.lua
 
+# ----- Standalone Z85 codec, vendored from LibZ85-1.0 (separate CF project).
+#       LibStub-registered as "LibZ85-1.0". Used by the v2 compressed Quests
+#       module and any future v2-emitted module. BigWigs packager refreshes
+#       this folder from the upstream repo via .pkgmeta externals at release.
+Libs\LibZ85-1.0\LibZ85-1.0.lua
+
 # ----- Reusable collection factory (every module is built from this)
 Modules\Common.lua
 

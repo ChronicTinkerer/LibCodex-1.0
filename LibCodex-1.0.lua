@@ -151,6 +151,18 @@ function LibCodex:RegisterModule(name, collection)
         end
         self.pendingLazyRows[name] = nil
     end
+    if self.pendingV2Rows and self.pendingV2Rows[name] and collection._IngestV2Chunk then
+        for _, p in ipairs(self.pendingV2Rows[name]) do
+            collection:_IngestV2Chunk(p.schemaVersion, p.build, p.thunk)
+        end
+        self.pendingV2Rows[name] = nil
+    end
+    if self.pendingV2Deltas and self.pendingV2Deltas[name] and collection._IngestV2Delta then
+        for _, p in ipairs(self.pendingV2Deltas[name]) do
+            collection:_IngestV2Delta(p.schemaVersion, p.deltaToc, p.thunk)
+        end
+        self.pendingV2Deltas[name] = nil
+    end
 
     return collection
 end
@@ -262,6 +274,153 @@ function LibCodex:_FeedBundledRowsLazy(moduleName, columns, thunk)
         self.pendingLazyRows = self.pendingLazyRows or {}
         self.pendingLazyRows[moduleName] = self.pendingLazyRows[moduleName] or {}
         table.insert(self.pendingLazyRows[moduleName], { columns = columns, thunk = thunk })
+    end
+end
+
+-- v2-format ingest. Modules emitted by bake_v2 carry positional rows with
+-- Z85-encoded location strings instead of the legacy column-named form.
+-- Format spec: see .dev/tools/bake_v2/ and the LibCodex format-v2 design memo.
+--
+-- Signature:
+--   LibCodex:_FeedBundledRowsV2(moduleName, schemaVersion, build, thunk)
+--
+-- thunk is a zero-arg function returning the chunk's row table (same lazy
+-- pattern as _FeedBundledRowsLazy: deferred materialization). Each call
+-- represents one chunk; multi-chunk modules call this multiple times with
+-- the same schemaVersion + build.
+--
+-- Schema-version handshake:
+--   * if schemaVersion > _READER_MAX_KNOWN_V: reader is too old, log + drop.
+--   * if schemaVersion < _READER_MIN_SUPPORTED_V: bundle is too old, log + drop.
+--   * else dispatch to the module's :_IngestV2Chunk if registered, else
+--     queue under pendingV2Rows for ingestion when the module registers.
+LibCodex._READER_MAX_KNOWN_V    = LibCodex._READER_MAX_KNOWN_V    or 1
+LibCodex._READER_MIN_SUPPORTED_V = LibCodex._READER_MIN_SUPPORTED_V or 1
+LibCodex._errorRing  = LibCodex._errorRing  or {}
+LibCodex._errorRingI = LibCodex._errorRingI or 0
+local _ERROR_RING_CAP = 100
+
+function LibCodex:_LogError(scope, moduleName, message)
+    self._errorRingI = (self._errorRingI % _ERROR_RING_CAP) + 1
+    self._errorRing[self._errorRingI] = {
+        time = (time and time()) or 0,
+        scope = scope,
+        module = moduleName,
+        message = message,
+    }
+end
+
+function LibCodex:GetErrors()
+    local out = {}
+    for i = 1, _ERROR_RING_CAP do
+        local e = self._errorRing[i]
+        if e then out[#out + 1] = e end
+    end
+    table.sort(out, function(a, b) return (a.time or 0) < (b.time or 0) end)
+    return out
+end
+
+function LibCodex:ClearErrors()
+    for k in pairs(self._errorRing) do self._errorRing[k] = nil end
+    self._errorRingI = 0
+end
+
+function LibCodex:_FeedBundledRowsV2(moduleName, schemaVersion, build, thunk)
+    if type(moduleName) ~= "string"
+        or type(schemaVersion) ~= "number"
+        or type(build) ~= "number"
+        or type(thunk) ~= "function"
+    then
+        return
+    end
+
+    -- Schema-version handshake. If the bundle's _V is outside our supported
+    -- range, log a clear actionable error and drop the chunk; the module's
+    -- queries will return nil for missing IDs rather than producing wrong
+    -- values from a mis-decoded format.
+    if schemaVersion > self._READER_MAX_KNOWN_V then
+        self:_LogError(
+            "module", moduleName,
+            string.format(
+                "module schema _V=%d is newer than reader supports (max %d). Update LibCodex.",
+                schemaVersion, self._READER_MAX_KNOWN_V
+            )
+        )
+        return
+    end
+    if schemaVersion < self._READER_MIN_SUPPORTED_V then
+        self:_LogError(
+            "module", moduleName,
+            string.format(
+                "module schema _V=%d is older than reader supports (min %d). Re-bake required.",
+                schemaVersion, self._READER_MIN_SUPPORTED_V
+            )
+        )
+        return
+    end
+
+    local mod = self.modules[moduleName]
+    if mod and mod._IngestV2Chunk then
+        mod:_IngestV2Chunk(schemaVersion, build, thunk)
+    else
+        self.pendingV2Rows = self.pendingV2Rows or {}
+        self.pendingV2Rows[moduleName] = self.pendingV2Rows[moduleName] or {}
+        table.insert(self.pendingV2Rows[moduleName], {
+            schemaVersion = schemaVersion,
+            build = build,
+            thunk = thunk,
+        })
+    end
+end
+
+-- v2 build delta. Phase 1.5 build-compatibility table: bake_v2 emits one
+-- delta per future TOC version it has data for. The reader applies any
+-- delta whose deltaToc <= GetBuildInfo() tocVersion in ascending order,
+-- after base chunks have been materialized. Delta thunks return a table:
+--   { [questID] = positional v2 row, ..., _removed = {ids...} }
+function LibCodex:_FeedBundledV2Delta(moduleName, schemaVersion, deltaToc, thunk)
+    if type(moduleName) ~= "string"
+        or type(schemaVersion) ~= "number"
+        or type(deltaToc) ~= "number"
+        or type(thunk) ~= "function"
+    then
+        return
+    end
+
+    -- Same schema-version handshake as _FeedBundledRowsV2: bail loudly if
+    -- the bundle is outside the reader's supported range.
+    if schemaVersion > self._READER_MAX_KNOWN_V then
+        self:_LogError(
+            "module", moduleName,
+            string.format(
+                "delta schema _V=%d is newer than reader supports (max %d). Update LibCodex.",
+                schemaVersion, self._READER_MAX_KNOWN_V
+            )
+        )
+        return
+    end
+    if schemaVersion < self._READER_MIN_SUPPORTED_V then
+        self:_LogError(
+            "module", moduleName,
+            string.format(
+                "delta schema _V=%d is older than reader supports (min %d). Re-bake required.",
+                schemaVersion, self._READER_MIN_SUPPORTED_V
+            )
+        )
+        return
+    end
+
+    local mod = self.modules[moduleName]
+    if mod and mod._IngestV2Delta then
+        mod:_IngestV2Delta(schemaVersion, deltaToc, thunk)
+    else
+        self.pendingV2Deltas = self.pendingV2Deltas or {}
+        self.pendingV2Deltas[moduleName] = self.pendingV2Deltas[moduleName] or {}
+        table.insert(self.pendingV2Deltas[moduleName], {
+            schemaVersion = schemaVersion,
+            deltaToc = deltaToc,
+            thunk = thunk,
+        })
     end
 end
 

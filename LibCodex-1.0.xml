@@ -15,6 +15,12 @@
 
     <Script file="LibCodex-1.0.lua"/>
 
+    <!-- Vendored LibZ85-1.0 (standalone library, separate CF project).
+         Used by the v2 compressed module format (Modules/Catalog/Quests.lua
+         and any future v2-emitted module). LibStub-registered as
+         "LibZ85-1.0". -->
+    <Include file="Libs\LibZ85-1.0\LibZ85-1.0.xml"/>
+
     <Script file="Modules\Common.lua"/>
 
     <Script file="Modules\Enums\Classes.lua"/>

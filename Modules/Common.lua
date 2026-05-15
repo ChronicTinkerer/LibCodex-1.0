@@ -123,6 +123,113 @@ function CC.New(name, opts)
         end
     end
 
+    -- ------------------------------------------------------------------
+    -- v2 chunks. The bake_v2 tool emits each chunk as a thunk via
+    -- _FeedBundledRowsV2(name, schemaVersion, build, thunk). The chunk's
+    -- rows are positional arrays in the v2 11-slot schema, with location
+    -- data Z85-packed into slot 3. Per-module decode logic lives on the
+    -- collection itself as :_DecodeV2Row(slots); collections that don't
+    -- define one silently skip v2 chunks.
+    -- ------------------------------------------------------------------
+    function self:_IngestV2Chunk(schemaVersion, build, thunk)
+        self._v2Chunks = self._v2Chunks or {}
+        self._v2Chunks[#self._v2Chunks + 1] = {
+            schemaVersion = schemaVersion,
+            build = build,
+            thunk = thunk,
+        }
+    end
+
+    -- Drain the v2 chunk queue. For each chunk, invoke its thunk to get the
+    -- row table, then call self:_DecodeV2Row(slots) for each row. If the
+    -- collection doesn't define _DecodeV2Row, this is a silent no-op.
+    -- After base materialization, applies any pending v2 deltas in TOC order.
+    function self:_MaterializeV2Chunks()
+        if not self._v2Chunks or #self._v2Chunks == 0 then
+            -- No base chunks pending, but deltas might still need applying
+            -- (e.g., re-running materialize after a partial load)
+            self:_MaterializeV2Deltas()
+            return
+        end
+        local chunks = self._v2Chunks
+        self._v2Chunks = nil
+        if not self._DecodeV2Row then return end  -- module hasn't opted in to v2
+        for i = 1, #chunks do
+            local p = chunks[i]
+            local ok, rows = pcall(p.thunk)
+            if ok and type(rows) == "table" then
+                for _, row in ipairs(rows) do
+                    self:_DecodeV2Row(row, p.schemaVersion, p.build)
+                end
+            end
+        end
+        -- Phase 1.5: after base rows, apply any deltas in TOC order
+        self:_MaterializeV2Deltas()
+    end
+
+    -- ------------------------------------------------------------------
+    -- v2 build deltas. bake_v2 emits one delta per future TOC version it
+    -- has data for. The reader applies any delta whose deltaToc <= the
+    -- player's current TOC (from GetBuildInfo()), in ascending order, after
+    -- base chunks materialize. Cumulative model: a player on TOC 120007
+    -- gets every 120006 + 120007 delta applied on top of base; a player
+    -- on TOC 120005 (the base) gets none.
+    --
+    -- Delta thunk return format:
+    --   { [questID] = positional v2 row, ..., _removed = {ids...} }
+    -- ------------------------------------------------------------------
+    function self:_IngestV2Delta(schemaVersion, deltaToc, thunk)
+        self._v2Deltas = self._v2Deltas or {}
+        self._v2Deltas[#self._v2Deltas + 1] = {
+            schemaVersion = schemaVersion,
+            deltaToc = deltaToc,
+            thunk = thunk,
+        }
+    end
+
+    function self:_MaterializeV2Deltas()
+        if not self._v2Deltas or #self._v2Deltas == 0 then return end
+        if not self._DecodeV2Row then return end
+
+        local deltas = self._v2Deltas
+        self._v2Deltas = nil
+
+        -- Determine current player TOC. GetBuildInfo() returns
+        -- (version, build, date, tocVersion). Skip apply for any delta
+        -- whose deltaToc > currentToc (those are future-build data the
+        -- player doesn't see yet).
+        local currentToc = 0
+        if GetBuildInfo then
+            local _, _, _, toc = GetBuildInfo()
+            if type(toc) == "number" then currentToc = toc end
+        end
+
+        -- Sort by deltaToc ascending so applies are deterministic
+        table.sort(deltas, function(a, b) return a.deltaToc < b.deltaToc end)
+
+        for i = 1, #deltas do
+            local p = deltas[i]
+            if p.deltaToc <= currentToc then
+                local ok, body = pcall(p.thunk)
+                if ok and type(body) == "table" then
+                    -- Drop removed IDs first so a remove-then-readd within a
+                    -- single delta lands as the readd (matches Python helper).
+                    if type(body._removed) == "table" then
+                        for _, removedId in ipairs(body._removed) do
+                            self._entries[removedId] = nil
+                        end
+                    end
+                    -- Apply integer-keyed overrides/adds
+                    for key, row in pairs(body) do
+                        if type(key) == "number" and type(row) == "table" then
+                            self:_DecodeV2Row(row, p.schemaVersion, p.deltaToc)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
     -- Add or merge an entry. Returns the resulting entry. Entries without a
     -- key field are still accepted but only addressable via :Search and :All.
     function self:Add(entry)
@@ -180,6 +287,11 @@ function CC.New(name, opts)
             return self:_ExpandTSVRow(key)
         end
         -- Fall through: maybe the key lives in a chunk we haven't loaded yet.
+        if self._v2Chunks then
+            self:_MaterializeV2Chunks()
+            local re = self._entries[key]
+            if re then return re end
+        end
         if self._lazyChunks then
             self:_MaterializeLazyChunks()
             if self._rowIndex and self._rowIndex[key] then
